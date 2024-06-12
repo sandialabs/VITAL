@@ -1,0 +1,14 @@
+# https://www.geonames.org/US/AK/largest-cities-in-alaska.html
+Name, Latitude, Longitude, Population
+Anchorage, 61.218, -149.9, 291247
+Juneau, 58.302, -134.42, 32756
+Fairbanks, 64.838, -147.716, 32325
+Eagle River, 61.321, -149.568, 24793
+Badger, 64.8, -147.533, 19482
+Knik-Fairview, 61.513, -149.6, 14923
+College, 64.857, -147.803, 12964
+Wasilla, 61.581, -149.441, 9284
+Sitka, 57.053, -135.331, 8863
+Lakes, 61.607, -149.309, 8364
+Ketchikan, 55.342, -131.648, 8197
+Tanaina, 61.627, -149.428, 8197
