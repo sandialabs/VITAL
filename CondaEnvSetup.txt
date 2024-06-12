@@ -1,5 +1,0 @@
->> conda env create --file environment.yml
-* The command above might takes a while to run as conda is installing the required packages. 
-* This command automatically creates the environment needed to run the tutorial. 
-
->> conda activate HDPS 
