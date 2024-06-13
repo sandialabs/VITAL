@@ -3,4 +3,6 @@
 /TurboShipCostCalculator/tutorial/*.pdf
 /TurboShipCostCalculator/.ipynb_checkpoints/
 /TurboShipCostCalculator/__pycache__/
+**/__pycache__/
+**/.ipynb_checkpoints/
 
