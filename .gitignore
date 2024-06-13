@@ -1,0 +1,6 @@
+# Ignore all .txt and .pdf files in the tutorial folder
+/TurboShipCostCalculator/tutorial/*.txt
+/TurboShipCostCalculator/tutorial/*.pdf
+/TurboShipCostCalculator/.ipynb_checkpoints/
+/TurboShipCostCalculator/__pycache__/
+
