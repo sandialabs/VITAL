@@ -8,8 +8,7 @@ The provided command will create an environment and activate it, allowing you to
 - If you don't have Conda installed, you can download it from the official Conda website: [https://www.anaconda.com/download](https://www.anaconda.com/download)
 
 ### Resources
-
-- [Anaconda Introduction]([resource1_link](https://anaconda.cloud/video-gs-installing-anaconda-windows)) - This link contains a helpful guide for first-time Python users. It guides the user through installing Anaconda on Windows (and Mac). Other videos in the tutorial sequence also provide an overview of what Python is, what Anaconda is, and what Jupyter Notebook is, among others.
+- [Anaconda Tutorial](https://anaconda.cloud/video-gs-installing-anaconda-windows)- This link contains a helpful guide for first-time Python users. It guides the user through installing Anaconda on Windows (and Mac). Other videos in the tutorial sequence also provide an overview of what Python is, what Anaconda is, and what Jupyter Notebook is, among others.
 
 ## Instructions
 
