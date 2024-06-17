@@ -1,5 +1,7 @@
 # import autograd.numpy as np  # Thinly-wrapped numpy
 import math
+# import autograd.numpy as np  # Thinly-wrapped numpy
+import numpy as np
 
 # # 36 ft fishing vessel
 # FISH = {
@@ -23,7 +25,6 @@ import math
 #     'Cd' : 1.0,
 # }
 
-import autograd.numpy as np  # Thinly-wrapped numpy
 
 # Convert degrees to radians for better readability
 def degrees_to_radians(degrees):

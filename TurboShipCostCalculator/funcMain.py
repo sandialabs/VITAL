@@ -1,4 +1,5 @@
-import autograd.numpy as np  # Thinly-wrapped numpy
+# import autograd.numpy as np  # Thinly-wrapped numpy
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 plt.style.use('tableau-colorblind10')

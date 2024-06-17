@@ -1,4 +1,5 @@
-import autograd.numpy as np  # Thinly-wrapped numpy for use with autograd
+# import autograd.numpy as np  # Thinly-wrapped numpy
+import numpy as np
 import matplotlib.pyplot as plt
 
 import funcTidal  # Module for tidal flow calculations

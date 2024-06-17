@@ -1,6 +1,4 @@
 name: HDPS
-channels:
-  - conda-forge
 dependencies:
   - pandas
   - python

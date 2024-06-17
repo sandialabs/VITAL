@@ -1,5 +1,6 @@
 import glob
-import autograd.numpy as np  # Used for operations that support automatic differentiation
+# import autograd.numpy as np  # Thinly-wrapped numpy
+import numpy as np
 import pandas as pd
 import scipy as sp
 from natsort import natsorted, ns  # Natural sorting
@@ -44,7 +45,9 @@ def loadRotorSurfaces(folderlocation, myTSRmax, myTSRmin):
 
     for x in range(FileListLen):
         fullfile_withpath = folderlocation + outFileList[x]
-        data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 4, 5, 7], sep='\s+')
+        # data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 4, 5, 7], sep='\s+')
+        data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 4, 5, 7], sep=r'\s+')
+
 
         rotordata_TSR[x] = data['RtTSR'][0]
         rotordata_pitch[x] = data['BldPitch1'][0]
@@ -92,7 +95,8 @@ def loadRotorSurfaces(folderlocation, myTSRmax, myTSRmin):
     datFileList = glob.glob1(folderlocation, "*blade.dat")
     fullfile_withpath = folderlocation + datFileList[0]
 
-    data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep='\s+')
+    # data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep='\s+')
+    data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep=r'\s+')
 
     spanRatio = [data['BlSpn'][19], data['BlSpn'][18], data['BlSpn'][17]] / data['BlSpn'][19]
     Cpmin_functions = [spline_Cpmin20, spline_Cpmin19, spline_Cpmin18]
@@ -115,7 +119,8 @@ def estimateRotorMass(folderlocation):
 
     datFileList = glob.glob1(folderlocation, "*blade.dat")
     fullfile_withpath = folderlocation + datFileList[0]
-    data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep='\s+')
+    # data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep='\s+')
+    data = pd.read_table(fullfile_withpath, header=0, skiprows=[0, 1, 2, 3, 5], sep=r'\s+')
 
     BladeSpan = data['BlSpn']
     BladeChord = data['BlChord']
@@ -135,7 +140,8 @@ def estimateRotorMass(folderlocation):
     idxB = np.arange(len(BladeSpan)) * (myrows - 1) + (myrows - 1)
 
     for idx in np.arange(len(BladeSpan)):
-        data = pd.read_table(fileList[idx], skiprows=15, nrows=myrows - 1, names=colnames, sep='\s+')
+        # data = pd.read_table(fileList[idx], skiprows=15, nrows=myrows - 1, names=colnames, sep='\s+')
+        data = pd.read_table(fileList[idx], skiprows=15, nrows=myrows - 1, names=colnames, sep=r'\s+')
         coor_geom[idxA[idx]:idxB[idx], 0] = data['X'] * BladeChord[idx]
         coor_geom[idxA[idx]:idxB[idx], 1] = data['Y'] * BladeChord[idx]
         coor_geom[idxA[idx]:idxB[idx], 2] = BladeSpan[idx]
