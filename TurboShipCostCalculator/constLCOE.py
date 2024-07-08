@@ -1,4 +1,3 @@
-
 class ConstantsLCOE:
     """
     A class to hold constants related to the Levelized Cost of Energy (LCOE) calculations.
@@ -42,7 +41,7 @@ class ConstantsLCOE:
     A_JacketStructure: float = 170.0    
     E_JacketStructure: float = 0.8  
     
-    # Cable installation cost  (based on Lopez table 7)
+    # Cable installation cost (based on Lopez table 7)
     A_cableInstall: float = 120.0   
     B1_cableInstall: float = 4.1 / 24   # knots
     B2_cableInstall: float = 2.3    # knots
