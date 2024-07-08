@@ -5,10 +5,10 @@ class ConstantsGlobal:
     Attributes are immutable to prevent accidental modification outside of class definition.
     """
     
-    rho: float = 1025.0         # Density of sea water (kg/m3)
+    rho: float = 1025.0         # Density of sea water (kg/m^3)
     Patm: float = 101325.0      # Atmospheric pressure at sea level (Pa)
     Pvap: float = 3063.7485     # Vapor pressure of sea water at 25 degrees Celsius (Pa)
-    g: float = 9.8              # Acceleration due to gravity (m/s2)
+    g: float = 9.8              # Acceleration due to gravity (m/s^2)
     
     def __setattr__(self, name: str, value) -> None:
         """
