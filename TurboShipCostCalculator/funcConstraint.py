@@ -1,68 +1,80 @@
-# import autograd.numpy as np  # Thinly-wrapped numpy
 import numpy as np
 import matplotlib.pyplot as plt
-
 import funcTidal  # Module for tidal flow calculations
 import funcSimRotor  # Module for simulating rotor dynamics
-
 import constGlobal
-GLOBAL = constGlobal.ConstantsGlobal()  # Global constants (e.g., fluid density, gravity)
-
-import matplotlib.pyplot as plt
-plt.style.use('tableau-colorblind10')
-
 import constUnitConvert
+
+# Initialize global constants and unit conversion constants
+GLOBAL = constGlobal.ConstantsGlobal()
 CONVERT = constUnitConvert.ConstantsUnitConversion()
 
-
+# Set the plotting style
+plt.style.use('tableau-colorblind10')
 
 # Function to calculate the force exerted by mooring on the vessel
-# Parameters:
-#   Uinf: Free stream velocity (m/s)
-#   vessel: Dictionary containing vessel properties ('Cd' for drag coefficient, 'area' for cross-sectional area)
-# Returns:
-#   The force exerted by the mooring on the vessel (N)
-calForceMoorThrustFunc = lambda Uinf, vessel: 0.5 * GLOBAL.rho * vessel['Cd'] * vessel['area'] * Uinf**2
+def calForceMoorThrust(Uinf, vessel):
+    """
+    Calculate the force exerted by mooring on the vessel.
+
+    Parameters:
+    Uinf (float): Free stream velocity (m/s)
+    vessel (dict): Dictionary containing vessel properties ('Cd' for drag coefficient, 'area' for cross-sectional area)
+
+    Returns:
+    float: The force exerted by the mooring on the vessel (N)
+    """
+    return 0.5 * GLOBAL.rho * vessel['Cd'] * vessel['area'] * Uinf**2
 
 # Function to calculate the pitch constraint for a tidal turbine system
-# Parameters:
-#   Radius: Radius of the turbine rotor (m)
-#   dHub: Depth of the turbine hub (m)
-#   dMoor: Mooring depth (m)
-#   Uinf: Free stream velocity (m/s)
-#   CtFunc: Function to calculate the thrust coefficient given TSR
-#   TSR: Tip-speed ratio
-#   vessel: Dictionary containing vessel properties
-#   NumTurbine: Number of turbines in the system
-# Returns:
-#   ConstraintOut: The calculated pitch constraint. Must be >= 0 for a feasible design
-def PitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, vessel, NumTurbine): 
-    Uinf = funcTidal.flowAtDepth(Uinf, Radius, dHub, dMoor)  # Adjust flow speed for hub depth
+def PitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, vessel, NumTurbine):
+    """
+    Calculate the pitch constraint for a tidal turbine system.
 
-    F_vessel_thrust = calForceMoorThrustFunc(Uinf, vessel)  # Calculate vessel thrust force
+    Parameters:
+    Radius (float): Radius of the turbine rotor (m)
+    dHub (float): Depth of the turbine hub (m)
+    dMoor (float): Mooring depth (m)
+    Uinf (float): Free stream velocity (m/s)
+    CtFunc (function): Function to calculate the thrust coefficient given TSR
+    TSR (float): Tip-speed ratio
+    vessel (dict): Dictionary containing vessel properties
+    NumTurbine (int): Number of turbines in the system
+
+    Returns:
+    float: The calculated pitch constraint. Must be >= 0 for a feasible design
+    """
+    Uinf = funcTidal.flowAtDepth(Uinf, Radius, dHub, dMoor)  # Adjust flow speed given hub depth
+    F_vessel_thrust = calForceMoorThrust(Uinf, vessel)  # Calculate vessel thrust force
     F_turbine_thrust = funcSimRotor.calForceThrustFunc(Radius, Uinf, CtFunc(TSR))  # Calculate turbine thrust force
     F_total = F_vessel_thrust + round(NumTurbine) * F_turbine_thrust  # Total force
 
     # Calculate the pitch constraint
-    ConstraintOut = vessel['K_m'] * vessel['phi'] - round(NumTurbine) * F_turbine_thrust * dHub - F_total * vessel['X_m'] * np.cos(vessel['theta']) - F_total * vessel['Z_m'] * np.sin(vessel['theta'])
+    ConstraintOut = (vessel['K_m'] * vessel['phi'] - round(NumTurbine) * F_turbine_thrust * dHub
+                     - F_total * vessel['X_m'] * np.cos(vessel['theta'])
+                     - F_total * vessel['Z_m'] * np.sin(vessel['theta']))
 
     return ConstraintOut
 
 # Function to calculate the cavitation constraint for a tidal turbine system
-# Parameters:
-#   Radius: Radius of the turbine rotor (m)
-#   dHub: Depth of the turbine hub (m)
-#   dMoor: Mooring depth (m)
-#   Uinf: Free stream velocity (m/s)
-#   w: Angular velocity of the rotor (rad/s)
-#   TSR: Tip-speed ratio
-#   CpminFunc: Function to calculate the minimum pressure coefficient given TSR
-#   spanRatio: Ratio of the segment position to the rotor radius
-# Returns:
-#   ConstraintOut: The calculated cavitation constraint. Must be >= 0 for a feasible design
-def CavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc, spanRatio): 
-    Uinf = funcTidal.flowAtDepth(Uinf, Radius, dHub, dMoor)  # Adjust flow speed for hub depth
+def CavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc, spanRatio):
+    """
+    Calculate the cavitation constraint for a tidal turbine system.
 
+    Parameters:
+    Radius (float): Radius of the turbine rotor (m)
+    dHub (float): Depth of the turbine hub (m)
+    dMoor (float): Mooring depth (m)
+    Uinf (float): Free stream velocity (m/s)
+    w (float): Angular velocity of the rotor (rad/s)
+    TSR (float): Tip-speed ratio
+    CpminFunc (function): Function to calculate the minimum pressure coefficient given TSR
+    spanRatio (float): Ratio of the segment position to the rotor radius
+
+    Returns:
+    float: The calculated cavitation constraint. Must be >= 0 for a feasible design
+    """
+    Uinf = funcTidal.flowAtDepth(Uinf, Radius, dHub, dMoor)  # Adjust flow speed for hub depth
     Vel = np.sqrt(Uinf**2 + (spanRatio * Radius)**2 * w**2)  # Calculate resultant velocity at blade
 
     # Calculate the cavitation constraint
@@ -73,62 +85,56 @@ def CavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc, spanRatio):
 
     return ConstraintOut
 
+# Function to plot the cavitation constraint over time
+def plotCavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc, spanRatio, t, ylim=None):
+    """
+    Plot the cavitation constraint over time.
 
-
-def plotCavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc, spanRatio, t, ylim):
-    # Create a figure with three subplots
+    Parameters:
+    Radius (float): Radius of the turbine rotor (m)
+    dHub (float): Depth of the turbine hub (m)
+    dMoor (float): Mooring depth (m)
+    Uinf (float): Free stream velocity (m/s)
+    w (float): Angular velocity of the rotor (rad/s)
+    TSR (float): Tip-speed ratio
+    CpminFunc (list of functions): List of functions to calculate the minimum pressure coefficient given TSR
+    spanRatio (list of floats): List of span ratios
+    t (array-like): Time array
+    ylim (tuple, optional): Y-axis limits for the plot
+    """
     fig, axs = plt.subplots(3, 1, figsize=(8, 12))
 
-    # Iterate over each span ratio
     for i, ratio in enumerate(spanRatio):
-        # Plot the cavitation constraint over time for the current span ratio
         axs[i].plot(t * CONVERT.sec2days, CavitationCon(Radius, dHub, dMoor, Uinf, w, TSR, CpminFunc[i], ratio))
-        
-        # Set the y-axis limits if provided, else use default limits
-        if ylim is not None:
-            axs[i].set_ylim(ylim)
-        else:
-            axs[i].set_ylim([-0.1, 1.0])
-        
-        # Add gridlines to the plot
+        axs[i].set_ylim(ylim if ylim is not None else [-0.1, 1.0])
         axs[i].grid()
-        
-        # Set the x-axis label
         axs[i].set_xlabel('Time [days]')
-        
-        # Set the y-axis label
         axs[i].set_ylabel('Cavitation Constraint (<0 means violation)')
-        
-        # Set the title for the subplot
         axs[i].set_title(f'Subplot for span ratio {round(ratio, 3)}')
 
-    # Adjust the spacing between subplots
     plt.tight_layout()
-    
-    # Display the plot
     plt.show()
 
+# Function to plot the pitch constraint over time
+def plotPitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, VESSEL, NumTurbine, t, ylim=None):
+    """
+    Plot the pitch constraint over time.
 
-
-def plotPitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, VESSEL, NumTurbine, t, ylim):
-    # Plot the pitch constraint over time
+    Parameters:
+    Radius (float): Radius of the turbine rotor (m)
+    dHub (float): Depth of the turbine hub (m)
+    dMoor (float): Mooring depth (m)
+    Uinf (float): Free stream velocity (m/s)
+    CtFunc (function): Function to calculate the thrust coefficient given TSR
+    TSR (float): Tip-speed ratio
+    VESSEL (dict): Dictionary containing vessel properties
+    NumTurbine (int): Number of turbines in the system
+    t (array-like): Time array
+    ylim (tuple, optional): Y-axis limits for the plot
+    """
     plt.plot(t * CONVERT.sec2days, PitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, VESSEL, NumTurbine))
-    
-    # Set the y-axis limits if provided, else use default limits
-    if ylim is not None:
-        plt.ylim(ylim)
-    else:
-        plt.ylim([-0.1, 10.0])
-    
-    # Add gridlines to the plot
+    plt.ylim(ylim if ylim is not None else [-0.1, 10.0])
     plt.grid()
-    
-    # Set the x-axis label
     plt.xlabel('Time [days]')
-    
-    # Set the y-axis label
     plt.ylabel('Pitch Constraint (<0 means violation)')
-    
-    # Display the plot
     plt.show()
-
