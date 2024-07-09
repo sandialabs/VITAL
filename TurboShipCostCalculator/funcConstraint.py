@@ -13,7 +13,7 @@ CONVERT = constUnitConvert.ConstantsUnitConversion()
 plt.style.use('tableau-colorblind10')
 
 # Function to calculate the force exerted by mooring on the vessel
-def calForceMoorThrust(Uinf, vessel):
+def calForceMoorThrustFunc(Uinf, vessel):
     """
     Calculate the force exerted by mooring on the vessel.
 
@@ -45,7 +45,7 @@ def PitchCon(Radius, dHub, dMoor, Uinf, CtFunc, TSR, vessel, NumTurbine):
     float: The calculated pitch constraint. Must be >= 0 for a feasible design
     """
     Uinf = funcTidal.flowAtDepth(Uinf, Radius, dHub, dMoor)  # Adjust flow speed given hub depth
-    F_vessel_thrust = calForceMoorThrust(Uinf, vessel)  # Calculate vessel thrust force
+    F_vessel_thrust = calForceMoorThrustFunc(Uinf, vessel)  # Calculate vessel thrust force
     F_turbine_thrust = funcSimRotor.calForceThrustFunc(Radius, Uinf, CtFunc(TSR))  # Calculate turbine thrust force
     F_total = F_vessel_thrust + round(NumTurbine) * F_turbine_thrust  # Total force
 
