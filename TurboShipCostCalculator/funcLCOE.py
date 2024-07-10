@@ -60,7 +60,7 @@ def calculate_cost(Radius, Prated, NumTurbine, dCable_m, dMoor_m, F_vessel_thrus
 
     # Calculate total energy production
     TotalDuration_seconds = np.mean(np.diff(t)) * len(t)
-    Et = NumTurbine * sp.integrate.simpson(Pelec, t) / (TotalDuration_seconds) * (365 * 24 * 3600) / 3600 / 1000  # Convert to kWh
+    Et = NumTurbine * sp.integrate.simpson(Pelec)*np.mean(np.diff(t)) / (TotalDuration_seconds) * (365 * 24 * 3600) / 3600 / 1000  # Convert to kWh
 
     # Calculate discounted energy production
     C_et_sum = sum(Et * ((1 + COST.interest_rate) ** (-tt)) for tt in range(1, int(COST.sys_life + 1)))
