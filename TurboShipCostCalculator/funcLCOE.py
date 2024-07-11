@@ -68,9 +68,13 @@ def calculate_cost(Radius, Prated, NumTurbine, dCable_m, dMoor_m, F_vessel_thrus
     # Calculate LCOE
     LCOE = (CAPEX_USD + C_opex_sum) / C_et_sum
 
+    # Calculate the capacity factor
+    CapacityFactor = calculate_CapacityFactor(t, Pelec, Prated)
+
     # Prepare cost breakdown for output
     CostBreakdown = {
         "LCOE": LCOE,
+        "CapacityFactor": CapacityFactor,
         "CAPEX": CAPEX_USD,
         "Et": Et,
         "cable": Cost_kE_cable * CONVERT.kE2E * CONVERT.euro2dollar,
@@ -92,4 +96,34 @@ def printCostBreakdown(CostBreakdown):
     print("="*60)  # Print a line of "=" characters at the beginning
     print("Cost Breakdown:")
     for cost_item, cost_value in CostBreakdown.items():
-        print(f"{cost_item}: ${cost_value:.2f}")
+        if cost_item == 'CapacityFactor':
+            print(f"{cost_item}: {cost_value:.2f}")
+        elif cost_item == 'LCOE':
+            print(f"{cost_item}: ${cost_value:.2f}/kHr")
+        elif cost_item == 'Et':
+            print(f"{cost_item}: {cost_value:.2f}W")
+        else:
+            print(f"{cost_item}: ${cost_value:.2f}")
+
+
+def calculate_CapacityFactor(t, Pelec, Prated):
+    """
+    Calculate the capacity factor given the turbine rated powe, time vector and electrical power output.
+
+    Parameters:
+    t (numpy array): Time vector in seconds.
+    Pelec (numpy array): Electrical power output (W)
+    Prated (float)): Rated power (W)
+
+    Returns:
+    float: Capacity factor. (unitless)
+    """
+    # Calculate the time step
+    dt = np.mean(np.diff(t))
+
+    # Calculate the capacity factor using trapezoidal integration
+    CapacityFactor = sp.integrate.simpson(Pelec)*dt / (Prated * len(t) * dt)
+    
+    return CapacityFactor
+    
+
