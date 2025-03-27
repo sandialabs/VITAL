@@ -17,7 +17,7 @@ from module_cost_calculations import (
     calculate_charge_controller_cost_SITKANA,
     calculate_platform_cost_SITKANA,
     calculate_anchor_cost_SITKANA,
-    calculate_electrical_cable_cost_SITKANA,
+    # calculate_electrical_cable_cost_SITKANA,
     calculate_battery_cost_SITKANA
 )
 

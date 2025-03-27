@@ -2,6 +2,9 @@ import numpy as np
 from constGlobal import ConstantsGlobal
 import scipy as sp
 
+from unit_weight import UnitWeight  # Import the function from the new file
+
+
 class RotorSimulation:
     def __init__(self, config):
         self.Radius = config['Radius']
@@ -24,7 +27,7 @@ class RotorSimulation:
 
         self.GLOBAL = ConstantsGlobal()
         self.Jr = 1000000
-        self.M_turbine = self.UnitWeight(self.Radius, self.Prated)
+        self.M_turbine = UnitWeight(self.Radius, self.Prated)  # Call the imported function
         self.Wturbine = self.M_turbine * self.GLOBAL.g
         self.Kopt = self.calculate_Kopt()
 
@@ -251,14 +254,4 @@ class RotorSimulation:
         optimal_speed = result.x
         return optimal_speed
 
-    def RotorWeight(self, Radius):
-        Weight = 11.19999928 * Radius**2 + 16.37714233 * Radius - 7.44
-        return Weight
-
-    def PTOWeight(self, Prated):
-        Weight = 0.01501693 * Prated + 1.51674108
-        return Weight
-
-    def UnitWeight(self, Radius, Prated):
-        Weight = self.RotorWeight(Radius) + self.PTOWeight(Prated)
-        return Weight
+    

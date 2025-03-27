@@ -3,6 +3,7 @@ import scipy as sp
 from constGlobal import ConstantsGlobal
 from constUnitConvert import ConstantsUnitConversion
 from module_cost_config import COST_FUNCTIONS
+from module_cost_calculations import operating_cost_SITKANA
 
 # Initialize global constants from modules
 GLOBAL = ConstantsGlobal()
@@ -99,13 +100,11 @@ class LCOE:
         
         return total_capex_usd, self.capex
 
-    def operating_cost_SITKANA(self, Prated):
-        return 471130.312 * np.exp(-0.0003 * Prated) + 65937.5846
 
     def calculate_total_opex(self, total_capex):
         # Calculate OPEX based on CAPEX
         if self.customer == 'customer_B': # SITKANA
-            total_opex_usd = self.operating_cost_SITKANA(self.turbine_rated_power * self.number_of_turbines)
+            total_opex_usd = operating_cost_SITKANA(self.turbine_rated_power,self.number_of_turbines)
         else:
             total_opex_usd = 0.04 * total_capex
 

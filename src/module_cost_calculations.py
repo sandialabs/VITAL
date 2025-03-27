@@ -1,5 +1,6 @@
 import numpy as np
 from constUnitConvert import ConstantsUnitConversion
+from unit_weight import UnitWeight  # Import the function from the new file
 
 CONVERT = ConstantsUnitConversion()
  
@@ -150,7 +151,11 @@ def calculate_rotor_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    rotor_cost_USD_perUnit = 280*turbine_radius_m**2 + 409.43*turbine_radius_m - 186.00
+    # Small Scale
+    # rotor_cost_USD_perUnit = 280*turbine_radius_m**2 + 409.43*turbine_radius_m - 186.00
+
+    # Large Scale
+    rotor_cost_USD_perUnit = 5.58*turbine_radius_m**2 + 8.26*turbine_radius_m -3.75
     rotor_cost_USD = rotor_cost_USD_perUnit*number_of_turbines
     return rotor_cost_USD 
 
@@ -163,7 +168,11 @@ def calculate_rotor_construction_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    rotor_construction_cost_USD_perUnit = -7.81*turbine_radius_m**2 + 391.41*turbine_radius_m - 168.75
+    # Small Scale
+    # rotor_construction_cost_USD_perUnit = -7.81*turbine_radius_m**2 + 391.41*turbine_radius_m - 168.75
+
+    # Large Scale
+    rotor_construction_cost_USD_perUnit = 6.53*turbine_radius_m + 0.03
     rotor_construction_cost_USD = rotor_construction_cost_USD_perUnit*number_of_turbines
     return rotor_construction_cost_USD 
 
@@ -189,7 +198,7 @@ def calculate_generator_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    generator_cost_USD_perUnit = -2.20122508e-06*turbine_rated_power_W**2 + 2.11613327e-01*turbine_rated_power_W + 1.42090625e+02
+    generator_cost_USD_perUnit = -2.20e-06*turbine_rated_power_W**2 + 2.12e-01*turbine_rated_power_W + 1.42e+02
     generator_cost_USD = generator_cost_USD_perUnit*number_of_turbines
     return generator_cost_USD 
 
@@ -202,7 +211,7 @@ def calculate_assembly_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    assembly_cost_USD_perUnit = -4.40245009e-07*turbine_rated_power_W**2 + 4.23226652e-02*turbine_rated_power_W + 1.28418126e+02
+    assembly_cost_USD_perUnit = -4.40e-07*turbine_rated_power_W**2 + 4.23e-02*turbine_rated_power_W + 1.28e+02
     assembly_cost_USD = assembly_cost_USD_perUnit*number_of_turbines
     return assembly_cost_USD 
 
@@ -215,7 +224,7 @@ def calculate_concrete_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    concrete_cost_USD_perUnit = 6.65213261e-09*turbine_rated_power_W**2 + 5.14682541e-03*turbine_rated_power_W + 8.45691949e-01
+    concrete_cost_USD_perUnit = 6.65e-09*turbine_rated_power_W**2 + 5.15e-03*turbine_rated_power_W + 8.46e-01
     concrete_cost_USD = concrete_cost_USD_perUnit*number_of_turbines
     return concrete_cost_USD 
 
@@ -228,8 +237,8 @@ def calculate_gearbox_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    a = -645.3078812435461
-    b = 120.3760419495365
+    a = -645.31
+    b = 120.38
     gearbox_cost_USD_perUnit = a + b * np.log(turbine_rated_power_W) 
     gearbox_cost_USD = gearbox_cost_USD_perUnit*number_of_turbines
     return gearbox_cost_USD  
@@ -243,9 +252,12 @@ def calculate_charge_controller_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None): 
-    a = -2553.9455502056103 
-    b = 398.4982065789759
-    charge_controller_USD_perUnit = a + b * np.log(turbine_rated_power_W) 
+    # a = -2553.9455502056103 
+    # b = 398.4982065789759
+    # charge_controller_USD_perUnit = a + b * np.log(turbine_rated_power_W) 
+    a = 12.71
+    b = -222.70
+    charge_controller_USD_perUnit = a*np.sqrt(turbine_rated_power_W) + b
     charge_controller_cost_USD = charge_controller_USD_perUnit*number_of_turbines
 
     return charge_controller_cost_USD  
@@ -253,6 +265,20 @@ def calculate_charge_controller_cost_SITKANA(turbine_radius_m,
 
 
 # System level cost
+# def calculate_platform_cost_SITKANA(turbine_radius_m, 
+#                             turbine_rated_power_W, 
+#                             number_of_turbines, 
+#                             electrical_cable_length_m, 
+#                             mooring_cable_length_m, 
+#                             force_vessel_drag_N, 
+#                             force_turbine_thrust_N, 
+#                             vessel_volume_m3=None, 
+#                             BatteryCapacity_kWh=None):
+#     if vessel_volume_m3 is None:
+#         raise ValueError("vessel_volume_m3 parameter is required for platform cost calculation.")
+#     PlasticDensity = 1000
+#     return vessel_volume_m3 * PlasticDensity * 10.0
+
 def calculate_platform_cost_SITKANA(turbine_radius_m, 
                             turbine_rated_power_W, 
                             number_of_turbines, 
@@ -262,10 +288,20 @@ def calculate_platform_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    if vessel_volume_m3 is None:
-        raise ValueError("vessel_volume_m3 parameter is required for platform cost calculation.")
-    PlasticDensity = 1000
-    return vessel_volume_m3 * PlasticDensity * 10.0
+
+    total_weight = UnitWeight(turbine_radius_m, turbine_rated_power_W)
+    platformVolume = total_weight/1020 # for neutral buoyancy
+    # density of platform given by Lance is 1020 (?)
+    new_min = 0.049019608 # np.min(df['Platform Volume (m3)'])
+    new_max = 3.921568627 # np.max(df['Platform Volume (m3)'])
+    old_min = 0.012327232416666669 # np.min(total_weight_vector/1020)
+    old_max = 0.36467610084313723 # np.max(total_weight_vector/1020)
+    platformVolume_adjusted = new_min + ((platformVolume - old_min) / (old_max - old_min)) * (new_max - new_min)
+
+    a = 3426.95
+    b = 0.43
+    cost = a * platformVolume_adjusted**b
+    return cost
 
 def calculate_anchor_cost_SITKANA(turbine_radius_m, 
                             turbine_rated_power_W, 
@@ -276,29 +312,29 @@ def calculate_anchor_cost_SITKANA(turbine_radius_m,
                             force_turbine_thrust_N, 
                             vessel_volume_m3=None, 
                             BatteryCapacity_kWh=None):
-    anchor_cost_USD_perUnit = 127.54 + 0.0158 *turbine_rated_power_W 
-    anchor_cost_USD = anchor_cost_USD_perUnit*number_of_turbines
+    anchor_cost_USD_perUnit = 1.27542203e+02 + 1.57545238e-02 *(turbine_rated_power_W *number_of_turbines)
+    anchor_cost_USD = anchor_cost_USD_perUnit
 
     return anchor_cost_USD  
 
 
 
-def calculate_electrical_cable_cost_SITKANA(turbine_radius_m, 
-                            turbine_rated_power_W, 
-                            number_of_turbines, 
-                            electrical_cable_length_m, 
-                            mooring_cable_length_m, 
-                            force_vessel_drag_N, 
-                            force_turbine_thrust_N, 
-                            vessel_volume_m3=None, 
-                            BatteryCapacity_kWh=None):
-    CostLand_Mile = 150000
-    CostWater_Mile = 50000
-    mile2meter = 1609.34
+# def calculate_electrical_cable_cost_SITKANA(turbine_radius_m, 
+#                             turbine_rated_power_W, 
+#                             number_of_turbines, 
+#                             electrical_cable_length_m, 
+#                             mooring_cable_length_m, 
+#                             force_vessel_drag_N, 
+#                             force_turbine_thrust_N, 
+#                             vessel_volume_m3=None, 
+#                             BatteryCapacity_kWh=None):
+#     CostLand_Mile = 150000
+#     CostWater_Mile = 50000
+#     mile2meter = 1609.34
 
-    electrical_cable_cost_USD = CostWater_Mile*0.75*electrical_cable_length_m/mile2meter + CostLand_Mile*0.25*electrical_cable_length_m/mile2meter
+#     electrical_cable_cost_USD = CostWater_Mile*0.75*electrical_cable_length_m/mile2meter + CostLand_Mile*0.25*electrical_cable_length_m/mile2meter
 
-    return electrical_cable_cost_USD 
+#     return electrical_cable_cost_USD 
 
 def calculate_battery_cost_SITKANA(turbine_radius_m, 
                             turbine_rated_power_W, 
@@ -315,3 +351,12 @@ def calculate_battery_cost_SITKANA(turbine_radius_m,
     battery_cost_USD = 150*BatteryCapacity_kWh
 
     return battery_cost_USD
+
+
+
+def operating_cost_SITKANA(turbine_rated_power,number_of_turbines):
+    System_Rated_Power = number_of_turbines*turbine_rated_power
+    a = 4.71130313e+05
+    b = 2.74814600e-04
+    c = 6.59375848e+04
+    return a * np.exp(-b * System_Rated_Power) + c
