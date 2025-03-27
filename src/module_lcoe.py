@@ -8,9 +8,12 @@ from module_cost_config import COST_FUNCTIONS
 GLOBAL = ConstantsGlobal()
 CONVERT = ConstantsUnitConversion()
 
-class LCOE:
+class LCOE: 
+
+    # def __init__(self, turbine_radius, turbine_rated_power, number_of_turbines, hub_depth, 
+    #              lifetime=20, discount_rate=0.01, turbulence_intensity=0, customer='customer_A', application='grid_connection'):
     def __init__(self, turbine_radius, turbine_rated_power, number_of_turbines, hub_depth, 
-                 lifetime=20, discount_rate=0.01, turbulence_intensity=0, customer='customer_A', application='grid_connection'):
+                 lifetime, discount_rate, turbulence_intensity, customer, application):
         self.turbine_radius = turbine_radius
         self.turbine_rated_power = turbine_rated_power
         self.number_of_turbines = number_of_turbines
@@ -35,7 +38,7 @@ class LCOE:
         self.time_series = None
 
     def set_instantaneous_power(self, power_data, time_data):
-        self.instantaneous_power = np.array(power_data) / (1 + self.turbulence_intensity) ** 3
+        self.instantaneous_power = np.array(power_data) / (1 + self.turbulence_intensity) ** 3 * self.number_of_turbines
         self.time_series = np.array(time_data)
 
     def calculate_annual_energy(self):
@@ -45,16 +48,15 @@ class LCOE:
         dt = np.mean(np.diff(self.time_series))
         total_energy_generated = sp.integrate.simpson(self.instantaneous_power, dx=dt)  # Total energy in Joules
         average_power = total_energy_generated / (self.time_series[-1] - self.time_series[0])  # Average power in watts
-        annual_energy = average_power * 8760 * self.number_of_turbines / 1000  # Convert to annual energy (kWh)
+        annual_energy = average_power * 8760  / 1000  # Convert to annual energy (kWh)
         return annual_energy
 
     def calculate_capacity_factor(self):
         annual_energy = self.calculate_annual_energy()
-        max_annual_energy = self.turbine_rated_power * self.number_of_turbines * 8760 / 1000  # Maximum annual energy in kWh
+        max_annual_energy = self.turbine_rated_power * 8760 / 1000  # Maximum annual energy in kWh
         capacity_factor = annual_energy / max_annual_energy
         return capacity_factor
-    
-    
+
     def calculate_total_capex(self, 
                               dCable_m, 
                               dMoor_m,
@@ -83,10 +85,31 @@ class LCOE:
         for cost_name, cost_function in self.application_costs.items():
             self.capex[cost_name] = cost_function(**common_params)
 
+        # # Print individual CAPEX components
+        # print("Individual CAPEX components:")
+        # for cost_name, cost_value in self.capex.items():
+        #     print(f"{cost_name}: ${cost_value:.2f}")
+
         # Sum all CAPEX components
         total_capex_usd = sum(self.capex.values())
-        return total_capex_usd
+        
+        # Add development cost (Only for HDPS)
+        if self.customer == 'customer_A':  # HDPS
+            total_capex_usd *= (1 + 0.05)
+        
+        return total_capex_usd, self.capex
 
+    def operating_cost_SITKANA(self, Prated):
+        return 471130.312 * np.exp(-0.0003 * Prated) + 65937.5846
+
+    def calculate_total_opex(self, total_capex):
+        # Calculate OPEX based on CAPEX
+        if self.customer == 'customer_B': # SITKANA
+            total_opex_usd = self.operating_cost_SITKANA(self.turbine_rated_power * self.number_of_turbines)
+        else:
+            total_opex_usd = 0.04 * total_capex
+
+        return total_opex_usd
 
     def calculate_present_value_of_costs(self, total_capex, total_opex):
         # Calculate present value of costs
@@ -98,20 +121,27 @@ class LCOE:
         pve = annual_energy * np.sum([1 / (1 + self.discount_rate)**t for t in range(1, self.lifetime + 1)])
         return pve
 
-    def calculate_lcoe(self,dCable_m, 
+    def calculate_lcoe(self, dCable_m, 
                               dMoor_m,
                               F_vessel_thrust,
                               F_turbine_thrust,
                               vessel_volume_m3,
                               BatteryCapacity_kWh):
-        # Calculate total CAPEX and OPEX
-        total_capex = self.calculate_total_capex(dCable_m, 
+        # Calculate total CAPEX
+        total_capex, capex_components = self.calculate_total_capex(dCable_m, 
                               dMoor_m,
                               F_vessel_thrust,
                               F_turbine_thrust,
                               vessel_volume_m3,
                               BatteryCapacity_kWh)
-        total_opex = 0  # Placeholder for OPEX calculation
+        
+        # Output individual CAPEX components to user
+        print("Individual CAPEX components:")
+        for cost_name, cost_value in capex_components.items():
+            print(f"{cost_name}: ${cost_value:.2f}")
+        
+        # Calculate total OPEX
+        total_opex = self.calculate_total_opex(total_capex)
         
         # Calculate annual energy generation
         annual_energy = self.calculate_annual_energy()
@@ -121,5 +151,8 @@ class LCOE:
         pve = self.calculate_present_value_of_energy(annual_energy)
         
         # Calculate LCOE
+        if pve == 0:
+            raise ValueError("Present value of energy is zero, cannot calculate LCOE.")
+        
         lcoe = pvc / pve
         return lcoe

@@ -4,7 +4,6 @@ import os
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-
 from module_vessel import VesselData
 from constGlobal import ConstantsGlobal
 
@@ -13,8 +12,9 @@ def test_vessel_data():
     Mturbine = 1000.0  # Example turbine weight (kg)
     Uinf = np.array([1.0, 1.5, 2.0, 2.5, 3.0])  # Example flow profile (m/s)
     Ft = np.array([100.0, 150.0, 200.0, 250.0, 300.0])  # Example thrust loads (N)
+    number_of_turbines = 2 # Example number of turbines
 
-    # Test user-defined vessel properties
+    # Test user-defined vessel properties (Fishing vessel)
     user_vessel_properties = {
         'Xm': 5.77,
         'Zm': 1.65,
@@ -49,7 +49,7 @@ def test_vessel_data():
         phi=10 * np.pi / 180.0
     )
 
-    rectangular_vessel.calculate_vessel_properties(Mturbine, Uinf, Ft)
+    rectangular_vessel.calculate_vessel_properties(Mturbine, Uinf, Ft, number_of_turbines)
 
     print("\nRectangular vessel properties:")
     print(f"Width: {rectangular_vessel.width:.2f} m")
@@ -60,7 +60,6 @@ def test_vessel_data():
     print(f"Metacentric Height (GM): {rectangular_vessel.GM:.2f} m")
     print(f"Vessel Volume: {rectangular_vessel.VesselVolume:.2f} m^3")
     print(f"Submerged Height (h_s): {rectangular_vessel.h_s:.2f} m")
-
 
 if __name__ == "__main__":
     test_vessel_data()

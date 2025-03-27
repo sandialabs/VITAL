@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 
-from lcoe import LCOE
+from module_lcoe import LCOE
 import numpy as np
 
 # Example code to test the calculate_total_capex and LCOE calculation
@@ -12,10 +12,10 @@ if __name__ == "__main__":
     # Parameters
     turbine_radius = 1  # meters
     turbine_rated_power = 1 * 10000  # kW to W
-    number_of_turbines = 4
+    number_of_turbines = 1
     dCable_m = 100  # meters
     dMoor_m = 50  # meters
-    dHub_m = 30
+    dHub_m = 10
     F_turbine_thrust = 1000  # N
     F_vessel_thrust = 1000  # N
     vessel_volume_m3 = 100  # m^3
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                                                         F_turbine_thrust, 
                                                         vessel_volume_m3, 
                                                         BatteryCapacity_kWh)
-    print(f"Total CAPEX: {total_capex:.2f} USD")
+    print(f"Total CAPEX: {total_capex[0]:.2f} USD")
 
     # Arbitrary Pelec(t) for instantaneous power data
     power_data = np.random.rand(8760) * turbine_rated_power  # Random power data for one year in watts

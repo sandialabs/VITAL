@@ -82,7 +82,7 @@ class ConstraintChecker:
             return True  # Skip check if vessel is user-defined
         return vessel.GM > 0
 
-    def pitch_constraint(self, vessel, Uinf, Ft, dHub):
+    def pitch_constraint(self, vessel, Uinf, Ft, dHub, number_of_turbines):
         """
         Check for pitch constraints.
         
@@ -96,11 +96,11 @@ class ConstraintChecker:
         - Array: Pitch constraint values (must be greater than 0 to be valid).
         """
         if vessel.user_defined:
-            return self.user_defined_pitch_constraint(vessel, Uinf, Ft, dHub)
+            return self.user_defined_pitch_constraint(vessel, Uinf, Ft, dHub, number_of_turbines)
         else:
-            return self.designed_pitch_constraint(vessel, Uinf, Ft)
+            return self.designed_pitch_constraint(vessel, Uinf, Ft, number_of_turbines)
 
-    def designed_pitch_constraint(self, vessel, Uinf, Ft):
+    def designed_pitch_constraint(self, vessel, Uinf, Ft, number_of_turbines):
         """
         Check for pitch constraints for a designed vessel.
         
@@ -112,6 +112,7 @@ class ConstraintChecker:
         Returns:
         - Array: Pitch constraint values (must be greater than 0 to be valid).
         """
+        print('USING designed_pitch_constraint()')
         theta_m = vessel.theta_m
         height = vessel.height
         Cd = vessel.Cd
@@ -119,17 +120,17 @@ class ConstraintChecker:
         width = vessel.width
         Kphi = vessel.Kphi
 
-        Fmoor = (0.25 * Cd * height * self.rho * width * Uinf**2 + Ft) / np.sin(theta_m)
+        Fmoor = (0.25 * Cd * height * self.rho * width * Uinf**2 + number_of_turbines*Ft) / np.sin(theta_m)
 
         h_s = vessel.h_s
         Fdrag = 0.5 * self.rho * Cd * Uinf**2 * width * h_s
         Fbuoy = self.rho * self.g * vessel.VesselVolume
 
-        MomentEquation = (Fmoor * np.cos(theta_m) * vessel.length / 2 + Ft * height / 2 + Fdrag * (height / 2 - h_s / 2) - Fbuoy * (height / 2 - h_s / 2))
+        MomentEquation = (Fmoor * np.cos(theta_m) * vessel.length / 2 + number_of_turbines*Ft * height / 2 + Fdrag * (height / 2 - h_s / 2) - Fbuoy * (height / 2 - h_s / 2))
 
         return Kphi * phi - MomentEquation
 
-    def user_defined_pitch_constraint(self, vessel, Uinf, Ft, dHub):
+    def user_defined_pitch_constraint(self, vessel, Uinf, Ft, dHub, number_of_turbines):
         """
         Check for pitch constraints for a user-defined vessel.
         
@@ -142,17 +143,18 @@ class ConstraintChecker:
         Returns:
         - Array: Pitch constraint values (must be greater than 0 to be valid).
         """
+        print('USING user_defined_pitch_constraint()')
         F_vessel_thrust = 0.5 * self.rho * vessel.Cd * vessel.area * Uinf**2
-        F_turbine_thrust = Ft
+        F_turbine_thrust = number_of_turbines*Ft
         F_total = F_vessel_thrust + F_turbine_thrust
 
         ConstraintOut = (vessel.Kphi * vessel.phi - F_turbine_thrust * dHub
-                         - F_total * vessel.X_m * np.cos(vessel.theta_m)
-                         - F_total * vessel.Z_m * np.sin(vessel.theta_m))
+                         - F_total * vessel.Xm * np.cos(vessel.theta_m)
+                         - F_total * vessel.Zm * np.sin(vessel.theta_m))
 
         return ConstraintOut
 
-    def check_pitch_constraint(self, vessel, Uinf, Ft, dHub):
+    def check_pitch_constraint(self, vessel, Uinf, Ft, dHub, number_of_turbines):
         """
         Check if the pitch constraint is satisfied.
         
@@ -165,5 +167,5 @@ class ConstraintChecker:
         Returns:
         - bool: True if the pitch constraint is satisfied, False otherwise.
         """
-        return np.all(self.pitch_constraint(vessel, Uinf, Ft, dHub) > 0)
+        return np.all(self.pitch_constraint(vessel, Uinf, Ft, dHub, number_of_turbines) > 0)
 

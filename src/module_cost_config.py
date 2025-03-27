@@ -45,7 +45,7 @@ COST_FUNCTIONS = {
     'customer_B': {
         'rotor_and_drivetrain': {
             'anchor_cost': calculate_anchor_cost_SITKANA,
-            'platform_cost': calculate_platform_cost_SITKANA,
+            # 'platform_cost': calculate_platform_cost_SITKANA,
             'charge_controller_cost': calculate_charge_controller_cost_SITKANA,
             'gearbox_cost': calculate_gearbox_cost_SITKANA,
             'concrete_cost': calculate_concrete_cost_SITKANA,

@@ -17,7 +17,7 @@ CONVERT = ConstantsUnitConversion()
 # Constants
 NOAA_API_BASE_URL = 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations'
 NOAA_TIDAL_DATA_URL = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter'
-EARTH_RADIUS_M = 6371000
+EARTH_RADIUS_M = 6378137.0
 MIN_FLOW_SPEED = 1e-4
 DEFAULT_MOORING_DISTANCE_M = 50.0
 
@@ -150,10 +150,17 @@ class TidalData:
         for ind in datafile.index:
             city_lat = math.radians(datafile[datafile.columns[1]][ind])
             city_lon = math.radians(datafile[datafile.columns[2]][ind])
+
             d_cable_len[ind] = self.distance(buoylat, city_lat, buoylon, city_lon)
 
         closestCity = datafile[datafile.columns[0]][np.argmin(d_cable_len)]
         cableLen_m = round(d_cable_len[np.argmin(d_cable_len)], 2)
+        print(f'City lat:{datafile[datafile.columns[1]][np.argmin(d_cable_len)]} degree')
+        print(f'City lon:{datafile[datafile.columns[2]][np.argmin(d_cable_len)]} degree')
+        print(f'City lat:{math.radians(datafile[datafile.columns[1]][np.argmin(d_cable_len)])} radian')
+        print(f'City lon:{math.radians(datafile[datafile.columns[2]][np.argmin(d_cable_len)])} radian')
+        print(f'Buoy lat:{buoylat} radian')
+        print(f'Buoy lon:{buoylon} radian')
         return cableLen_m, closestCity
 
     def load_tidal_data(self, city_data_file: str) -> tuple:
@@ -167,6 +174,8 @@ class TidalData:
             input_data = self.get_station_info()
             self.buoy_latitude_rad = math.radians(input_data['stations'][0]['lat'])
             self.buoy_longitude_rad = math.radians(input_data['stations'][0]['lng'])
+            print(f'Buoy lat:{float(input_data['stations'][0]['lat'])} degree')
+            print(f'Buoy lon:{float(input_data['stations'][0]['lng'])} degree')
             self.mooring_distance_m = DEFAULT_MOORING_DISTANCE_M
         else:
             input_data = self.get_deployment_info()
@@ -175,6 +184,9 @@ class TidalData:
                 self.mooring_distance_m *= CONVERT.ft2m
             self.buoy_latitude_rad = math.radians(float(input_data['deployments'][0]['lat']))
             self.buoy_longitude_rad = math.radians(float(input_data['deployments'][0]['lng']))
+            print(f'Buoy lat:{float(input_data['deployments'][0]['lat'])} degree')
+            print(f'Buoy lon:{float(input_data['deployments'][0]['lng'])} degree')
+
 
         tidal_data = self.get_tidal_data()
         tidal_speed_cms = self.extract_tidal_speed(tidal_data)

@@ -61,6 +61,7 @@ class RotorSimulation:
                 self.simulate_optimal_control(kk, dt)
             elif self.control_strategy == 'constant_speed':
                 self.simulate_constant_speed(kk, dt)
+                # print('This is constant speed')
 
         self.calculate_power()
 
@@ -104,6 +105,7 @@ class RotorSimulation:
     def simulate_constant_speed(self, kk, dt):
         if kk == 0:
             self.w[kk] = self.optimal_speed
+            print(f'Optimal Speed is {self.optimal_speed}')
         else:
             self.w[kk] = self.w[kk-1] + self.wd[kk-1] * dt
 

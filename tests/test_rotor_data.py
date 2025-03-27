@@ -73,11 +73,11 @@ def test_rotor_data(rotor_filename, cpmin_filename=None):
     plt.show()
 
 if __name__ == "__main__":
-    cpmin_filename = "/Users/akeow/Desktop/VITAL/HDPS_TeamerClean/data/Cpmin_data.json"
-    rotor_filename = "/Users/akeow/Desktop/VITAL/HDPS_TeamerClean/data/Sandia_rotor_data.txt"
+    # cpmin_filename = "/Users/akeow/Desktop/VITAL/HDPS_TeamerClean/data/Cpmin_data.json"
+    # rotor_filename = "/Users/akeow/Desktop/VITAL/HDPS_TeamerClean/data/Sandia_rotor_data.txt"
 
-    test_rotor_data(rotor_filename, cpmin_filename)
+    # test_rotor_data(rotor_filename, cpmin_filename)
 
-    # rotor_filename = "Sitkana_rotor_data_blade_1.txt"
+    rotor_filename = "Sitkana_rotor_data_blade_1.txt"
 
-    # test_rotor_data(rotor_filename)
+    test_rotor_data(rotor_filename)

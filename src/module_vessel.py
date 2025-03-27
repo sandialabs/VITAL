@@ -1,5 +1,6 @@
 import numpy as np
 from constGlobal import ConstantsGlobal
+GLOBAL = ConstantsGlobal()
 
 class VesselData:
     """
@@ -14,7 +15,7 @@ class VesselData:
     theta_m : float
         Mooring line angle in radians.
     alpha : float
-        aspect ratio for the vessel.
+        Aspect ratio for the vessel.
     Cd : float
         Drag coefficient.
     phi : float
@@ -38,7 +39,7 @@ class VesselData:
     VesselVolume : float
         Volume of the vessel.
     h_s : float
-        submerged height; Half of the vessel height.
+        Submerged height; Half of the vessel height.
     """
 
     def __init__(self, height=None, density=None, theta_m=None, alpha=None, Cd=None, phi=None, user_defined=False, vessel_properties=None):
@@ -54,7 +55,7 @@ class VesselData:
         theta_m : float, optional
             Mooring line angle in radians (default is None).
         alpha : float, optional
-            aspect ratio for the vessel (default is None).
+            Aspect ratio for the vessel (default is None).
         Cd : float, optional
             Drag coefficient (default is None).
         phi : float, optional
@@ -71,7 +72,7 @@ class VesselData:
         self.Cd = Cd
         self.phi = phi
         self.user_defined = user_defined
-        self.vessel_properties = vessel_properties
+        self.vessel_properties = vessel_properties or {}
 
         self.width = None
         self.Fmoor = None
@@ -91,13 +92,16 @@ class VesselData:
         """
         Set vessel properties from user-defined vessel geometry.
         """
-        self.Xm = self.vessel_properties['Xm']
-        self.Zm = self.vessel_properties['Zm']
-        self.Kphi = self.vessel_properties['Kphi']
-        self.theta_m = self.vessel_properties['theta']
-        self.phi = self.vessel_properties['phi']
-        self.area = self.vessel_properties['area']
-        self.Cd = self.vessel_properties['Cd']
+        try:
+            self.Xm = self.vessel_properties['Xm']
+            self.Zm = self.vessel_properties['Zm']
+            self.Kphi = self.vessel_properties['Kphi']
+            self.theta_m = self.vessel_properties['theta']
+            self.phi = self.vessel_properties['phi']
+            self.area = self.vessel_properties['area']
+            self.Cd = self.vessel_properties['Cd']
+        except KeyError as e:
+            raise ValueError(f"Missing key in vessel_properties: {e}")
 
     def set_default_properties(self):
         """
@@ -117,23 +121,24 @@ class VesselData:
             self.phi = 10.0 * np.pi / 180.0  # Default pitch constraint (radians)
         self.h_s = self.height / 2
 
-    def calculate_vessel_properties(self, Mturbine, Uinf, Ft):
+    def calculate_vessel_properties(self, mass_of_turbines, Uinf, Ft, number_of_turbines):
         """
         Calculate the vessel properties based on the given parameters.
 
         Parameters
         ----------
-        Mturbine : float
+        mass_of_turbines : float
             Mass of the turbine.
         Uinf : array
             Array of flow speeds.
         Ft : array
             Array of thrust forces.
+        number_of_turbines : int
+            Number of turbines.
         """
         if self.user_defined:
             return  # Skip calculation if vessel properties are user-defined
 
-        GLOBAL = ConstantsGlobal()
         theta_m = self.theta_m
         alpha = self.alpha
         height = self.height
@@ -144,14 +149,15 @@ class VesselData:
         g = GLOBAL.g
 
         U = np.max(Uinf)
-        Fthrust = Ft[np.argmax(Uinf)]
+        total_mass_of_turbines = mass_of_turbines * number_of_turbines
+        total_turbine_thrust_force = Ft[np.argmax(Uinf)] * number_of_turbines
         width_temp = height * (height * Cd**2 * U**4 * rho**2 * np.cos(theta_m)**2 + 
-                               32 * Mturbine * alpha * g**2 * rho * np.sin(theta_m)**2 - 
-                               64 * Mturbine * alpha * rho_b * g**2 * np.sin(theta_m)**2 + 
-                               16 * Fthrust * alpha * np.sin(2 * theta_m) * g * rho - 
-                               32 * Fthrust * alpha * rho_b * np.sin(2 * theta_m) * g)
+                               32 * total_mass_of_turbines * alpha * g**2 * rho * np.sin(theta_m)**2 - 
+                               64 * total_mass_of_turbines * alpha * rho_b * g**2 * np.sin(theta_m)**2 + 
+                               16 * total_turbine_thrust_force * alpha * np.sin(2 * theta_m) * g * rho - 
+                               32 * total_turbine_thrust_force * alpha * rho_b * np.sin(2 * theta_m) * g)
         self.width = 0.25 * (np.sqrt(width_temp) + Cd * U**2 * height * rho * np.cos(theta_m)) / (np.sin(theta_m) * (alpha * g * height * rho - 2 * alpha * g * height * rho_b))
-        self.Fmoor = (0.25 * Cd * height * rho * self.width * U**2 + Fthrust) / np.sin(theta_m)
+        self.Fmoor = (0.25 * Cd * height * rho * self.width * U**2 + total_turbine_thrust_force) / np.sin(theta_m)
         self.length = self.alpha * self.width
         self.Khs = rho * g * self.width * self.length
         self.VesselVolume = self.width * self.length * height
@@ -162,6 +168,33 @@ class VesselData:
         zCOB = -self.h_s / 2
         self.GM = BM + zCOB - zCOG
         self.Kphi = rho * V_submerged * g * self.GM  # Pitch hydrostatic stiffness
+        self.area = self.h_s * self.width
+
+    def calculate_vessel_drag_force(self, Uinf):
+        """
+        Calculate the drag force exerted on the vessel.
+
+        Parameters
+        ----------
+        Uinf : float
+            Free stream velocity (m/s)
+
+        Returns
+        -------
+        float
+            The drag force exerted on the vessel (N)
+        """
+        rho = GLOBAL.rho
+
+        return 0.5 * rho * self.Cd * self.area * Uinf**2
+
+    def print_all_attributes(self):
+        """
+        Print all attributes of the VesselData object.
+        """
+        for attribute, value in vars(self).items():
+            print(f"{attribute}: {value}")
+
 
     # def calculate_mooring_force(self, Uinf, Ft):
     #     """
