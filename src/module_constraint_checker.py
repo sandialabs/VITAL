@@ -2,7 +2,7 @@ import numpy as np
 from constGlobal import ConstantsGlobal
 
 class ConstraintChecker:
-    def __init__(self, Radius, CpminFunc):
+    def __init__(self, Radius, CpminFunc, withCable = False):
         self.Radius = Radius
         self.CpminFunc = CpminFunc
         self.GLOBAL = ConstantsGlobal()
@@ -10,6 +10,7 @@ class ConstraintChecker:
         self.g = self.GLOBAL.g
         self.Pvap = self.GLOBAL.Pvap
         self.Patm = self.GLOBAL.Patm
+        self.withCable = withCable
 
     def depth_constraint(self, dHub):
         """
@@ -144,9 +145,14 @@ class ConstraintChecker:
         - Array: Pitch constraint values (must be greater than 0 to be valid).
         """
         print('USING user_defined_pitch_constraint()')
+
+
         F_vessel_thrust = 0.5 * self.rho * vessel.Cd * vessel.area * Uinf**2
         F_turbine_thrust = number_of_turbines*Ft
         F_total = F_vessel_thrust + F_turbine_thrust
+
+        if self.withCable == True:
+            F_total = F_vessel_thrust
 
         ConstraintOut = (vessel.Kphi * vessel.phi - F_turbine_thrust * dHub
                          - F_total * vessel.Xm * np.cos(vessel.theta_m)

@@ -6,6 +6,8 @@ Welcome to Tidal Energy Capture's documentation!
    :caption: Contents:
 
    modules
+   derivation
+   license
 
 Indices and tables
 ==================
