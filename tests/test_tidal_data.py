@@ -17,7 +17,7 @@ plt.style.use('tableau-colorblind10')
 
 def test_tidal_data():
     # Define parameters for tidal data acquisition
-    station = "SEA0202"  # Site 2
+    station = "SEA0505"  # Site 2
     startdate = 20200201  # yyyyMMdd
     rangeHr = 2 * 7 * 24  # Two weeks
     timestep = 5.0
