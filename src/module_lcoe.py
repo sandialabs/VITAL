@@ -64,7 +64,20 @@ class LCOE:
                               F_vessel_thrust,
                               F_turbine_thrust,
                               vessel_volume_m3,
-                              BatteryCapacity_kWh):
+                              BatteryCapacity_kWh=None):
+        
+        # If the application is 'grid_connection', BatteryCapacity_kWh is set to 0 regardless of whether the user provided a value or not.
+        # If the application is not 'grid_connection' and the user did not provide a value for BatteryCapacity_kWh (i.e., it is None), a ValueError will be raised.
+        # If the application is not 'grid_connection' and the user provided a value for BatteryCapacity_kWh that is less than or equal to zero, a ValueError will be raised.
+
+        
+        # Check application type and set BatteryCapacity_kWh accordingly
+        if self.application == 'grid_connection':
+            BatteryCapacity_kWh = 0
+        elif BatteryCapacity_kWh <= 0:
+            raise ValueError("Battery capacity must be greater than zero for non-grid_connection applications.")
+
+
         # Common parameters
         common_params = {
             'turbine_radius_m': self.turbine_radius,
@@ -125,14 +138,26 @@ class LCOE:
                               F_vessel_thrust,
                               F_turbine_thrust,
                               vessel_volume_m3,
-                              BatteryCapacity_kWh):
+                              BatteryCapacity_kWh=None):
+        
+        # If the application is 'grid_connection', BatteryCapacity_kWh is set to 0 regardless of whether the user provided a value or not.
+        # If the application is not 'grid_connection' and the user did not provide a value for BatteryCapacity_kWh (i.e., it is None), a ValueError will be raised.
+        # If the application is not 'grid_connection' and the user provided a value for BatteryCapacity_kWh that is less than or equal to zero, a ValueError will be raised.
+
+        # Check application type and set BatteryCapacity_kWh accordingly
+        if self.application == 'grid_connection':
+            BatteryCapacity_kWh = 0
+        elif BatteryCapacity_kWh <= 0:
+            raise ValueError("Battery capacity must be greater than zero for non-grid_connection applications.")
+
+
         # Calculate total CAPEX
         total_capex, capex_components = self.calculate_total_capex(dCable_m, 
                               dMoor_m,
                               F_vessel_thrust,
                               F_turbine_thrust,
                               vessel_volume_m3,
-                              BatteryCapacity_kWh)
+                              BatteryCapacity_kWh=None)
         
         # Output individual CAPEX components to user
         print("Individual CAPEX components:")
