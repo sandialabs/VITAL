@@ -1,0 +1,765 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 7: Optimizing LCOE (module_lcoe_optimizer) &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 8: Generator and Power Electronics Loss Models (module_rotor_simulation)" href="08_loss_models.html" />
+    <link rel="prev" title="Tutorial 6: Calculating LCOE (module_lcoe)" href="06_lcoe_calculation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Notes-for-new-users">Notes for new users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Load-tidal-and-rotor-data">1. Load tidal and rotor data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Define-the-base-turbine-configuration">2. Define the base turbine configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Define-vessel-properties">3. Define vessel properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Define-optimization-variables">4. Define optimization variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Run-the-optimization">5. Run the optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Inspect-the-optimal-design">6. Inspect the optimal design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-View-optimization-tables">7. View optimization tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Plot-optimization-results">8. Plot optimization results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-7:-Optimizing-LCOE-(module_lcoe_optimizer)">
+<h1>Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)<a class="headerlink" href="#Tutorial-7:-Optimizing-LCOE-(module_lcoe_optimizer)" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">LCOEOptimizer</span></code> class to search for low-LCOE turbine designs.</p>
+<p>The optimizer performs an explicit grid search over user-defined design variables. For each design point, it:</p>
+<ol class="arabic simple">
+<li><p>Builds a turbine configuration.</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code>.</p></li>
+<li><p>Creates a <code class="docutils literal notranslate"><span class="pre">VesselData</span></code> object.</p></li>
+<li><p>Checks power, depth, cavitation, and pitch constraints.</p></li>
+<li><p>Calculates LCOE for feasible designs.</p></li>
+<li><p>Assigns a penalty value to infeasible designs.</p></li>
+</ol>
+<section id="Notes-for-new-users">
+<h2>Notes for new users<a class="headerlink" href="#Notes-for-new-users" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This is a grid search, not a continuous optimizer.</p></li>
+<li><p>The search resolution is controlled by the variable bounds and step sizes.</p></li>
+<li><p>Finer grids give more detail but require more simulations.</p></li>
+<li><p>Designs that violate constraints or fail during evaluation are assigned a penalty LCOE value of <code class="docutils literal notranslate"><span class="pre">1e6</span></code>.</p></li>
+<li><p>The current optimizer returns a dictionary containing the optimal design, full results table, feasible results table, and plotting data.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span>
+
+<span class="kn">from</span> <span class="nn">vital.module_tidal</span> <span class="kn">import</span> <span class="n">process_tidal_data</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor</span> <span class="kn">import</span> <span class="n">RotorData</span>
+<span class="kn">from</span> <span class="nn">vital.module_lcoe_optimizer</span> <span class="kn">import</span> <span class="n">LCOEOptimizer</span>
+
+<span class="c1"># Suppress warnings caused by NOAA requests using verify=False internally.</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Load-tidal-and-rotor-data">
+<h2>1. Load tidal and rotor data<a class="headerlink" href="#1.-Load-tidal-and-rotor-data" title="Link to this heading"></a></h2>
+<p>First, load the tidal resource data and rotor performance data.</p>
+<p>The optimizer needs both:</p>
+<ul class="simple">
+<li><p>tidal data, which provide flow speeds, time values, mooring distance, and cable length;</p></li>
+<li><p>rotor data, which provide the rotor coefficient functions used by the simulation.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tidal data inputs</span>
+<span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;COI0303&quot;</span>
+<span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;2021-09-01&quot;</span>
+
+<span class="n">range_hrs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span>
+<span class="n">time_step_s</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="n">city_data_file</span> <span class="o">=</span> <span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span>
+
+<span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="n">station</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="n">range_hrs</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="n">time_step_s</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="n">city_data_file</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data source: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station name: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mooring distance: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cable length: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">cable_length</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of time points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rotor data</span>
+<span class="n">rotor_performance_file</span> <span class="o">=</span> <span class="s2">&quot;../data/Sitkana_rotor_data_blade_2.txt&quot;</span>
+<span class="n">rotor</span> <span class="o">=</span> <span class="n">RotorData</span><span class="p">(</span><span class="n">rotor_performance_file</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal Cp: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal TSR: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated TSRmax: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Data source: NOAA
+Station name: Port Mackenzie, South of
+Mooring distance: 31.10 m
+Cable length: 3970.22 m
+Number of time points: 336
+
+Optimal Cp: 0.2119
+Optimal TSR: 0.7648
+Estimated TSRmax: 1.7084
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Define-the-base-turbine-configuration">
+<h2>2. Define the base turbine configuration<a class="headerlink" href="#2.-Define-the-base-turbine-configuration" title="Link to this heading"></a></h2>
+<p>The optimizer starts from a base turbine configuration.</p>
+<p>Design variables specified in <code class="docutils literal notranslate"><span class="pre">variable_bounds</span></code> will overwrite values in this base configuration. Parameters listed in <code class="docutils literal notranslate"><span class="pre">fixed_params</span></code> will also overwrite the base configuration during the search.</p>
+<p>For this tutorial, we keep the grid intentionally small so the notebook runs quickly.</p>
+<p>The drivetrain and generator parameters are held fixed for demonstration. In a real design study, parameters such as rated torque, inertia, gear ratio, and generator constants may need to change with rotor size and rated power.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">base_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Baseline values. Some of these will be overwritten by the optimizer.</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>                    <span class="c1"># Rotor radius (m)</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>                 <span class="c1"># Rated electrical power (W)</span>
+    <span class="s2">&quot;Trated&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>                  <span class="c1"># Rated generator torque (N m)</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>                      <span class="c1"># Hub depth (m)</span>
+    <span class="s2">&quot;number_of_turbines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>          <span class="c1"># Number of turbines</span>
+
+    <span class="c1"># Site/time inputs</span>
+    <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>
+    <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+
+    <span class="c1"># Rotor performance functions</span>
+    <span class="s2">&quot;CpFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cp</span><span class="p">,</span>
+    <span class="s2">&quot;CqFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cq</span><span class="p">,</span>
+    <span class="s2">&quot;CtFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_ct</span><span class="p">,</span>
+    <span class="s2">&quot;CpOpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSROpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSRmax&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="p">,</span>
+
+    <span class="c1"># Drivetrain and generator parameters</span>
+    <span class="s2">&quot;Ng&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;Kt&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="s2">&quot;Rw&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;J_d&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="s2">&quot;B_d&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;J_r&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+
+    <span class="c1"># Power-conversion model</span>
+    <span class="s2">&quot;power_model&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.-Define-vessel-properties">
+<h2>3. Define vessel properties<a class="headerlink" href="#3.-Define-vessel-properties" title="Link to this heading"></a></h2>
+<p>The optimizer creates a <code class="docutils literal notranslate"><span class="pre">VesselData</span></code> object for each candidate design.</p>
+<p>The vessel properties below are representative values for demonstration only. They should be replaced with project-specific vessel or platform properties for design studies.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_vessel_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Xm&quot;</span><span class="p">:</span> <span class="mf">5.77</span><span class="p">,</span>                       <span class="c1"># Horizontal distance from center of rotation (m)</span>
+    <span class="s2">&quot;Zm&quot;</span><span class="p">:</span> <span class="mf">1.65</span><span class="p">,</span>                       <span class="c1"># Vertical distance from center of rotation (m)</span>
+    <span class="s2">&quot;Kphi&quot;</span><span class="p">:</span> <span class="mf">1.95e6</span><span class="p">,</span>                   <span class="c1"># Pitch hydrostatic stiffness (N m/rad)</span>
+    <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>    <span class="c1"># Mooring line angle (rad)</span>
+    <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>      <span class="c1"># Allowable/representative pitch angle (rad)</span>
+    <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>                      <span class="c1"># Cross-sectional area (m^2)</span>
+    <span class="s2">&quot;Cd&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>                        <span class="c1"># Drag coefficient</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Define-optimization-variables">
+<h2>4. Define optimization variables<a class="headerlink" href="#4.-Define-optimization-variables" title="Link to this heading"></a></h2>
+<p>The optimizer expects <code class="docutils literal notranslate"><span class="pre">variable_bounds</span></code> to map each design variable to a tuple of:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For this tutorial, we optimize two variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Radius</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Prated</span></code></p></li>
+</ul>
+<p>We hold <code class="docutils literal notranslate"><span class="pre">dHub</span></code> and <code class="docutils literal notranslate"><span class="pre">number_of_turbines</span></code> fixed to keep the grid small and easy to interpret.</p>
+<p>This example evaluates:</p>
+<div class="math notranslate nohighlight">
+\[3 \times 3 = 9\]</div>
+<p>design points, which is appropriate for a tutorial.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">variable_bounds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>          <span class="c1"># 0.5, 0.75, 1.0 m</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">5000.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">),</span>  <span class="c1"># 1000, 3000, 5000 W</span>
+<span class="p">}</span>
+
+<span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>
+    <span class="s2">&quot;number_of_turbines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Count grid points for user awareness.</span>
+<span class="n">num_grid_points</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">variable_bounds</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">num_grid_points</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of design points to evaluate: </span><span class="si">{</span><span class="n">num_grid_points</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of design points to evaluate: 9
+</pre></div></div>
+</div>
+</section>
+<section id="5.-Run-the-optimization">
+<h2>5. Run the optimization<a class="headerlink" href="#5.-Run-the-optimization" title="Link to this heading"></a></h2>
+<p>Now create an <code class="docutils literal notranslate"><span class="pre">LCOEOptimizer</span></code> object and run the grid search.</p>
+<p>This example uses the Sitkana-style battery-charging cost configuration:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">customer=&quot;customer_B&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application=&quot;battery_charging&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh=10.0</span></code></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">LCOEOptimizer</span><span class="p">(</span>
+    <span class="n">tidal</span><span class="o">=</span><span class="n">tidal</span><span class="p">,</span>
+    <span class="n">rotor</span><span class="o">=</span><span class="n">rotor</span><span class="p">,</span>
+    <span class="n">base_config</span><span class="o">=</span><span class="n">base_config</span><span class="p">,</span>
+    <span class="n">user_vessel_properties</span><span class="o">=</span><span class="n">user_vessel_properties</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">opt_result</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">variable_bounds</span><span class="o">=</span><span class="n">variable_bounds</span><span class="p">,</span>
+    <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed_params</span><span class="p">,</span>
+    <span class="n">customer</span><span class="o">=</span><span class="s2">&quot;customer_B&quot;</span><span class="p">,</span>
+    <span class="n">application</span><span class="o">=</span><span class="s2">&quot;battery_charging&quot;</span><span class="p">,</span>
+    <span class="n">BatteryCapacity_kWh</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">turbulence_intensity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Testing: {&#39;Radius&#39;: np.float64(0.5), &#39;Prated&#39;: np.float64(1000.0)} LCOE: 0.5136269374021034
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Testing: {&#39;Radius&#39;: np.float64(0.5), &#39;Prated&#39;: np.float64(3000.0)} LCOE: 0.7807437457576142
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Testing: {&#39;Radius&#39;: np.float64(0.5), &#39;Prated&#39;: np.float64(5000.0)} LCOE: 0.996585568101187
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(1000.0)}
+Testing: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(1000.0)} LCOE: 1000000.0
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(3000.0)}
+Testing: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(3000.0)} LCOE: 1000000.0
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(5000.0)}
+Testing: {&#39;Radius&#39;: np.float64(0.75), &#39;Prated&#39;: np.float64(5000.0)} LCOE: 1000000.0
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(1000.0)}
+Testing: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(1000.0)} LCOE: 1000000.0
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(3000.0)}
+Testing: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(3000.0)} LCOE: 1000000.0
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+Constraint failure for: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(5000.0)}
+Testing: {&#39;Radius&#39;: np.float64(1.0), &#39;Prated&#39;: np.float64(5000.0)} LCOE: 1000000.0
+</pre></div></div>
+</div>
+</section>
+<section id="6.-Inspect-the-optimal-design">
+<h2>6. Inspect the optimal design<a class="headerlink" href="#6.-Inspect-the-optimal-design" title="Link to this heading"></a></h2>
+<p>The optimizer returns a dictionary containing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">optimal_params</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optimal_lcoe</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">results_table</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feasible_table</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">variable_names</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fixed_params</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">site_params</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">grid</span></code></p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">results_table</span></code> includes every design point. Infeasible designs are assigned a penalty LCOE of <code class="docutils literal notranslate"><span class="pre">1e6</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">feasible_table</span></code> includes only feasible designs.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimal parameters:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">opt_result</span><span class="p">[</span><span class="s2">&quot;optimal_params&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Optimal LCOE: $</span><span class="si">{</span><span class="n">opt_result</span><span class="p">[</span><span class="s1">&#39;optimal_lcoe&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">/kWh&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total design points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">opt_result</span><span class="p">[</span><span class="s1">&#39;results_table&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feasible design points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">opt_result</span><span class="p">[</span><span class="s1">&#39;feasible_table&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimal parameters:
+  Radius: 0.5
+  Prated: 1000.0
+
+Optimal LCOE: $0.5136/kWh
+
+Total design points: 9
+Feasible design points: 3
+</pre></div></div>
+</div>
+</section>
+<section id="7.-View-optimization-tables">
+<h2>7. View optimization tables<a class="headerlink" href="#7.-View-optimization-tables" title="Link to this heading"></a></h2>
+<p>The full results table includes both feasible and infeasible designs.</p>
+<p>The feasible table excludes penalty-valued designs.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Full results table:&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">opt_result</span><span class="p">[</span><span class="s2">&quot;results_table&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Feasible designs only:&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">opt_result</span><span class="p">[</span><span class="s2">&quot;feasible_table&quot;</span><span class="p">])</span>
+
+
+<span class="n">best_row</span> <span class="o">=</span> <span class="n">opt_result</span><span class="p">[</span><span class="s2">&quot;feasible_table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">opt_result</span><span class="p">[</span><span class="s2">&quot;feasible_table&quot;</span><span class="p">][</span><span class="s2">&quot;LCOE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best feasible row:&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">best_row</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Full results table:
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Radius</th>
+      <th>Prated</th>
+      <th>LCOE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.50</td>
+      <td>1000.0</td>
+      <td>0.513627</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.50</td>
+      <td>3000.0</td>
+      <td>0.780744</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.50</td>
+      <td>5000.0</td>
+      <td>0.996586</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.75</td>
+      <td>1000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.75</td>
+      <td>3000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.75</td>
+      <td>5000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1.00</td>
+      <td>1000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1.00</td>
+      <td>3000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>1.00</td>
+      <td>5000.0</td>
+      <td>1000000.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Feasible designs only:
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Radius</th>
+      <th>Prated</th>
+      <th>LCOE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.5</td>
+      <td>1000.0</td>
+      <td>0.513627</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.5</td>
+      <td>3000.0</td>
+      <td>0.780744</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.5</td>
+      <td>5000.0</td>
+      <td>0.996586</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Best feasible row:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Radius</th>
+      <th>Prated</th>
+      <th>LCOE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.5</td>
+      <td>1000.0</td>
+      <td>0.513627</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="8.-Plot-optimization-results">
+<h2>8. Plot optimization results<a class="headerlink" href="#8.-Plot-optimization-results" title="Link to this heading"></a></h2>
+<p>The optimizer includes a plotting helper.</p>
+<div class="line-block">
+<div class="line">For one design variable, it produces a line plot.</div>
+<div class="line">For two design variables, it produces a heatmap.</div>
+<div class="line">For three or more design variables, it produces multiple heatmaps.</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="o">.</span><span class="n">plot_results</span><span class="p">(</span><span class="n">opt_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimal parameters:
+  Radius: 0.5
+  Prated: 1000.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_07_optimization_17_1.png" src="../_images/examples_07_optimization_17_1.png" />
+</div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This tutorial showed how to:</p>
+<ul class="simple">
+<li><p>Define a base turbine configuration.</p></li>
+<li><p>Specify design variables and fixed parameters.</p></li>
+<li><p>Run an explicit grid-search optimization.</p></li>
+<li><p>Identify the feasible design with the lowest LCOE.</p></li>
+<li><p>Inspect and plot optimization results.</p></li>
+</ul>
+<p>For larger studies, increase the number of design variables or use finer step sizes. Keep in mind that the number of simulations grows as the product of the number of values for each variable.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="06_lcoe_calculation.html" class="btn btn-neutral float-left" title="Tutorial 6: Calculating LCOE (module_lcoe)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="08_loss_models.html" class="btn btn-neutral float-right" title="Tutorial 8: Generator and Power Electronics Loss Models (module_rotor_simulation)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

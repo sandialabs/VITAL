@@ -1,0 +1,427 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "4c477673",
+   "metadata": {},
+   "source": [
+    "# Tutorial 7: Optimizing LCOE (``module_lcoe_optimizer``)\n",
+    "\n",
+    "This tutorial demonstrates how to use the ``LCOEOptimizer`` class to search for low-LCOE turbine designs.\n",
+    "\n",
+    "The optimizer performs an explicit grid search over user-defined design variables. For each design point, it:\n",
+    "\n",
+    "1. Builds a turbine configuration.\n",
+    "2. Runs ``RotorSimulation``.\n",
+    "3. Creates a ``VesselData`` object.\n",
+    "4. Checks power, depth, cavitation, and pitch constraints.\n",
+    "5. Calculates LCOE for feasible designs.\n",
+    "6. Assigns a penalty value to infeasible designs.\n",
+    "\n",
+    "## Notes for new users\n",
+    "\n",
+    "- This is a grid search, not a continuous optimizer.\n",
+    "- The search resolution is controlled by the variable bounds and step sizes.\n",
+    "- Finer grids give more detail but require more simulations.\n",
+    "- Designs that violate constraints or fail during evaluation are assigned a penalty LCOE value of ``1e6``.\n",
+    "- The current optimizer returns a dictionary containing the optimal design, full results table, feasible results table, and plotting data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2314f96a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import urllib3\n",
+    "\n",
+    "from IPython.display import display\n",
+    "\n",
+    "from vital.module_tidal import process_tidal_data\n",
+    "from vital.module_rotor import RotorData\n",
+    "from vital.module_lcoe_optimizer import LCOEOptimizer\n",
+    "\n",
+    "# Suppress warnings caused by NOAA requests using verify=False internally.\n",
+    "urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "700de4b9",
+   "metadata": {},
+   "source": [
+    "## 1. Load tidal and rotor data\n",
+    "\n",
+    "First, load the tidal resource data and rotor performance data.\n",
+    "\n",
+    "The optimizer needs both:\n",
+    "\n",
+    "- tidal data, which provide flow speeds, time values, mooring distance, and cable length;\n",
+    "- rotor data, which provide the rotor coefficient functions used by the simulation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e9b8befe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Tidal data inputs\n",
+    "station = \"COI0303\"\n",
+    "startdate = \"2021-09-01\"\n",
+    "\n",
+    "range_hrs = 2 * 7 * 24\n",
+    "time_step_s = 3600\n",
+    "city_data_file = \"../data/AlaskaCityLatLong.txt\"\n",
+    "\n",
+    "tidal = process_tidal_data(\n",
+    "    station=station,\n",
+    "    startdate=startdate,\n",
+    "    range_hrs=range_hrs,\n",
+    "    time_step_s=time_step_s,\n",
+    "    city_data_file=city_data_file,\n",
+    ")\n",
+    "\n",
+    "print(f\"Data source: {tidal.source}\")\n",
+    "print(f\"Station name: {tidal.station_name}\")\n",
+    "print(f\"Mooring distance: {tidal.mooring_distance:.2f} m\")\n",
+    "print(f\"Cable length: {tidal.cable_length:.2f} m\")\n",
+    "print(f\"Number of time points: {len(tidal.times)}\")\n",
+    "\n",
+    "# Rotor data\n",
+    "rotor_performance_file = \"../data/Sitkana_rotor_data_blade_2.txt\"\n",
+    "rotor = RotorData(rotor_performance_file)\n",
+    "\n",
+    "print()\n",
+    "print(f\"Optimal Cp: {rotor.CpOpt:.4f}\")\n",
+    "print(f\"Optimal TSR: {rotor.TSROpt:.4f}\")\n",
+    "print(f\"Estimated TSRmax: {rotor.TSRmax:.4f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4a65c7f0",
+   "metadata": {},
+   "source": [
+    "## 2. Define the base turbine configuration\n",
+    "\n",
+    "The optimizer starts from a base turbine configuration.\n",
+    "\n",
+    "Design variables specified in ``variable_bounds`` will overwrite values in this base configuration. Parameters listed in ``fixed_params`` will also overwrite the base configuration during the search.\n",
+    "\n",
+    "For this tutorial, we keep the grid intentionally small so the notebook runs quickly.\n",
+    "\n",
+    "The drivetrain and generator parameters are held fixed for demonstration. In a real design study, parameters such as rated torque, inertia, gear ratio, and generator constants may need to change with rotor size and rated power."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "aadb1832",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "base_config = {\n",
+    "    # Baseline values. Some of these will be overwritten by the optimizer.\n",
+    "    \"Radius\": 0.5,                    # Rotor radius (m)\n",
+    "    \"Prated\": 1000.0,                 # Rated electrical power (W)\n",
+    "    \"Trated\": 100.0,                  # Rated generator torque (N m)\n",
+    "    \"dHub\": 7.0,                      # Hub depth (m)\n",
+    "    \"number_of_turbines\": 2,          # Number of turbines\n",
+    "\n",
+    "    # Site/time inputs\n",
+    "    \"dMoor\": tidal.mooring_distance,\n",
+    "    \"Uinf\": tidal.flow_speeds,\n",
+    "    \"t\": tidal.times,\n",
+    "\n",
+    "    # Rotor performance functions\n",
+    "    \"CpFunc\": rotor.get_cp,\n",
+    "    \"CqFunc\": rotor.get_cq,\n",
+    "    \"CtFunc\": rotor.get_ct,\n",
+    "    \"CpOpt\": rotor.CpOpt,\n",
+    "    \"TSROpt\": rotor.TSROpt,\n",
+    "    \"TSRmax\": rotor.TSRmax,\n",
+    "\n",
+    "    # Drivetrain and generator parameters\n",
+    "    \"Ng\": 10,\n",
+    "    \"Kt\": 1.5,\n",
+    "    \"Rw\": 0.5,\n",
+    "    \"J_d\": 10.0,\n",
+    "    \"B_d\": 1.0,\n",
+    "    \"J_r\": 50.0,\n",
+    "\n",
+    "    # Power-conversion model\n",
+    "    \"power_model\": \"simple\",\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5c594fa3",
+   "metadata": {},
+   "source": [
+    "## 3. Define vessel properties\n",
+    "\n",
+    "The optimizer creates a ``VesselData`` object for each candidate design.\n",
+    "\n",
+    "The vessel properties below are representative values for demonstration only. They should be replaced with project-specific vessel or platform properties for design studies."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2b2e5932",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "user_vessel_properties = {\n",
+    "    \"Xm\": 5.77,                       # Horizontal distance from center of rotation (m)\n",
+    "    \"Zm\": 1.65,                       # Vertical distance from center of rotation (m)\n",
+    "    \"Kphi\": 1.95e6,                   # Pitch hydrostatic stiffness (N m/rad)\n",
+    "    \"theta\": 45.0 * np.pi / 180.0,    # Mooring line angle (rad)\n",
+    "    \"phi\": 10.0 * np.pi / 180.0,      # Allowable/representative pitch angle (rad)\n",
+    "    \"area\": 9.5,                      # Cross-sectional area (m^2)\n",
+    "    \"Cd\": 1.0,                        # Drag coefficient\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ec3ce62",
+   "metadata": {},
+   "source": [
+    "## 4. Define optimization variables\n",
+    "\n",
+    "The optimizer expects ``variable_bounds`` to map each design variable to a tuple of:\n",
+    "\n",
+    "```python\n",
+    "(minimum, maximum, step)\n",
+    "```\n",
+    "\n",
+    "For this tutorial, we optimize two variables:\n",
+    "\n",
+    "- ``Radius``\n",
+    "- ``Prated``\n",
+    "\n",
+    "We hold ``dHub`` and ``number_of_turbines`` fixed to keep the grid small and easy to interpret.\n",
+    "\n",
+    "This example evaluates:\n",
+    "\n",
+    "$$\n",
+    "3 \\times 3 = 9\n",
+    "$$\n",
+    "\n",
+    "design points, which is appropriate for a tutorial."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6d256fa4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "variable_bounds = {\n",
+    "    \"Radius\": (0.5, 1.0, 0.25),          # 0.5, 0.75, 1.0 m\n",
+    "    \"Prated\": (1000.0, 5000.0, 2000.0),  # 1000, 3000, 5000 W\n",
+    "}\n",
+    "\n",
+    "fixed_params = {\n",
+    "    \"dHub\": 7.0,\n",
+    "    \"number_of_turbines\": 2,\n",
+    "}\n",
+    "\n",
+    "# Count grid points for user awareness.\n",
+    "num_grid_points = 1\n",
+    "for low, high, step in variable_bounds.values():\n",
+    "    values = np.arange(low, high + 0.5 * step, step)\n",
+    "    num_grid_points *= len(values)\n",
+    "\n",
+    "print(f\"Number of design points to evaluate: {num_grid_points}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "07d0f340",
+   "metadata": {},
+   "source": [
+    "## 5. Run the optimization\n",
+    "\n",
+    "Now create an ``LCOEOptimizer`` object and run the grid search.\n",
+    "\n",
+    "This example uses the Sitkana-style battery-charging cost configuration:\n",
+    "\n",
+    "- ``customer=\"customer_B\"``\n",
+    "- ``application=\"battery_charging\"``\n",
+    "- ``BatteryCapacity_kWh=10.0``"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "600026b8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "optimizer = LCOEOptimizer(\n",
+    "    tidal=tidal,\n",
+    "    rotor=rotor,\n",
+    "    base_config=base_config,\n",
+    "    user_vessel_properties=user_vessel_properties,\n",
+    ")\n",
+    "\n",
+    "opt_result = optimizer.optimize(\n",
+    "    variable_bounds=variable_bounds,\n",
+    "    fixed_params=fixed_params,\n",
+    "    customer=\"customer_B\",\n",
+    "    application=\"battery_charging\",\n",
+    "    BatteryCapacity_kWh=10.0,\n",
+    "    lifetime=10,\n",
+    "    discount_rate=0.1,\n",
+    "    turbulence_intensity=0.0,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca3da983",
+   "metadata": {},
+   "source": [
+    "## 6. Inspect the optimal design\n",
+    "\n",
+    "The optimizer returns a dictionary containing:\n",
+    "\n",
+    "- ``optimal_params``\n",
+    "- ``optimal_lcoe``\n",
+    "- ``results_table``\n",
+    "- ``feasible_table``\n",
+    "- ``variable_names``\n",
+    "- ``fixed_params``\n",
+    "- ``site_params``\n",
+    "- ``grid``\n",
+    "\n",
+    "The ``results_table`` includes every design point. Infeasible designs are assigned a penalty LCOE of ``1e6``.\n",
+    "\n",
+    "The ``feasible_table`` includes only feasible designs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7cc262f0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(\"Optimal parameters:\")\n",
+    "for name, value in opt_result[\"optimal_params\"].items():\n",
+    "    print(f\"  {name}: {value}\")\n",
+    "\n",
+    "print(f\"\\nOptimal LCOE: ${opt_result['optimal_lcoe']:.4f}/kWh\")\n",
+    "\n",
+    "print()\n",
+    "print(f\"Total design points: {len(opt_result['results_table'])}\")\n",
+    "print(f\"Feasible design points: {len(opt_result['feasible_table'])}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2ed555fc",
+   "metadata": {},
+   "source": [
+    "## 7. View optimization tables\n",
+    "\n",
+    "The full results table includes both feasible and infeasible designs.\n",
+    "\n",
+    "The feasible table excludes penalty-valued designs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "702b93e5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(\"Full results table:\")\n",
+    "display(opt_result[\"results_table\"])\n",
+    "\n",
+    "print(\"Feasible designs only:\")\n",
+    "display(opt_result[\"feasible_table\"])\n",
+    "\n",
+    "\n",
+    "best_row = opt_result[\"feasible_table\"].loc[\n",
+    "    opt_result[\"feasible_table\"][\"LCOE\"].idxmin()\n",
+    "]\n",
+    "\n",
+    "print(\"Best feasible row:\")\n",
+    "display(best_row.to_frame().T)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "097d9898",
+   "metadata": {},
+   "source": [
+    "## 8. Plot optimization results\n",
+    "\n",
+    "The optimizer includes a plotting helper.\n",
+    "\n",
+    "For one design variable, it produces a line plot.  \n",
+    "For two design variables, it produces a heatmap.  \n",
+    "For three or more design variables, it produces multiple heatmaps."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ebe1ef34",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "optimizer.plot_results(opt_result)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "17a4dc1d",
+   "metadata": {},
+   "source": [
+    "## Summary\n",
+    "\n",
+    "This tutorial showed how to:\n",
+    "\n",
+    "- Define a base turbine configuration.\n",
+    "- Specify design variables and fixed parameters.\n",
+    "- Run an explicit grid-search optimization.\n",
+    "- Identify the feasible design with the lowest LCOE.\n",
+    "- Inspect and plot optimization results.\n",
+    "\n",
+    "For larger studies, increase the number of design variables or use finer step sizes. Keep in mind that the number of simulations grows as the product of the number of values for each variable."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "VITAL_env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

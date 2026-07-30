@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constraint Overview &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Assumptions and FAQ" href="assumptions_and_faq.html" />
+    <link rel="prev" title="Tutorials and Workflow" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Constraint Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#power-constraint">Power Constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#depth-submergence-constraint">Depth / Submergence Constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cavitation">Cavitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pitch-stability">Pitch Stability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Constraint Overview</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="constraint-overview">
+<h1>Constraint Overview<a class="headerlink" href="#constraint-overview" title="Link to this heading"></a></h1>
+<p>This page summarizes the main physical constraints checked by VITAL. These constraints are intended for screening-level analysis and should not replace detailed engineering design, cavitation analysis, vessel stability analysis, or certification review.</p>
+<p>The current <code class="docutils literal notranslate"><span class="pre">ConstraintChecker</span></code> evaluates four constraints:</p>
+<ul class="simple">
+<li><p>power constraint,</p></li>
+<li><p>depth/submergence constraint,</p></li>
+<li><p>cavitation constraint,</p></li>
+<li><p>pitch-stability constraint.</p></li>
+</ul>
+<section id="power-constraint">
+<h2>Power Constraint<a class="headerlink" href="#power-constraint" title="Link to this heading"></a></h2>
+<p>The power constraint checks that the simulated electrical power is nonnegative and does not exceed the rated turbine power.</p>
+<p>The implementation checks:</p>
+<div class="math notranslate nohighlight">
+\[P_{elec} \geq 0\]</div>
+<p>and:</p>
+<div class="math notranslate nohighlight">
+\[P_{rated} - P_{elec} \geq 0\]</div>
+<p>with a small numerical tolerance of <code class="docutils literal notranslate"><span class="pre">1e-9</span></code>.</p>
+<p>In code, the power margin is:</p>
+<div class="math notranslate nohighlight">
+\[h_{power}(x) = P_{rated} - P_{elec}\]</div>
+<p>The design satisfies the upper power limit when:</p>
+<div class="math notranslate nohighlight">
+\[h_{power}(x) \geq 0\]</div>
+<p>The lower power check ensures that:</p>
+<div class="math notranslate nohighlight">
+\[P_{elec} \geq 0\]</div>
+</section>
+<section id="depth-submergence-constraint">
+<h2>Depth / Submergence Constraint<a class="headerlink" href="#depth-submergence-constraint" title="Link to this heading"></a></h2>
+<p>The depth constraint checks that the top of the rotor remains below the water surface.</p>
+<p>For a rotor of radius <span class="math notranslate nohighlight">\(R\)</span> and hub depth <span class="math notranslate nohighlight">\(d_{hub}\)</span>, the depth margin is:</p>
+<div class="math notranslate nohighlight">
+\[h_{depth}(x) = d_{hub} - R\]</div>
+<p>The constraint is satisfied when:</p>
+<div class="math notranslate nohighlight">
+\[h_{depth}(x) &gt; 0\]</div>
+<p>This means the rotor tip is submerged below the free surface. This is a simplified geometric check and does not account for waves, vessel motions, dynamic trim, or sea-state effects.</p>
+</section>
+<section id="cavitation">
+<h2>Cavitation<a class="headerlink" href="#cavitation" title="Link to this heading"></a></h2>
+<p>The cavitation constraint estimates whether the local blade pressure remains above the vapor pressure of water.</p>
+<p>The minimum pressure coefficient (<span class="math notranslate nohighlight">\(C_{p,\min}\)</span>) corresponds to the lowest pressure on the blade, often near the leading edge or suction side. It is defined as:</p>
+<div class="math notranslate nohighlight">
+\[C_{p,\min} =
+\frac{P - P_\infty}
+{\frac{1}{2} \rho V_\infty^2}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P\)</span> is the local pressure on the blade surface,</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_\infty\)</span> is the freestream pressure,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\rho\)</span> is fluid density,</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_\infty\)</span> is the effective velocity at the blade tip.</p></li>
+</ul>
+<p>The effective velocity used in the current implementation is:</p>
+<div class="math notranslate nohighlight">
+\[V_\infty =
+\sqrt{
+U_{\text{inf,adjusted}}^2
++ (R \omega_r)^2
+}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(U_{\text{inf,adjusted}}\)</span> is the adjusted flow speed at turbine depth,</p></li>
+<li><p><span class="math notranslate nohighlight">\(R\)</span> is the rotor radius,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\omega_r\)</span> is rotor-side angular velocity.</p></li>
+</ul>
+<p>The pressure at the rotor tip is estimated as:</p>
+<div class="math notranslate nohighlight">
+\[P_\infty =
+P_{atm}
++ \rho g (d_{hub} - R)\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P_{atm}\)</span> is atmospheric pressure,</p></li>
+<li><p><span class="math notranslate nohighlight">\(g\)</span> is gravitational acceleration,</p></li>
+<li><p><span class="math notranslate nohighlight">\(d_{hub} - R\)</span> is the depth of the upper rotor tip below the free surface.</p></li>
+</ul>
+<p>The upper rotor tip is shallower than the hub by one rotor radius, so the hydrostatic pressure is evaluated using <span class="math notranslate nohighlight">\(d_{hub} - R\)</span>.</p>
+<p>To avoid cavitation, the estimated minimum pressure should remain above vapor pressure:</p>
+<div class="math notranslate nohighlight">
+\[P_{min} &gt; P_{vap}\]</div>
+<p>The current cavitation margin can be written as:</p>
+<div class="math notranslate nohighlight">
+\[h_{cav}(x) =
+\frac{1}{2}
+\rho
+V_\infty^2
+C_{p,\min}
+-
+\left(
+P_{vap}
+-
+P_\infty
+\right)\]</div>
+<p>Equivalently:</p>
+<div class="math notranslate nohighlight">
+\[h_{cav}(x) =
+P_\infty
++ \frac{1}{2}
+\rho
+V_\infty^2
+C_{p,\min}
+-
+P_{vap}\]</div>
+<p>The implementation checks:</p>
+<div class="math notranslate nohighlight">
+\[h_{cav}(x) &gt; 0\]</div>
+<p>If <span class="math notranslate nohighlight">\(h_{cav}(x) &lt; 0\)</span>, the estimated local pressure is below vapor pressure and cavitation is predicted.</p>
+<p>Important notes:</p>
+<ul class="simple">
+<li><p>The cavitation result depends strongly on the quality of the supplied <span class="math notranslate nohighlight">\(C_{p,\min}\)</span> data.</p></li>
+<li><p>If no <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> file is supplied, <code class="docutils literal notranslate"><span class="pre">RotorData</span></code> uses a default value of <span class="math notranslate nohighlight">\(C_{p,\min} = -1.0\)</span>.</p></li>
+<li><p>This is a screening-level cavitation check and should not replace detailed blade pressure or cavitation analysis.</p></li>
+</ul>
+</section>
+<section id="pitch-stability">
+<h2>Pitch Stability<a class="headerlink" href="#pitch-stability" title="Link to this heading"></a></h2>
+<p>The pitch constraint checks a simplified pitch-stability margin for the vessel or floating platform. It compares a restoring pitch moment against destabilizing moments from turbine thrust, vessel drag, and mooring geometry.</p>
+<p>The diagram illustrates the forces acting on the vessel, including drag, turbine thrust, and mooring-related force components:</p>
+<a class="reference internal image-reference" href="_images/VesselPitchConstrain.png"><img alt="Diagram of forces acting on the vessel" class="align-center" src="_images/VesselPitchConstrain.png" style="width: 600px;" />
+</a>
+<p>In the current implementation, the vessel drag force is estimated as:</p>
+<div class="math notranslate nohighlight">
+\[F_{vessel} =
+\frac{1}{2}
+\rho
+A
+U_{\text{inf,adjusted}}^2\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\rho\)</span> is fluid density,</p></li>
+<li><p><span class="math notranslate nohighlight">\(A\)</span> is the vessel or platform projected area,</p></li>
+<li><p><span class="math notranslate nohighlight">\(U_{\text{inf,adjusted}}\)</span> is the adjusted flow speed.</p></li>
+</ul>
+<p>The total turbine thrust is:</p>
+<div class="math notranslate nohighlight">
+\[F_{turbine,total} =
+N_t F_t\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N_t\)</span> is the number of turbines,</p></li>
+<li><p><span class="math notranslate nohighlight">\(F_t\)</span> is the thrust from a single turbine.</p></li>
+</ul>
+<p>The total load used in the pitch check is:</p>
+<div class="math notranslate nohighlight">
+\[F_{total} =
+F_{vessel}
++
+F_{turbine,total}\]</div>
+<p>The pitch constraint margin is implemented as:</p>
+<div class="math notranslate nohighlight">
+\[h_{pitch}(x) =
+K_\phi \phi
+-
+F_{turbine,total} d_{hub}
+-
+F_{total} X_m \cos(\theta_m)
+-
+F_{total} Z_m \sin(\theta_m)\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(K_\phi\)</span> is pitch hydrostatic stiffness,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\phi\)</span> is the representative pitch angle,</p></li>
+<li><p><span class="math notranslate nohighlight">\(d_{hub}\)</span> is hub depth,</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_m\)</span> is the horizontal force-application distance,</p></li>
+<li><p><span class="math notranslate nohighlight">\(Z_m\)</span> is the vertical force-application distance,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\theta_m\)</span> is the mooring line angle.</p></li>
+</ul>
+<p>The constraint is satisfied when:</p>
+<div class="math notranslate nohighlight">
+\[h_{pitch}(x) &gt; 0\]</div>
+<p>If <span class="math notranslate nohighlight">\(h_{pitch}(x) &lt; 0\)</span>, the simplified destabilizing moment exceeds the restoring pitch moment.</p>
+<p>Important notes:</p>
+<ul class="simple">
+<li><p>This check is intended for screening-level analysis.</p></li>
+<li><p>The result depends strongly on user-supplied vessel/platform properties such as <code class="docutils literal notranslate"><span class="pre">Kphi</span></code>, <code class="docutils literal notranslate"><span class="pre">Xm</span></code>, <code class="docutils literal notranslate"><span class="pre">Zm</span></code>, <code class="docutils literal notranslate"><span class="pre">area</span></code>, <code class="docutils literal notranslate"><span class="pre">Cd</span></code>, <code class="docutils literal notranslate"><span class="pre">theta</span></code>, and <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p></li>
+<li><p>This simplified pitch check should not replace detailed vessel stability, mooring, or seakeeping analysis.</p></li>
+</ul>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>The constraint margins used by VITAL follow these sign conventions:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Constraint margin sign conventions</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 45.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Constraint</p></th>
+<th class="head"><p>Margin</p></th>
+<th class="head"><p>Satisfied when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Power</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{rated} - P_{elec}\)</span> and <span class="math notranslate nohighlight">\(P_{elec} \geq 0\)</span></p></td>
+<td><p>nonnegative, with tolerance</p></td>
+</tr>
+<tr class="row-odd"><td><p>Depth</p></td>
+<td><p><span class="math notranslate nohighlight">\(d_{hub} - R\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(&gt; 0\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Cavitation</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_\infty + \frac{1}{2}\rho V_\infty^2 C_{p,\min} - P_{vap}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(&gt; 0\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pitch</p></td>
+<td><p><span class="math notranslate nohighlight">\(K_\phi \phi - F_{turbine,total} d_{hub} - F_{total} X_m \cos(\theta_m) - F_{total} Z_m \sin(\theta_m)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(&gt; 0\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Tutorials and Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assumptions_and_faq.html" class="btn btn-neutral float-right" title="Assumptions and FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "79b86fc7",
+   "metadata": {},
+   "source": [
+    "# Tutorial 6: Calculating LCOE (``module_lcoe``)\n",
+    "\n",
+    "This tutorial demonstrates how to calculate the Levelized Cost of Energy (LCOE) using ``LCOEData`` and ``LCOECalculator``.\n",
+    "\n",
+    "The LCOE calculation combines:\n",
+    "\n",
+    "- Tidal resource data\n",
+    "- Turbine configuration\n",
+    "- Vessel/platform properties\n",
+    "- Rotor simulation results\n",
+    "- Cost model assumptions\n",
+    "- Project lifetime and discount rate\n",
+    "\n",
+    "This tutorial briefly repeats the tidal-data, rotor-data, rotor-simulation, and vessel setup from earlier tutorials so that the LCOE workflow is self-contained.\n",
+    "\n",
+    "## Notes for new users\n",
+    "\n",
+    "- LCOE is reported in USD/kWh.\n",
+    "- Annual energy is estimated from the simulated electrical power time series.\n",
+    "- For ``application=\"battery_charging\"``, ``BatteryCapacity_kWh`` must be provided and must be greater than zero.\n",
+    "- For ``application=\"grid_connection\"``, battery capacity is internally set to zero.\n",
+    "- The current active OPEX model assumes annual OPEX is 4% of CAPEX."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1111ba11",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "import urllib3\n",
+    "\n",
+    "from vital.module_tidal import process_tidal_data\n",
+    "from vital.module_rotor import RotorData\n",
+    "from vital.module_rotor_simulation import RotorSimulation\n",
+    "from vital.module_vessel import VesselData\n",
+    "from vital.module_constraint_checker import ConstraintChecker\n",
+    "from vital.module_lcoe import LCOEData, LCOECalculator\n",
+    "\n",
+    "# Suppress warnings caused by NOAA requests using verify=False internally.\n",
+    "urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d2445f70",
+   "metadata": {},
+   "source": [
+    "## 1. Load tidal and rotor data\n",
+    "\n",
+    "First, load the tidal resource data and rotor performance data.\n",
+    "\n",
+    "This tutorial uses the same basic NOAA workflow and Sitkana rotor file used in the previous tutorials."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "69293fa5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Tidal data inputs\n",
+    "station = \"COI0303\"\n",
+    "startdate = \"2021-09-01\"\n",
+    "\n",
+    "range_hrs = 2 * 7 * 24\n",
+    "time_step_s = 3600\n",
+    "city_data_file = \"../data/AlaskaCityLatLong.txt\"\n",
+    "\n",
+    "tidal = process_tidal_data(\n",
+    "    station=station,\n",
+    "    startdate=startdate,\n",
+    "    range_hrs=range_hrs,\n",
+    "    time_step_s=time_step_s,\n",
+    "    city_data_file=city_data_file,\n",
+    ")\n",
+    "\n",
+    "print(f\"Data source: {tidal.source}\")\n",
+    "print(f\"Station name: {tidal.station_name}\")\n",
+    "print(f\"Mooring distance: {tidal.mooring_distance:.2f} m\")\n",
+    "print(f\"Cable length: {tidal.cable_length:.2f} m\")\n",
+    "print(f\"Number of time points: {len(tidal.times)}\")\n",
+    "\n",
+    "# Rotor data\n",
+    "rotor_performance_file = \"../data/Sitkana_rotor_data_blade_2.txt\"\n",
+    "rotor = RotorData(rotor_performance_file)\n",
+    "\n",
+    "print()\n",
+    "print(f\"Optimal Cp: {rotor.CpOpt:.4f}\")\n",
+    "print(f\"Optimal TSR: {rotor.TSROpt:.4f}\")\n",
+    "print(f\"Estimated TSRmax: {rotor.TSRmax:.4f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7d8c5520",
+   "metadata": {},
+   "source": [
+    "## 2. Plot tidal resource data\n",
+    "\n",
+    "The time vector is stored in seconds. For plotting, we convert time to days."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2f855a2b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "time_days = tidal.times / (3600 * 24)\n",
+    "\n",
+    "plt.figure(figsize=(8, 4))\n",
+    "plt.plot(time_days, tidal.flow_speeds)\n",
+    "plt.xlabel(\"Time (days)\")\n",
+    "plt.ylabel(\"Flow speed (m/s)\")\n",
+    "plt.title(f\"Tidal resource at {tidal.station_name}\")\n",
+    "plt.grid(True)\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "acaedfa9",
+   "metadata": {},
+   "source": [
+    "## 3. Run rotor simulation\n",
+    "\n",
+    "Next, define a turbine configuration and run ``RotorSimulation``.\n",
+    "\n",
+    "The simulation results provide the electrical power time series used by the LCOE calculation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d0c44f62",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "config = {\n",
+    "    \"Radius\": 0.5,                    # Rotor radius (m)\n",
+    "    \"Prated\": 1000.0,                 # Rated electrical power (W)\n",
+    "    \"Trated\": 100.0,                  # Rated generator torque (N m)\n",
+    "    \"dHub\": 7.0,                      # Hub depth (m)\n",
+    "    \"number_of_turbines\": 2,          # Number of turbines\n",
+    "\n",
+    "    # Site/time inputs\n",
+    "    \"dMoor\": tidal.mooring_distance,\n",
+    "    \"Uinf\": tidal.flow_speeds,\n",
+    "    \"t\": tidal.times,\n",
+    "\n",
+    "    # Rotor performance functions\n",
+    "    \"CpFunc\": rotor.get_cp,\n",
+    "    \"CqFunc\": rotor.get_cq,\n",
+    "    \"CtFunc\": rotor.get_ct,\n",
+    "    \"CpOpt\": rotor.CpOpt,\n",
+    "    \"TSROpt\": rotor.TSROpt,\n",
+    "    \"TSRmax\": rotor.TSRmax,\n",
+    "\n",
+    "    # Drivetrain and generator parameters\n",
+    "    \"Ng\": 10,\n",
+    "    \"Kt\": 1.5,\n",
+    "    \"Rw\": 0.5,\n",
+    "    \"J_d\": 10.0,\n",
+    "    \"B_d\": 1.0,\n",
+    "    \"J_r\": 50.0,\n",
+    "\n",
+    "    # Power-conversion model\n",
+    "    \"power_model\": \"simple\",\n",
+    "}\n",
+    "\n",
+    "rotor_sim = RotorSimulation(config)\n",
+    "rotor_sim.simulate()\n",
+    "result = rotor_sim.get_results()\n",
+    "\n",
+    "print(\"Rotor simulation complete.\")\n",
+    "print(f\"Mean electrical power: {np.mean(result['Pelec']) / 1000:.3f} kW\")\n",
+    "print(f\"Maximum electrical power: {np.max(result['Pelec']) / 1000:.3f} kW\")\n",
+    "print(f\"Rated electrical power: {config['Prated'] / 1000:.3f} kW\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "17cdb02f",
+   "metadata": {},
+   "source": [
+    "## 4. Plot electrical power\n",
+    "\n",
+    "The LCOE calculation uses the simulated electrical power time series. In this tutorial, annual energy is calculated from ``Pelec``."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8650ab85",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "time_days = result[\"t\"] / (3600 * 24)\n",
+    "\n",
+    "plt.figure(figsize=(8, 4))\n",
+    "plt.plot(time_days, result[\"Pelec\"] / 1000, label=\"Electrical power\")\n",
+    "plt.axhline(config[\"Prated\"] / 1000, color=\"k\", linestyle=\"--\", label=\"Rated power\")\n",
+    "plt.xlabel(\"Time (days)\")\n",
+    "plt.ylabel(\"Pelec (kW)\")\n",
+    "plt.title(\"Simulated electrical power\")\n",
+    "plt.legend()\n",
+    "plt.grid(True)\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fbb1e012",
+   "metadata": {},
+   "source": [
+    "## 5. Define vessel properties\n",
+    "\n",
+    "The LCOE data object stores vessel/platform information such as drag force and vessel volume for use by cost functions when applicable.\n",
+    "\n",
+    "For this tutorial, we use the same representative vessel configuration from the constraint-checking tutorial. These values are for demonstration only and should be replaced with project-specific vessel or platform properties for design studies."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0a647602",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "user_vessel_properties = {\n",
+    "    \"Xm\": 5.77,                       # Horizontal distance from center of rotation (m)\n",
+    "    \"Zm\": 1.65,                       # Vertical distance from center of rotation (m)\n",
+    "    \"Kphi\": 1.95e6,                   # Pitch hydrostatic stiffness (N m/rad)\n",
+    "    \"theta\": 45.0 * np.pi / 180.0,    # Mooring line angle (rad)\n",
+    "    \"phi\": 10.0 * np.pi / 180.0,      # Allowable/representative pitch angle (rad)\n",
+    "    \"area\": 9.5,                      # Cross-sectional area (m^2)\n",
+    "    \"Cd\": 1.0,                        # Drag coefficient\n",
+    "}\n",
+    "\n",
+    "vessel = VesselData(\n",
+    "    user_defined=True,\n",
+    "    vessel_properties=user_vessel_properties,\n",
+    "    simResult=result,\n",
+    ")\n",
+    "\n",
+    "print(\"Vessel object created.\")\n",
+    "print(f\"Maximum vessel drag: {np.max(vessel.Fdrag):.3f} N\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6748ffb9",
+   "metadata": {},
+   "source": [
+    "## 6. Optional: check constraints before calculating LCOE\n",
+    "\n",
+    "LCOE can be calculated for any simulated design, but a design that violates constraints should generally be treated as infeasible.\n",
+    "\n",
+    "Here we briefly check the same constraints introduced in the constraint-checking tutorial. The optimizer tutorial later uses constraint failures to exclude infeasible designs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c5e5479b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "constraint_checker = ConstraintChecker(rotor, config, vessel, result)\n",
+    "\n",
+    "constraints = {\n",
+    "    \"Power Constraint\": constraint_checker.check_power_constraint(),\n",
+    "    \"Depth Constraint\": constraint_checker.check_depth_constraint(),\n",
+    "    \"Cavitation Constraint\": constraint_checker.check_cavitation_constraint(),\n",
+    "    \"Pitch Constraint\": constraint_checker.check_pitch_constraint(),\n",
+    "}\n",
+    "\n",
+    "print(\"Constraint Results:\")\n",
+    "for name, satisfied in constraints.items():\n",
+    "    status = \"Satisfied\" if satisfied else \"Not Satisfied\"\n",
+    "    print(f\"  {name}: {status}\")\n",
+    "\n",
+    "if not all(constraints.values()):\n",
+    "    print()\n",
+    "    print(\"Warning: One or more constraints are not satisfied. The LCOE can still be calculated, but the design should be treated as infeasible.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "58f7a723",
+   "metadata": {},
+   "source": [
+    "## 7. Create LCOE input data\n",
+    "\n",
+    "The ``LCOEData`` object stores the inputs required by ``LCOECalculator``.\n",
+    "\n",
+    "This example uses the Sitkana-style battery-charging configuration:\n",
+    "\n",
+    "- ``customer=\"customer_B\"``\n",
+    "- ``application=\"battery_charging\"``\n",
+    "- ``BatteryCapacity_kWh=10.0``\n",
+    "\n",
+    "Because this is a battery-charging application, battery capacity must be provided and must be greater than zero."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c365ab74",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lifetime = 10\n",
+    "discount_rate = 0.1\n",
+    "turbulence_intensity = 0.0\n",
+    "battery_capacity_kWh = 10.0\n",
+    "\n",
+    "lcoe_data = LCOEData(\n",
+    "    tidalData=tidal,\n",
+    "    turbineConfig=config,\n",
+    "    vesselData=vessel,\n",
+    "    simResult=result,\n",
+    "    lifetime=lifetime,\n",
+    "    discount_rate=discount_rate,\n",
+    "    turbulence_intensity=turbulence_intensity,\n",
+    "    customer=\"customer_B\",\n",
+    "    application=\"battery_charging\",\n",
+    "    BatteryCapacity_kWh=battery_capacity_kWh,\n",
+    ")\n",
+    "\n",
+    "calculator = LCOECalculator(lcoe_data)\n",
+    "\n",
+    "print(\"LCOEData and LCOECalculator objects created.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "792f6eb0",
+   "metadata": {},
+   "source": [
+    "## 8. Calculate LCOE\n",
+    "\n",
+    "The LCOE calculation combines CAPEX, OPEX, annual energy production, discount rate, and project lifetime.\n",
+    "\n",
+    "The result is reported in USD/kWh."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7fa785e7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "total_capex = calculator.calculate_total_capex()\n",
+    "total_opex = calculator.calculate_total_opex(total_capex)\n",
+    "annual_energy = calculator.calculate_annual_energy()\n",
+    "capacity_factor = calculator.calculate_capacity_factor()\n",
+    "lcoe = calculator.calculate_lcoe()\n",
+    "\n",
+    "print(f\"LCOE: ${lcoe:.4f}/kWh\")\n",
+    "print(f\"Annual energy: {annual_energy:,.2f} kWh/year\")\n",
+    "print(f\"Capacity factor: {capacity_factor:.3f}\")\n",
+    "print(f\"Total CAPEX: ${total_capex:,.2f}\")\n",
+    "print(f\"Annual OPEX: ${total_opex:,.2f}/year\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "61c1fbda",
+   "metadata": {},
+   "source": [
+    "## 9. Inspect CAPEX and OPEX details\n",
+    "\n",
+    "The calculator stores a breakdown of CAPEX components after ``calculate_total_capex()`` or ``calculate_lcoe()`` has been called."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e7219171",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "calculator.list_capex()\n",
+    "print()\n",
+    "calculator.list_opex(total_capex)\n",
+    "print()\n",
+    "calculator.list_annual_energy()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd938e75",
+   "metadata": {},
+   "source": [
+    "## Optional: Get CAPEX summary as a dictionary\n",
+    "\n",
+    "For programmatic workflows, the CAPEX summary can also be returned as a dictionary."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "91fad243",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "capex_summary = calculator.get_capex_summary()\n",
+    "\n",
+    "print(\"CAPEX summary:\")\n",
+    "print(f\"  Component CAPEX: ${capex_summary['component_capex']:,.2f}\")\n",
+    "print(f\"  Adjustment factor: {capex_summary['adjustment_factor']:.2f}\")\n",
+    "print(f\"  Adjusted CAPEX: ${capex_summary['adjusted_capex']:,.2f}\")\n",
+    "\n",
+    "print()\n",
+    "print(\"CAPEX items:\")\n",
+    "for name, value in capex_summary[\"capex_items\"].items():\n",
+    "    print(f\"  {name}: ${value:,.2f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "572332db",
+   "metadata": {},
+   "source": [
+    "## Summary\n",
+    "\n",
+    "This tutorial showed how to:\n",
+    "\n",
+    "- Load tidal and rotor data.\n",
+    "- Run a rotor simulation.\n",
+    "- Define vessel properties.\n",
+    "- Optionally check design constraints.\n",
+    "- Create ``LCOEData``.\n",
+    "- Calculate LCOE using ``LCOECalculator``.\n",
+    "- Inspect annual energy, CAPEX, and OPEX.\n",
+    "\n",
+    "The next tutorial demonstrates how to automate this process over a grid of design variables using the LCOE optimizer."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "VITAL_env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

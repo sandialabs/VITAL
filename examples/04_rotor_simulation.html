@@ -1,0 +1,503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 4: Simulating Rotor Performance (module_rotor_simulation) &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 5: Checking Constraints (module_constraint_checker)" href="05_constraint_checking.html" />
+    <link rel="prev" title="Tutorial 3: Defining Rotor Data (module_rotor)" href="03_rotordata.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Notes-for-new-users">Notes for new users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Load-tidal-resource-data">1. Load tidal resource data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Load-rotor-performance-data">2. Load rotor performance data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Define-two-rotor-configurations">3. Define two rotor configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Run-rotor-simulations">4. Run rotor simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Summarize-simulation-results">5. Summarize simulation results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Compare-time-series-outputs">6. Compare time-series outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-4:-Simulating-Rotor-Performance-(module_rotor_simulation)">
+<h1>Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)<a class="headerlink" href="#Tutorial-4:-Simulating-Rotor-Performance-(module_rotor_simulation)" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code> class to simulate turbine performance using tidal resource data and rotor performance data.</p>
+<p>The tutorial compares two rotor configurations with different radii:</p>
+<ul class="simple">
+<li><p>Rotor 1: radius = 0.5 m</p></li>
+<li><p>Rotor 2: radius = 1.0 m</p></li>
+</ul>
+<p>For simplicity, the two configurations use the same tidal resource, rotor performance curves, drivetrain parameters, and power-conversion model. Only the rotor radius is changed.</p>
+<p>This tutorial covers:</p>
+<ol class="arabic simple">
+<li><p>Loading tidal resource data.</p></li>
+<li><p>Loading rotor performance data.</p></li>
+<li><p>Defining simulation configuration dictionaries.</p></li>
+<li><p>Running <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code>.</p></li>
+<li><p>Comparing electrical power, torque, TSR, and rotor speed.</p></li>
+</ol>
+<section id="Notes-for-new-users">
+<h2>Notes for new users<a class="headerlink" href="#Notes-for-new-users" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This tutorial uses the built-in <code class="docutils literal notranslate"><span class="pre">simple</span></code> power-conversion model.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">simple</span></code> model requires generator constants <code class="docutils literal notranslate"><span class="pre">Kt</span></code> and <code class="docutils literal notranslate"><span class="pre">Rw</span></code>.</p></li>
+<li><p>The rotor simulation uses the adjusted flow speed at turbine depth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pelec</span></code> is the main electrical power output used by later LCOE and constraint tutorials.</p></li>
+<li><p>The drivetrain and generator parameters are held fixed for comparison. In a real design study, parameters such as inertia, rated torque, and generator constants may need to scale with rotor size.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+
+<span class="kn">from</span> <span class="nn">vital.module_tidal</span> <span class="kn">import</span> <span class="n">process_tidal_data</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor</span> <span class="kn">import</span> <span class="n">RotorData</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor_simulation</span> <span class="kn">import</span> <span class="n">RotorSimulation</span>
+
+<span class="c1"># Suppress warnings caused by NOAA requests using verify=False internally.</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Load-tidal-resource-data">
+<h2>1. Load tidal resource data<a class="headerlink" href="#1.-Load-tidal-resource-data" title="Link to this heading"></a></h2>
+<p>First, load tidal resource data using <code class="docutils literal notranslate"><span class="pre">process_tidal_data</span></code>.</p>
+<p>This tutorial uses the same basic NOAA workflow introduced in the tidal-data tutorial. If NOAA access is unavailable, see the tidal-data tutorial for local-file workflows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;COI0303&quot;</span>
+<span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;2021-09-01&quot;</span>
+
+<span class="n">range_hrs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span>
+<span class="n">time_step_s</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="n">city_data_file</span> <span class="o">=</span> <span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span>
+
+<span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="n">station</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="n">range_hrs</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="n">time_step_s</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="n">city_data_file</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data source: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station name: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mooring distance: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of time points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Data source: NOAA
+Station name: Port Mackenzie, South of
+Mooring distance: 31.10 m
+Number of time points: 336
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_days</span> <span class="o">=</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (days)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Flow speed (m/s)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tidal resource at </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_04_rotor_simulation_4_0.png" src="../_images/examples_04_rotor_simulation_4_0.png" />
+</div>
+</div>
+</section>
+<section id="2.-Load-rotor-performance-data">
+<h2>2. Load rotor performance data<a class="headerlink" href="#2.-Load-rotor-performance-data" title="Link to this heading"></a></h2>
+<p>Next, load rotor performance data using the <code class="docutils literal notranslate"><span class="pre">RotorData</span></code> class.</p>
+<p>The rotor file provides <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, and <code class="docutils literal notranslate"><span class="pre">Cq</span></code>. VITAL computes the power coefficient internally as:</p>
+<div class="math notranslate nohighlight">
+\[C_p = TSR \cdot C_q\]</div>
+<p>The resulting rotor object provides coefficient functions used by the simulation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rotor.get_cp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotor.get_cq</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotor.get_ct</span></code></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rotor_performance_file</span> <span class="o">=</span> <span class="s2">&quot;../data/Sitkana_rotor_data_blade_2.txt&quot;</span>
+
+<span class="n">rotor</span> <span class="o">=</span> <span class="n">RotorData</span><span class="p">(</span><span class="n">rotor_performance_file</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal Cp: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal TSR: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated TSRmax: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimal Cp: 0.2119
+Optimal TSR: 0.7648
+Estimated TSRmax: 1.7084
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Define-two-rotor-configurations">
+<h2>3. Define two rotor configurations<a class="headerlink" href="#3.-Define-two-rotor-configurations" title="Link to this heading"></a></h2>
+<p>The two configurations below use the same drivetrain, generator, and tidal inputs. The only parameter changed is rotor radius.</p>
+<p>This makes the comparison easier to interpret.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">base_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="mf">5000.0</span><span class="p">,</span>                 <span class="c1"># Rated electrical power (W)</span>
+    <span class="s2">&quot;Trated&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>                   <span class="c1"># Rated generator torque (N m)</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>                      <span class="c1"># Hub depth (m)</span>
+    <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>  <span class="c1"># Mooring depth/distance (m)</span>
+    <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>        <span class="c1"># Tidal flow speed time series (m/s)</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>                 <span class="c1"># Time vector (s)</span>
+
+    <span class="c1"># Rotor performance functions</span>
+    <span class="s2">&quot;CpFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cp</span><span class="p">,</span>
+    <span class="s2">&quot;CqFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cq</span><span class="p">,</span>
+    <span class="s2">&quot;CtFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_ct</span><span class="p">,</span>
+    <span class="s2">&quot;CpOpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSROpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSRmax&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="p">,</span>
+
+    <span class="c1"># Drivetrain and generator parameters</span>
+    <span class="s2">&quot;Ng&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;Kt&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="s2">&quot;Rw&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;J_d&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="s2">&quot;B_d&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;J_r&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+
+    <span class="c1"># Power-conversion model</span>
+    <span class="s2">&quot;power_model&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">config_rotor1</span> <span class="o">=</span> <span class="n">base_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">config_rotor1</span><span class="p">[</span><span class="s2">&quot;Radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="n">config_rotor2</span> <span class="o">=</span> <span class="n">base_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">config_rotor2</span><span class="p">[</span><span class="s2">&quot;Radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Run-rotor-simulations">
+<h2>4. Run rotor simulations<a class="headerlink" href="#4.-Run-rotor-simulations" title="Link to this heading"></a></h2>
+<p>Now run the dynamic rotor simulation for both configurations.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rotor_sim1</span> <span class="o">=</span> <span class="n">RotorSimulation</span><span class="p">(</span><span class="n">config_rotor1</span><span class="p">)</span>
+<span class="n">rotor_sim1</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="n">results_rotor1</span> <span class="o">=</span> <span class="n">rotor_sim1</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+
+<span class="n">rotor_sim2</span> <span class="o">=</span> <span class="n">RotorSimulation</span><span class="p">(</span><span class="n">config_rotor2</span><span class="p">)</span>
+<span class="n">rotor_sim2</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="n">results_rotor2</span> <span class="o">=</span> <span class="n">rotor_sim2</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Solving the initial value problem (IVP) for turbine dynamics...
+Rated torque exceeded. Switching to open-loop dynamics...
+IVP solving complete.
+</pre></div></div>
+</div>
+</section>
+<section id="5.-Summarize-simulation-results">
+<h2>5. Summarize simulation results<a class="headerlink" href="#5.-Summarize-simulation-results" title="Link to this heading"></a></h2>
+<p>The simulation returns time histories for rotor speed, generator torque, thrust, hydrodynamic power, mechanical power, electrical power, and other quantities.</p>
+<p>Here we print a few simple summary metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">summarize_results</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radius: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Radius&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean adjusted flow speed: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Uinf_adjusted&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m/s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max adjusted flow speed: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Uinf_adjusted&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m/s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean Pelec: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max Pelec: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean TSR: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;TSR&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max TSR: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;TSR&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean generator torque: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Tg&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N m&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max generator torque: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;Tg&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N m&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+<span class="n">summarize_results</span><span class="p">(</span><span class="s2">&quot;Rotor 1&quot;</span><span class="p">,</span> <span class="n">config_rotor1</span><span class="p">,</span> <span class="n">results_rotor1</span><span class="p">)</span>
+<span class="n">summarize_results</span><span class="p">(</span><span class="s2">&quot;Rotor 2&quot;</span><span class="p">,</span> <span class="n">config_rotor2</span><span class="p">,</span> <span class="n">results_rotor2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Rotor 1
+-------
+Radius: 0.50 m
+Mean adjusted flow speed: 1.177 m/s
+Max adjusted flow speed: 2.988 m/s
+Mean Pelec: 0.010 kW
+Max Pelec: 0.138 kW
+Mean TSR: 0.144
+Max TSR: 0.765
+Mean generator torque: 0.457 N m
+Max generator torque: 3.904 N m
+
+Rotor 2
+-------
+Radius: 1.00 m
+Mean adjusted flow speed: 1.177 m/s
+Max adjusted flow speed: 2.988 m/s
+Mean Pelec: 0.463 kW
+Max Pelec: 2.718 kW
+Mean TSR: 0.619
+Max TSR: 1.096
+Mean generator torque: 23.266 N m
+Max generator torque: 50.000 N m
+
+</pre></div></div>
+</div>
+</section>
+<section id="6.-Compare-time-series-outputs">
+<h2>6. Compare time-series outputs<a class="headerlink" href="#6.-Compare-time-series-outputs" title="Link to this heading"></a></h2>
+<p>The plots below compare electrical power, generator torque, tip-speed ratio, and rotor speed for the two rotor radii.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_days</span> <span class="o">=</span> <span class="n">results_rotor1</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Electrical power</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor1</span><span class="p">[</span><span class="s2">&quot;Pelec&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 1: R = 0.5 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor2</span><span class="p">[</span><span class="s2">&quot;Pelec&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 2: R = 1.0 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">base_config</span><span class="p">[</span><span class="s2">&quot;Prated&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rated power&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pelec (kW)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Electrical Power&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Generator torque</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor1</span><span class="p">[</span><span class="s2">&quot;Tg&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 1: R = 0.5 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor2</span><span class="p">[</span><span class="s2">&quot;Tg&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 2: R = 1.0 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">base_config</span><span class="p">[</span><span class="s2">&quot;Trated&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rated torque&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Tg (N m)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Generator Torque&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Tip-speed ratio</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor1</span><span class="p">[</span><span class="s2">&quot;TSR&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 1: R = 0.5 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor2</span><span class="p">[</span><span class="s2">&quot;TSR&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 2: R = 1.0 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Optimal TSR&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;TSR&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Tip-Speed Ratio&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Rotor angular speed</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor1</span><span class="p">[</span><span class="s2">&quot;wr&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 1: R = 0.5 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">results_rotor2</span><span class="p">[</span><span class="s2">&quot;wr&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rotor 2: R = 1.0 m&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Rotor speed (rad/s)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (days)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Rotor Angular Speed&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_04_rotor_simulation_14_0.png" src="../_images/examples_04_rotor_simulation_14_0.png" />
+</div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This tutorial showed how to:</p>
+<ul class="simple">
+<li><p>Load tidal resource data.</p></li>
+<li><p>Load rotor performance data.</p></li>
+<li><p>Configure the <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code> model.</p></li>
+<li><p>Run simulations for two rotor radii.</p></li>
+<li><p>Compare electrical power, torque, TSR, and rotor speed.</p></li>
+</ul>
+<p>The next tutorial uses the simulation results to evaluate design constraints such as power limits, rotor submergence, cavitation, and vessel pitch stability.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03_rotordata.html" class="btn btn-neutral float-left" title="Tutorial 3: Defining Rotor Data (module_rotor)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="05_constraint_checking.html" class="btn btn-neutral float-right" title="Tutorial 5: Checking Constraints (module_constraint_checker)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assumptions and FAQ &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VITAL Quickstart Tutorial" href="examples/01_quickstart.html" />
+    <link rel="prev" title="Constraint Overview" href="constraint.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Assumptions and FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-scope">General Scope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-vital-intended-to-do">What is VITAL intended to do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-applications-are-currently-represented">What applications are currently represented?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-global-physical-constants-are-used">What global physical constants are used?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tidal-data">Tidal Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#where-does-tidal-data-come-from">Where does tidal data come from?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-are-the-default-tidal-data-processing-values">What are the default tidal-data processing values?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-units-are-used-for-tidal-speed">What units are used for tidal speed?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-are-flow-speeds-made-nonnegative">Why are flow speeds made nonnegative?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-there-a-minimum-flow-speed">Is there a minimum flow speed?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-mooring-distance-determined">How is mooring distance determined?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-cable-length-estimated">How is cable length estimated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-local-fallback-data-format-is-expected">What local fallback data format is expected?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rotor-data">Rotor Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-rotor-data-columns-are-required">What rotor data columns are required?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-to-negative-rotor-coefficients">What happens to negative rotor coefficients?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-are-rotor-coefficients-interpolated">How are rotor coefficients interpolated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-if-cpmin-data-is-not-provided">What happens if Cpmin data is not provided?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rotor-simulation">Rotor Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-dynamics-are-modeled">What dynamics are modeled?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-inputs-are-required-in-the-rotor-simulation-configuration">What inputs are required in the rotor simulation configuration?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-validation-is-performed-in-rotor-simulation">What validation is performed in rotor simulation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-power-conversion-model-is-used-by-default">What power conversion model is used by default?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-power-conversion-models-are-supported">What power conversion models are supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-numerical-solver-is-used">What numerical solver is used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-if-rated-torque-is-exceeded">What happens if rated torque is exceeded?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-pelec">What is <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#flow-at-depth-model">Flow-at-Depth Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-flow-adjusted-for-turbine-depth">How is flow adjusted for turbine depth?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#constraint-checking">Constraint Checking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-constraints-are-checked">What constraints are checked?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-numerical-tolerances-are-used-in-constraint-checks">What numerical tolerances are used in constraint checks?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-the-power-constraint-interpreted">How is the power constraint interpreted?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-the-depth-constraint-interpreted">How is the depth constraint interpreted?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-cavitation-checked">How is cavitation checked?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-pitch-stability-checked">How is pitch stability checked?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vessel-model">Vessel Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-vessel-properties-are-required-for-user-defined-vessels">What vessel properties are required for user-defined vessels?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-default-vessel-properties-are-used">What default vessel properties are used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-vessel-drag-calculated">How is vessel drag calculated?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lcoe-calculation">LCOE Calculation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-does-the-lcoe-calculation-include">What does the LCOE calculation include?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-power-signal-is-used-for-annual-energy-in-lcoe">What power signal is used for annual energy in LCOE?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-lcoe-defaults-are-used-by-the-optimizer">What LCOE defaults are used by the optimizer?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-annual-energy-calculated">How is annual energy calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#does-the-capacity-factor-include-all-turbines">Does the capacity factor include all turbines?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-turbulence-intensity-used">How is turbulence intensity used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-is-opex-calculated">How is OPEX calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-capex-adjustment-factors-are-applied">What CAPEX adjustment factors are applied?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-if-battery-capacity-is-missing">What happens if battery capacity is missing?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cost-models">Cost Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#are-the-cost-models-general">Are the cost models general?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-cost-model-configurations-are-included">What cost model configurations are included?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-battery-cost-is-currently-used-for-sitkana-style-battery-charging">What battery cost is currently used for SITKANA-style battery charging?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-currency-conversion-is-used">What currency conversion is used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-permitting-costs-included">Are permitting costs included?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization">Optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-optimization-method-is-used">What optimization method is used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-defaults-are-used-by-the-optimizer">What defaults are used by the optimizer?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-when-a-design-violates-constraints">What happens when a design violates constraints?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-did-optimization-fail-to-find-a-feasible-design">Why did optimization fail to find a feasible design?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-are-variable-bounds-interpreted">How are variable bounds interpreted?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-and-software-notes">Numerical and Software Notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#does-the-software-validate-every-physical-input">Does the software validate every physical input?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-unit-system-is-used">What unit system is used?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-useful-unit-conversions-are-defined">What useful unit conversions are defined?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-should-users-check-before-trusting-results">What should users check before trusting results?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Assumptions and FAQ</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="assumptions-and-faq">
+<h1>Assumptions and FAQ<a class="headerlink" href="#assumptions-and-faq" title="Link to this heading"></a></h1>
+<p>This page summarizes important assumptions, simplifications, default values, and common questions for users of VITAL.</p>
+<p>The details below are provided to help users interpret screening-level results and understand where additional engineering review may be needed.</p>
+<section id="general-scope">
+<h2>General Scope<a class="headerlink" href="#general-scope" title="Link to this heading"></a></h2>
+<section id="what-is-vital-intended-to-do">
+<h3>What is VITAL intended to do?<a class="headerlink" href="#what-is-vital-intended-to-do" title="Link to this heading"></a></h3>
+<p>VITAL is intended to support early-stage assessment of tidal turbine systems integrated with vessels or floating platforms. It combines tidal resource processing, rotor performance data, rotor dynamic simulation, vessel loading, constraint checking, cost estimation, and LCOE calculation.</p>
+<p>The tool is designed for comparative analysis and screening studies. It is not a substitute for detailed engineering design, certification, environmental review, or site-specific permitting analysis.</p>
+</section>
+<section id="what-applications-are-currently-represented">
+<h3>What applications are currently represented?<a class="headerlink" href="#what-applications-are-currently-represented" title="Link to this heading"></a></h3>
+<p>The software includes cost configuration support for:</p>
+<ul class="simple">
+<li><p>Battery charging applications.</p></li>
+<li><p>Grid connection applications.</p></li>
+</ul>
+<p>However, some application-specific models are simplified and should be reviewed before use in decision-critical studies.</p>
+</section>
+<section id="what-global-physical-constants-are-used">
+<h3>What global physical constants are used?<a class="headerlink" href="#what-global-physical-constants-are-used" title="Link to this heading"></a></h3>
+<p>The following global physical constants are defined in <code class="docutils literal notranslate"><span class="pre">constGlobal.py</span></code>:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Global physical constants</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Symbol / variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Seawater density</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rho</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1025.0</span> <span class="pre">kg/m^3</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Atmospheric pressure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Patm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">101325.0</span> <span class="pre">Pa</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Seawater vapor pressure at 25 deg C</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Pvap</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3063.7485</span> <span class="pre">Pa</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Gravitational acceleration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">9.8</span> <span class="pre">m/s^2</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>These constants are used in hydrodynamic force calculations, cavitation checks, and flow-related calculations.</p>
+</section>
+</section>
+<section id="tidal-data">
+<h2>Tidal Data<a class="headerlink" href="#tidal-data" title="Link to this heading"></a></h2>
+<section id="where-does-tidal-data-come-from">
+<h3>Where does tidal data come from?<a class="headerlink" href="#where-does-tidal-data-come-from" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">module_tidal</span></code> workflow attempts to retrieve tidal current predictions from NOAA APIs. If NOAA access fails and a local fallback file is supplied, the workflow can use local tidal data instead.</p>
+<p>The high-level function is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span><span class="p">,</span>
+    <span class="n">local_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fallback_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="what-are-the-default-tidal-data-processing-values">
+<h3>What are the default tidal-data processing values?<a class="headerlink" href="#what-are-the-default-tidal-data-processing-values" title="Link to this heading"></a></h3>
+<p>The following defaults are used by <code class="docutils literal notranslate"><span class="pre">process_tidal_data</span></code> and <code class="docutils literal notranslate"><span class="pre">module_tidal.py</span></code>:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Tidal-data defaults</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Time range</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">range_hrs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">7</span> <span class="pre">*</span> <span class="pre">24</span> <span class="pre">=</span> <span class="pre">336</span> <span class="pre">hr</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Interpolated time step</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">time_step_s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3600</span> <span class="pre">s</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>City data file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">city_data_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;../data/AlaskaCityLatLong.txt&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Minimum flow speed floor</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MIN_FLOW_SPEED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-4</span> <span class="pre">m/s</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Default mooring distance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DEFAULT_MOORING_DISTANCE_M</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">50.0</span> <span class="pre">m</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Earth radius for distance calculations</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EARTH_RADIUS_M</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">6378137.0</span> <span class="pre">m</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The NOAA request internally extends the requested range by 2 hours before interpolation. For example, if <code class="docutils literal notranslate"><span class="pre">range_hrs</span> <span class="pre">=</span> <span class="pre">336</span></code>, the NOAA request uses <code class="docutils literal notranslate"><span class="pre">338</span></code> hours. This helps provide enough data for interpolation at the end of the requested interval.</p>
+</section>
+<section id="what-units-are-used-for-tidal-speed">
+<h3>What units are used for tidal speed?<a class="headerlink" href="#what-units-are-used-for-tidal-speed" title="Link to this heading"></a></h3>
+<p>NOAA current prediction speeds are converted internally from cm/s to m/s using:</p>
+<div class="math notranslate nohighlight">
+\[1 \; \text{cm/s} = 10^{-2} \; \text{m/s}\]</div>
+<p>Local fallback files should provide speed directly in m/s.</p>
+</section>
+<section id="why-are-flow-speeds-made-nonnegative">
+<h3>Why are flow speeds made nonnegative?<a class="headerlink" href="#why-are-flow-speeds-made-nonnegative" title="Link to this heading"></a></h3>
+<p>The current implementation uses the magnitude of flow speed by applying an absolute value:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speeds_m_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speeds_m_s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This means flow reversal direction is not explicitly modeled. The rotor simulation treats the input as a speed magnitude rather than a signed vector velocity.</p>
+</section>
+<section id="is-there-a-minimum-flow-speed">
+<h3>Is there a minimum flow speed?<a class="headerlink" href="#is-there-a-minimum-flow-speed" title="Link to this heading"></a></h3>
+<p>Yes. A small minimum speed floor is applied to avoid numerical issues in interpolation and rotor dynamics calculations:</p>
+<div class="math notranslate nohighlight">
+\[U_{\min} = 10^{-4} \; \text{m/s}\]</div>
+<p>This value is defined as <code class="docutils literal notranslate"><span class="pre">MIN_FLOW_SPEED</span> <span class="pre">=</span> <span class="pre">1e-4</span></code> in <code class="docutils literal notranslate"><span class="pre">module_tidal.py</span></code>.</p>
+</section>
+<section id="how-is-mooring-distance-determined">
+<h3>How is mooring distance determined?<a class="headerlink" href="#how-is-mooring-distance-determined" title="Link to this heading"></a></h3>
+<p>For most NOAA stations, the code attempts to retrieve deployment depth information. If depth is unavailable, a default mooring distance is used:</p>
+<div class="math notranslate nohighlight">
+\[d_{moor,default} = 50.0 \; \text{m}\]</div>
+<p>For older station IDs beginning with <code class="docutils literal notranslate"><span class="pre">PCT</span></code>, the code uses station metadata and applies the same default mooring distance of <code class="docutils literal notranslate"><span class="pre">50.0</span> <span class="pre">m</span></code>.</p>
+<p>If NOAA reports depth in feet, the code converts it to meters using:</p>
+<div class="math notranslate nohighlight">
+\[1 \; \text{ft} = 0.3048 \; \text{m}\]</div>
+</section>
+<section id="how-is-cable-length-estimated">
+<h3>How is cable length estimated?<a class="headerlink" href="#how-is-cable-length-estimated" title="Link to this heading"></a></h3>
+<p>Cable length is estimated as the great-circle distance between the tidal station/buoy location and the nearest city in the provided city metadata file.</p>
+<p>The calculation uses:</p>
+<div class="math notranslate nohighlight">
+\[R_{Earth} = 6378137.0 \; \text{m}\]</div>
+<p>This is a simplified estimate and does not represent actual cable routing, bathymetry, landfall constraints, permitting constraints, installation feasibility, or final engineering design.</p>
+</section>
+<section id="what-local-fallback-data-format-is-expected">
+<h3>What local fallback data format is expected?<a class="headerlink" href="#what-local-fallback-data-format-is-expected" title="Link to this heading"></a></h3>
+<p>If NOAA data are unavailable, a local fallback file can be supplied. The local file must be whitespace-delimited and contain at least the following columns:</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Required local tidal file columns</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td><p>Time</p></td>
+<td><p>seconds</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">U</span></code></p></td>
+<td><p>Flow speed</p></td>
+<td><p>m/s</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>t U
+0 0.85
+3600 1.10
+7200 0.95
+10800 0.40
+</pre></div>
+</div>
+<p>When using a local fallback file, <code class="docutils literal notranslate"><span class="pre">fallback_metadata</span></code> must include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">station_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latitude_deg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">longitude_deg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mooring_distance_m</span></code></p></li>
+</ul>
+<p>Optional metadata fields are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nearest_city</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cable_length_m</span></code></p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">city_data_file</span></code> is provided, the code attempts to compute nearest city and cable length from the fallback latitude and longitude.</p>
+</section>
+</section>
+<section id="rotor-data">
+<h2>Rotor Data<a class="headerlink" href="#rotor-data" title="Link to this heading"></a></h2>
+<section id="what-rotor-data-columns-are-required">
+<h3>What rotor data columns are required?<a class="headerlink" href="#what-rotor-data-columns-are-required" title="Link to this heading"></a></h3>
+<p>The rotor performance data file must contain the following columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TSR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ct</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cq</span></code></p></li>
+</ul>
+<p>The power coefficient is computed internally as:</p>
+<div class="math notranslate nohighlight">
+\[C_p = TSR \cdot C_q\]</div>
+</section>
+<section id="what-happens-to-negative-rotor-coefficients">
+<h3>What happens to negative rotor coefficients?<a class="headerlink" href="#what-happens-to-negative-rotor-coefficients" title="Link to this heading"></a></h3>
+<p>The rotor data are processed using the following physical sign constraints:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">cq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cq</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">ct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ct</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cpmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpmin</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cp</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Thus:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Cq</span></code> is clipped to be nonnegative.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ct</span></code> is clipped to be nonnegative.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cp</span></code> is clipped to be nonnegative.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> is clipped to be nonpositive.</p></li>
+</ul>
+</section>
+<section id="how-are-rotor-coefficients-interpolated">
+<h3>How are rotor coefficients interpolated?<a class="headerlink" href="#how-are-rotor-coefficients-interpolated" title="Link to this heading"></a></h3>
+<p>The code uses monotonic PCHIP interpolation for <code class="docutils literal notranslate"><span class="pre">Cq</span></code> and <code class="docutils literal notranslate"><span class="pre">Ct</span></code> through <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.PchipInterpolator</span></code>.</p>
+<p>Outside the provided TSR range, the implementation applies simplified behavior:</p>
+<ul class="simple">
+<li><p>Below the minimum TSR, <code class="docutils literal notranslate"><span class="pre">Cq</span></code> and <code class="docutils literal notranslate"><span class="pre">Ct</span></code> are held at the first measured value.</p></li>
+<li><p>Above the maximum TSR, <code class="docutils literal notranslate"><span class="pre">Cq</span></code> and <code class="docutils literal notranslate"><span class="pre">Ct</span></code> decay exponentially toward zero.</p></li>
+</ul>
+<p>This low-TSR behavior avoids forcing <code class="docutils literal notranslate"><span class="pre">Cq</span></code> or <code class="docutils literal notranslate"><span class="pre">Ct</span></code> to zero at <code class="docutils literal notranslate"><span class="pre">TSR</span> <span class="pre">=</span> <span class="pre">0</span></code>. That assumption can be incorrect for drag-based turbines, where torque and thrust coefficients may be nonzero or even large at low TSR.</p>
+<p>For the above-range exponential decay, the decay scale is based on the maximum TSR in the supplied rotor data:</p>
+<div class="math notranslate nohighlight">
+\[\text{decay scale} = \max(TSR_{max,data}, 10^{-6})\]</div>
+<p>Because the power coefficient is computed as:</p>
+<div class="math notranslate nohighlight">
+\[C_p = TSR \cdot C_q\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">Cp</span></code> still approaches zero as <code class="docutils literal notranslate"><span class="pre">TSR</span></code> approaches zero, even if <code class="docutils literal notranslate"><span class="pre">Cq</span></code> is held nonzero below the measured TSR range.</p>
+<p>The extrapolated values should not be interpreted as validated rotor performance. Users should provide rotor data over the expected operating TSR range whenever possible.</p>
+</section>
+<section id="what-happens-if-cpmin-data-is-not-provided">
+<h3>What happens if Cpmin data is not provided?<a class="headerlink" href="#what-happens-if-cpmin-data-is-not-provided" title="Link to this heading"></a></h3>
+<p>If no Cpmin file is provided, the code assumes:</p>
+<div class="math notranslate nohighlight">
+\[C_{p,\min} = -1.0\]</div>
+<p>across the TSR range.</p>
+<p>This affects the cavitation constraint and should be replaced with rotor-specific minimum pressure coefficient data when available.</p>
+</section>
+</section>
+<section id="rotor-simulation">
+<h2>Rotor Simulation<a class="headerlink" href="#rotor-simulation" title="Link to this heading"></a></h2>
+<section id="what-dynamics-are-modeled">
+<h3>What dynamics are modeled?<a class="headerlink" href="#what-dynamics-are-modeled" title="Link to this heading"></a></h3>
+<p>The rotor simulation models generator-side angular speed using a drivetrain dynamic equation with effective inertia, friction, hydrodynamic torque, and generator torque.</p>
+<p>The effective inertia is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[I_{eff} = \frac{J_r}{N_g^2} + J_d\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">J_r</span></code> is rotor inertia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">J_d</span></code> is drivetrain inertia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">N_g</span></code> is gear ratio.</p></li>
+</ul>
+<p>The default controller uses an optimal torque law intended to track the optimal tip-speed ratio.</p>
+</section>
+<section id="what-inputs-are-required-in-the-rotor-simulation-configuration">
+<h3>What inputs are required in the rotor simulation configuration?<a class="headerlink" href="#what-inputs-are-required-in-the-rotor-simulation-configuration" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code> class expects the configuration dictionary to include, at minimum:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Radius</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Prated</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Trated</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dHub</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dMoor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Uinf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CpFunc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CqFunc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CtFunc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CpOpt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TSROpt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TSRmax</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ng</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">J_d</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B_d</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">J_r</span></code></p></li>
+</ul>
+<p>For the simple electrical power model, the configuration must also include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Kt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Rw</span></code></p></li>
+</ul>
+</section>
+<section id="what-validation-is-performed-in-rotor-simulation">
+<h3>What validation is performed in rotor simulation?<a class="headerlink" href="#what-validation-is-performed-in-rotor-simulation" title="Link to this heading"></a></h3>
+<p>The rotor simulation checks several basic conditions:</p>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Rotor simulation validation</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Requirement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Gear ratio</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Ng</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Rotor radius</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Radius</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Time vector</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">len(t)</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimal TSR</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TSROpt</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> when computing <code class="docutils literal notranslate"><span class="pre">Kopt</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-power-conversion-model-is-used-by-default">
+<h3>What power conversion model is used by default?<a class="headerlink" href="#what-power-conversion-model-is-used-by-default" title="Link to this heading"></a></h3>
+<p>The default power conversion model is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">power_model</span> <span class="o">=</span> <span class="s2">&quot;simple&quot;</span>
+</pre></div>
+</div>
+<p>This model requires generator constants <code class="docutils literal notranslate"><span class="pre">Kt</span></code> and <code class="docutils literal notranslate"><span class="pre">Rw</span></code>.</p>
+</section>
+<section id="what-power-conversion-models-are-supported">
+<h3>What power conversion models are supported?<a class="headerlink" href="#what-power-conversion-models-are-supported" title="Link to this heading"></a></h3>
+<p>The rotor simulation supports the following power-conversion options:</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Power conversion model options</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">power_model</span></code></p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;simple&quot;</span></code></p></td>
+<td><p>Built-in generator electrical model using <code class="docutils literal notranslate"><span class="pre">Kt</span></code> and <code class="docutils literal notranslate"><span class="pre">Rw</span></code>. No power-electronics loss model is applied.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;simple_with_pe_loss&quot;</span></code></p></td>
+<td><p>Built-in generator electrical model plus user-supplied power-electronics loss model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;generator_loss_model&quot;</span></code></p></td>
+<td><p>User-supplied generator loss model. No power-electronics loss model is applied.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;generator_and_pe_loss_models&quot;</span></code></p></td>
+<td><p>User-supplied generator loss model and user-supplied power-electronics loss model.</p></td>
+</tr>
+</tbody>
+</table>
+<p>For user-supplied generator or power-electronics loss models, the functions are assumed to use generator-side angular speed and generator torque:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">omega_g</span> <span class="pre">=</span> <span class="pre">self.w</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tau_g</span> <span class="pre">=</span> <span class="pre">self.Tg</span></code></p></li>
+</ul>
+</section>
+<section id="what-numerical-solver-is-used">
+<h3>What numerical solver is used?<a class="headerlink" href="#what-numerical-solver-is-used" title="Link to this heading"></a></h3>
+<p>Rotor dynamics are solved using <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp</span></code> with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;Radau&quot;</span>
+</pre></div>
+</div>
+<p>The Radau method is an implicit method suitable for stiff systems.</p>
+</section>
+<section id="what-happens-if-rated-torque-is-exceeded">
+<h3>What happens if rated torque is exceeded?<a class="headerlink" href="#what-happens-if-rated-torque-is-exceeded" title="Link to this heading"></a></h3>
+<p>The simulation first solves closed-loop dynamics. If the generator torque exceeds the rated torque, the torque is clipped at:</p>
+<div class="math notranslate nohighlight">
+\[T_g \leq T_{rated}\]</div>
+<p>The dynamics are then re-solved in open-loop mode using the clipped torque trajectory.</p>
+</section>
+<section id="what-is-pelec">
+<h3>What is <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>?<a class="headerlink" href="#what-is-pelec" title="Link to this heading"></a></h3>
+<p>For compatibility with downstream code, <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> is the primary electrical output used by the LCOE and constraint calculations.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">simple</span></code> and <code class="docutils literal notranslate"><span class="pre">simple_with_pe_loss</span></code> modes, <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> comes from the built-in generator electrical model. In these modes, <code class="docutils literal notranslate"><span class="pre">Pac</span></code> is calculated as nonnegative AC-side electrical power.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">generator_loss_model</span></code> and <code class="docutils literal notranslate"><span class="pre">generator_and_pe_loss_models</span></code> modes, <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> is treated as AC-side power and is equal to <code class="docutils literal notranslate"><span class="pre">Pac</span></code>.</p>
+<p>If power-electronics losses are included, battery-side power is available separately as <code class="docutils literal notranslate"><span class="pre">Pbat</span></code>.</p>
+<p>For battery-charging studies, users should verify whether <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>, <code class="docutils literal notranslate"><span class="pre">Pac</span></code>, or <code class="docutils literal notranslate"><span class="pre">Pbat</span></code> is the appropriate power signal for their intended analysis. The current LCOE workflow uses <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> for annual energy calculations.</p>
+</section>
+</section>
+<section id="flow-at-depth-model">
+<h2>Flow-at-Depth Model<a class="headerlink" href="#flow-at-depth-model" title="Link to this heading"></a></h2>
+<section id="how-is-flow-adjusted-for-turbine-depth">
+<h3>How is flow adjusted for turbine depth?<a class="headerlink" href="#how-is-flow-adjusted-for-turbine-depth" title="Link to this heading"></a></h3>
+<p>The simulation uses a simplified vertical profile correction through the <code class="docutils literal notranslate"><span class="pre">flowAtDepth</span></code> method. This estimates an adjusted flow speed at the rotor location based on hub depth, rotor radius, and mooring depth.</p>
+<p>The method uses an internal average-flow scaling:</p>
+<div class="math notranslate nohighlight">
+\[U_{avg} = \frac{U}{1.07}\]</div>
+<p>and then estimates an equivalent velocity based on a depth-dependent power calculation.</p>
+<p>This model is a simplification and does not fully resolve site-specific bathymetry, turbulence, shear, wave-current interaction, or three-dimensional flow effects.</p>
+</section>
+</section>
+<section id="constraint-checking">
+<h2>Constraint Checking<a class="headerlink" href="#constraint-checking" title="Link to this heading"></a></h2>
+<section id="what-constraints-are-checked">
+<h3>What constraints are checked?<a class="headerlink" href="#what-constraints-are-checked" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ConstraintChecker</span></code> evaluates:</p>
+<ul class="simple">
+<li><p>Power constraint.</p></li>
+<li><p>Rotor submergence/depth constraint.</p></li>
+<li><p>Cavitation constraint.</p></li>
+<li><p>Vessel pitch stability constraint.</p></li>
+</ul>
+</section>
+<section id="what-numerical-tolerances-are-used-in-constraint-checks">
+<h3>What numerical tolerances are used in constraint checks?<a class="headerlink" href="#what-numerical-tolerances-are-used-in-constraint-checks" title="Link to this heading"></a></h3>
+<p>The power constraint uses a small tolerance of <code class="docutils literal notranslate"><span class="pre">1e-9</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pelec</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1e-9</span>
+<span class="n">Prated</span> <span class="o">-</span> <span class="n">Pelec</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1e-9</span>
+</pre></div>
+</div>
+<p>The other constraints use strict positivity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">depth_constraint</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">cavitation_constraint</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">pitch_constraint</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+<section id="how-is-the-power-constraint-interpreted">
+<h3>How is the power constraint interpreted?<a class="headerlink" href="#how-is-the-power-constraint-interpreted" title="Link to this heading"></a></h3>
+<p>The electrical power must be nonnegative and must not exceed rated turbine power:</p>
+<div class="math notranslate nohighlight">
+\[0 \leq P_{elec} \leq P_{rated}\]</div>
+<p>In the implementation, this is checked with the <code class="docutils literal notranslate"><span class="pre">1e-9</span></code> numerical tolerance described above.</p>
+</section>
+<section id="how-is-the-depth-constraint-interpreted">
+<h3>How is the depth constraint interpreted?<a class="headerlink" href="#how-is-the-depth-constraint-interpreted" title="Link to this heading"></a></h3>
+<p>The depth constraint requires:</p>
+<div class="math notranslate nohighlight">
+\[d_{hub} - R &gt; 0\]</div>
+<p>This means the top of the rotor must remain below the water surface.</p>
+</section>
+<section id="how-is-cavitation-checked">
+<h3>How is cavitation checked?<a class="headerlink" href="#how-is-cavitation-checked" title="Link to this heading"></a></h3>
+<p>The cavitation check estimates minimum blade pressure using the supplied or default minimum pressure coefficient.</p>
+<p>The effective velocity is estimated as:</p>
+<div class="math notranslate nohighlight">
+\[V_{\infty} = \sqrt{U_{\text{inf,adjusted}}^2 + (R \omega_r)^2}\]</div>
+<p>The pressure at the rotor tip is estimated using:</p>
+<div class="math notranslate nohighlight">
+\[P_{\infty} = P_{atm} + \rho g (d_{hub} - R)\]</div>
+<p>The cavitation constraint is implemented as:</p>
+<div class="math notranslate nohighlight">
+\[h(x) =
+\frac{1}{2} \rho V_{\infty}^2 C_{p,\min}
+- \left(P_{vap} - P_{\infty}\right)\]</div>
+<p>and must satisfy:</p>
+<div class="math notranslate nohighlight">
+\[h(x) &gt; 0\]</div>
+<p>The default values used in this calculation are:</p>
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Cavitation constants</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Seawater density</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rho</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1025.0</span> <span class="pre">kg/m^3</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Atmospheric pressure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Patm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">101325.0</span> <span class="pre">Pa</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Vapor pressure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Pvap</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3063.7485</span> <span class="pre">Pa</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Gravitational acceleration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">9.8</span> <span class="pre">m/s^2</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Default <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> if no file is supplied</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Cpmin</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1.0</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The cavitation model depends strongly on the quality of the <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> data.</p>
+</section>
+<section id="how-is-pitch-stability-checked">
+<h3>How is pitch stability checked?<a class="headerlink" href="#how-is-pitch-stability-checked" title="Link to this heading"></a></h3>
+<p>Pitch stability is checked using a simplified moment balance involving vessel drag, turbine thrust, turbine hub depth, mooring angle, vessel geometry, and pitch hydrostatic stiffness.</p>
+<p>The code computes vessel drag as:</p>
+<div class="math notranslate nohighlight">
+\[F_{vessel} =
+\frac{1}{2} \rho A U_{\text{inf,adjusted}}^2\]</div>
+<p>and turbine thrust as:</p>
+<div class="math notranslate nohighlight">
+\[F_{turbine,total} = N_t F_t\]</div>
+<p>The total horizontal load used in the pitch check is:</p>
+<div class="math notranslate nohighlight">
+\[F_{total} = F_{vessel} + F_{turbine,total}\]</div>
+<p>The pitch constraint margin is implemented as:</p>
+<div class="math notranslate nohighlight">
+\[h(x) =
+K_{\phi} \phi
+- F_{turbine,total} d_{hub}
+- F_{total} X_m \cos(\theta_m)
+- F_{total} Z_m \sin(\theta_m)\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Kphi</span></code> is the pitch hydrostatic stiffness.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phi</span></code> is the representative pitch angle.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dHub</span></code> is the hub depth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Xm</span></code> is the horizontal force-application distance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Zm</span></code> is the vertical force-application distance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_m</span></code> is the mooring line angle.</p></li>
+</ul>
+<p>The constraint must satisfy:</p>
+<div class="math notranslate nohighlight">
+\[h(x) &gt; 0\]</div>
+<p>This check is intended as a screening-level constraint and should not replace detailed vessel stability analysis.</p>
+</section>
+</section>
+<section id="vessel-model">
+<h2>Vessel Model<a class="headerlink" href="#vessel-model" title="Link to this heading"></a></h2>
+<section id="what-vessel-properties-are-required-for-user-defined-vessels">
+<h3>What vessel properties are required for user-defined vessels?<a class="headerlink" href="#what-vessel-properties-are-required-for-user-defined-vessels" title="Link to this heading"></a></h3>
+<p>For user-defined vessels, the following keys are expected in <code class="docutils literal notranslate"><span class="pre">vessel_properties</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Xm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Zm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kphi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">area</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cd</span></code></p></li>
+</ul>
+<p>If any of these are missing, <code class="docutils literal notranslate"><span class="pre">VesselData</span></code> will raise an error.</p>
+</section>
+<section id="what-default-vessel-properties-are-used">
+<h3>What default vessel properties are used?<a class="headerlink" href="#what-default-vessel-properties-are-used" title="Link to this heading"></a></h3>
+<p>If the vessel is not user-defined, the following default vessel properties are used:</p>
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">Default vessel properties</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Vessel height</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">height</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.5</span> <span class="pre">m</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Vessel density</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">density</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500.0</span> <span class="pre">kg/m^3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Mooring line angle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">theta_m</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">45</span> <span class="pre">deg</span> <span class="pre">=</span> <span class="pre">0.7854</span> <span class="pre">rad</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Aspect ratio</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alpha</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Drag coefficient</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Cd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pitch angle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">phi</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">deg</span> <span class="pre">=</span> <span class="pre">0.1745</span> <span class="pre">rad</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Submerged height</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">h_s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">/</span> <span class="pre">2</span> <span class="pre">=</span> <span class="pre">0.25</span> <span class="pre">m</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Cross-sectional area</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">area</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">*</span> <span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">2.0</span> <span class="pre">m^2</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Some vessel attributes, such as <code class="docutils literal notranslate"><span class="pre">Xm</span></code>, <code class="docutils literal notranslate"><span class="pre">Zm</span></code>, <code class="docutils literal notranslate"><span class="pre">Kphi</span></code>, and <code class="docutils literal notranslate"><span class="pre">VesselVolume</span></code>, are not assigned by the default vessel model. These should be supplied explicitly for analyses that require them.</p>
+</section>
+<section id="how-is-vessel-drag-calculated">
+<h3>How is vessel drag calculated?<a class="headerlink" href="#how-is-vessel-drag-calculated" title="Link to this heading"></a></h3>
+<p>Vessel drag is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[F_{drag} = \frac{1}{2} \rho C_d A U^2\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rho</span> <span class="pre">=</span> <span class="pre">1025.0</span> <span class="pre">kg/m^3</span></code> by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cd</span></code> is the vessel drag coefficient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> is the vessel cross-sectional area.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">U</span></code> is the adjusted flow speed.</p></li>
+</ul>
+<p>For the default vessel model:</p>
+<div class="math notranslate nohighlight">
+\[C_d = 0.25\]</div>
+<p>and:</p>
+<div class="math notranslate nohighlight">
+\[A = 2.0 \; \text{m}^2\]</div>
+</section>
+</section>
+<section id="lcoe-calculation">
+<h2>LCOE Calculation<a class="headerlink" href="#lcoe-calculation" title="Link to this heading"></a></h2>
+<section id="what-does-the-lcoe-calculation-include">
+<h3>What does the LCOE calculation include?<a class="headerlink" href="#what-does-the-lcoe-calculation-include" title="Link to this heading"></a></h3>
+<p>The LCOE calculation includes:</p>
+<ul class="simple">
+<li><p>CAPEX from the configured cost functions.</p></li>
+<li><p>OPEX as a fraction of CAPEX.</p></li>
+<li><p>Annual energy production estimated from simulated electrical power.</p></li>
+<li><p>Discounted project lifetime.</p></li>
+</ul>
+<p>The result is reported in USD/kWh.</p>
+</section>
+<section id="what-power-signal-is-used-for-annual-energy-in-lcoe">
+<h3>What power signal is used for annual energy in LCOE?<a class="headerlink" href="#what-power-signal-is-used-for-annual-energy-in-lcoe" title="Link to this heading"></a></h3>
+<p>The current LCOE workflow calculates annual energy from <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>.</p>
+<p>For battery-charging studies with power-electronics losses, <code class="docutils literal notranslate"><span class="pre">Pbat</span></code> may be a more appropriate delivered-energy metric. Users should review whether <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> or <code class="docutils literal notranslate"><span class="pre">Pbat</span></code> is appropriate for their analysis.</p>
+</section>
+<section id="what-lcoe-defaults-are-used-by-the-optimizer">
+<h3>What LCOE defaults are used by the optimizer?<a class="headerlink" href="#what-lcoe-defaults-are-used-by-the-optimizer" title="Link to this heading"></a></h3>
+<p>When using <code class="docutils literal notranslate"><span class="pre">LCOEOptimizer.optimize</span></code> without overriding defaults, the following values are used:</p>
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Optimizer LCOE defaults</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Customer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">customer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;customer_B&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Application</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">application</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;battery_charging&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Battery capacity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10.0</span> <span class="pre">kWh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Project lifetime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lifetime</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">years</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Discount rate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">discount_rate</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Turbulence intensity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">turbulence_intensity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>These defaults are optimizer defaults only. If users instantiate <code class="docutils literal notranslate"><span class="pre">LCOEData</span></code> directly, these values must be provided explicitly.</p>
+</section>
+<section id="how-is-annual-energy-calculated">
+<h3>How is annual energy calculated?<a class="headerlink" href="#how-is-annual-energy-calculated" title="Link to this heading"></a></h3>
+<p>The code integrates the simulated power time series to estimate average power, then scales it to annual energy using:</p>
+<div class="math notranslate nohighlight">
+\[8760 \; \text{hr/year}\]</div>
+<p>Annual energy is reported in kWh.</p>
+</section>
+<section id="does-the-capacity-factor-include-all-turbines">
+<h3>Does the capacity factor include all turbines?<a class="headerlink" href="#does-the-capacity-factor-include-all-turbines" title="Link to this heading"></a></h3>
+<p>The annual energy calculation multiplies instantaneous power by the number of turbines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">instantaneous_power</span> <span class="o">=</span> <span class="n">Pelec</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">turbulence_intensity</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">number_of_turbines</span>
+</pre></div>
+</div>
+<p>Users should ensure that rated power and turbine count are interpreted consistently when comparing capacity factor or system-level power.</p>
+</section>
+<section id="how-is-turbulence-intensity-used">
+<h3>How is turbulence intensity used?<a class="headerlink" href="#how-is-turbulence-intensity-used" title="Link to this heading"></a></h3>
+<p>The LCOE calculation adjusts instantaneous power by dividing by:</p>
+<div class="math notranslate nohighlight">
+\[(1 + TI)^3\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">TI</span></code> is the turbulence intensity input.</p>
+<p>The optimizer default is:</p>
+<div class="math notranslate nohighlight">
+\[TI = 0.0\]</div>
+<p>This is a simplified correction and should be reviewed for the intended application.</p>
+</section>
+<section id="how-is-opex-calculated">
+<h3>How is OPEX calculated?<a class="headerlink" href="#how-is-opex-calculated" title="Link to this heading"></a></h3>
+<p>The current active implementation calculates OPEX as:</p>
+<div class="math notranslate nohighlight">
+\[OPEX = 0.04 \cdot CAPEX\]</div>
+<p>That is, annual OPEX is assumed to be 4% of total CAPEX.</p>
+<p>A SITKANA-specific operating cost function exists in the code, but the currently active <code class="docutils literal notranslate"><span class="pre">calculate_total_opex</span></code> method uses the 4% of CAPEX approximation for all customers.</p>
+</section>
+<section id="what-capex-adjustment-factors-are-applied">
+<h3>What CAPEX adjustment factors are applied?<a class="headerlink" href="#what-capex-adjustment-factors-are-applied" title="Link to this heading"></a></h3>
+<p>After component CAPEX values are summed, an adjustment factor is applied.</p>
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-text">CAPEX adjustment factors</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Customer</p></th>
+<th class="head"><p>Adjustment factor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">customer_A</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.05</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Other customers, including <code class="docutils literal notranslate"><span class="pre">customer_B</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-happens-if-battery-capacity-is-missing">
+<h3>What happens if battery capacity is missing?<a class="headerlink" href="#what-happens-if-battery-capacity-is-missing" title="Link to this heading"></a></h3>
+<p>For <code class="docutils literal notranslate"><span class="pre">grid_connection</span></code> applications, battery capacity is internally set to zero.</p>
+<p>For non-grid applications, such as <code class="docutils literal notranslate"><span class="pre">battery_charging</span></code>, battery capacity must be provided and must be greater than zero.</p>
+<p>If battery capacity is missing or nonpositive for a non-grid application, the code raises an error.</p>
+</section>
+</section>
+<section id="cost-models">
+<h2>Cost Models<a class="headerlink" href="#cost-models" title="Link to this heading"></a></h2>
+<section id="are-the-cost-models-general">
+<h3>Are the cost models general?<a class="headerlink" href="#are-the-cost-models-general" title="Link to this heading"></a></h3>
+<p>No. The cost models are configuration-dependent and include customer/application-specific assumptions. Users should review <code class="docutils literal notranslate"><span class="pre">module_cost_config.py</span></code> and <code class="docutils literal notranslate"><span class="pre">module_cost_calculations.py</span></code> before applying results to a new use case.</p>
+</section>
+<section id="what-cost-model-configurations-are-included">
+<h3>What cost model configurations are included?<a class="headerlink" href="#what-cost-model-configurations-are-included" title="Link to this heading"></a></h3>
+<p>The cost configuration includes two customer keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">customer_A</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">customer_B</span></code></p></li>
+</ul>
+<p>Each customer has:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rotor_and_drivetrain</span></code> cost components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">applications</span></code> cost components for <code class="docutils literal notranslate"><span class="pre">grid_connection</span></code> and/or <code class="docutils literal notranslate"><span class="pre">battery_charging</span></code>.</p></li>
+</ul>
+</section>
+<section id="what-battery-cost-is-currently-used-for-sitkana-style-battery-charging">
+<h3>What battery cost is currently used for SITKANA-style battery charging?<a class="headerlink" href="#what-battery-cost-is-currently-used-for-sitkana-style-battery-charging" title="Link to this heading"></a></h3>
+<p>The battery cost function <code class="docutils literal notranslate"><span class="pre">calculate_battery_cost_SITKANA</span></code> uses:</p>
+<div class="math notranslate nohighlight">
+\[\text{battery cost} = 150 \cdot \text{BatteryCapacity}_{kWh}\]</div>
+<p>Thus, the assumed battery cost is:</p>
+<div class="math notranslate nohighlight">
+\[150 \; \text{USD/kWh}\]</div>
+</section>
+<section id="what-currency-conversion-is-used">
+<h3>What currency conversion is used?<a class="headerlink" href="#what-currency-conversion-is-used" title="Link to this heading"></a></h3>
+<p>The following conversion is defined in <code class="docutils literal notranslate"><span class="pre">constUnitConvert.py</span></code>:</p>
+<div class="math notranslate nohighlight">
+\[\text{euro2dollar} = 1.26 \cdot 1.1304 = 1.424304\]</div>
+<p>Costs based on kEuro values are converted using:</p>
+<div class="math notranslate nohighlight">
+\[\text{USD} =
+\text{kEuro}
+\cdot 1000
+\cdot 1.424304\]</div>
+</section>
+<section id="are-permitting-costs-included">
+<h3>Are permitting costs included?<a class="headerlink" href="#are-permitting-costs-included" title="Link to this heading"></a></h3>
+<p>No. Permitting costs are not currently included in the LCOE calculation.</p>
+<p>See the permitting information page for a qualitative list of agencies and considerations.</p>
+</section>
+</section>
+<section id="optimization">
+<h2>Optimization<a class="headerlink" href="#optimization" title="Link to this heading"></a></h2>
+<section id="what-optimization-method-is-used">
+<h3>What optimization method is used?<a class="headerlink" href="#what-optimization-method-is-used" title="Link to this heading"></a></h3>
+<p>The current <code class="docutils literal notranslate"><span class="pre">LCOEOptimizer</span></code> performs an explicit grid search over user-specified parameter values.</p>
+<p>Although older code used <code class="docutils literal notranslate"><span class="pre">scipy.optimize.brute</span></code>, the current implementation explicitly constructs the grid and evaluates each point.</p>
+</section>
+<section id="what-defaults-are-used-by-the-optimizer">
+<h3>What defaults are used by the optimizer?<a class="headerlink" href="#what-defaults-are-used-by-the-optimizer" title="Link to this heading"></a></h3>
+<p>The optimizer defaults are:</p>
+<table class="docutils align-default" id="id10">
+<caption><span class="caption-text">Optimization defaults</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Customer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">customer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;customer_B&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Application</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">application</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;battery_charging&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Battery capacity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10.0</span> <span class="pre">kWh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Lifetime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lifetime</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">years</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Discount rate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">discount_rate</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Turbulence intensity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">turbulence_intensity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-happens-when-a-design-violates-constraints">
+<h3>What happens when a design violates constraints?<a class="headerlink" href="#what-happens-when-a-design-violates-constraints" title="Link to this heading"></a></h3>
+<p>If a design violates any checked constraint, it is assigned a penalty LCOE value of:</p>
+<div class="math notranslate nohighlight">
+\[10^6\]</div>
+<p>This value is used numerically to exclude infeasible designs from the feasible design table. It is not a physical cost estimate.</p>
+</section>
+<section id="why-did-optimization-fail-to-find-a-feasible-design">
+<h3>Why did optimization fail to find a feasible design?<a class="headerlink" href="#why-did-optimization-fail-to-find-a-feasible-design" title="Link to this heading"></a></h3>
+<p>Common reasons include:</p>
+<ul class="simple">
+<li><p>Hub depth too shallow relative to rotor radius.</p></li>
+<li><p>Rated power too low for simulated electrical power.</p></li>
+<li><p>Cavitation constraint violation.</p></li>
+<li><p>Pitch stability violation.</p></li>
+<li><p>Missing or inconsistent turbine configuration parameters.</p></li>
+<li><p>Missing vessel properties.</p></li>
+<li><p>Battery capacity not provided for battery-charging applications.</p></li>
+<li><p>Search bounds too narrow.</p></li>
+<li><p>Grid step sizes too coarse.</p></li>
+</ul>
+</section>
+<section id="how-are-variable-bounds-interpreted">
+<h3>How are variable bounds interpreted?<a class="headerlink" href="#how-are-variable-bounds-interpreted" title="Link to this heading"></a></h3>
+<p>The optimizer expects <code class="docutils literal notranslate"><span class="pre">variable_bounds</span></code> to map variable names to tuples of:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The grid values are generated using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This means the upper bound is usually included if it falls on the step spacing.</p>
+</section>
+</section>
+<section id="numerical-and-software-notes">
+<h2>Numerical and Software Notes<a class="headerlink" href="#numerical-and-software-notes" title="Link to this heading"></a></h2>
+<section id="does-the-software-validate-every-physical-input">
+<h3>Does the software validate every physical input?<a class="headerlink" href="#does-the-software-validate-every-physical-input" title="Link to this heading"></a></h3>
+<p>No. Some validation is included, but users are responsible for providing physically meaningful inputs, consistent units, and appropriate parameter ranges.</p>
+</section>
+<section id="what-unit-system-is-used">
+<h3>What unit system is used?<a class="headerlink" href="#what-unit-system-is-used" title="Link to this heading"></a></h3>
+<p>The software primarily uses SI units:</p>
+<table class="docutils align-default" id="id11">
+<caption><span class="caption-text">Primary unit conventions</span><a class="headerlink" href="#id11" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Length</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>Time</p></td>
+<td><p>s</p></td>
+</tr>
+<tr class="row-even"><td><p>Mass</p></td>
+<td><p>kg</p></td>
+</tr>
+<tr class="row-odd"><td><p>Force</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>Torque</p></td>
+<td><p>N m</p></td>
+</tr>
+<tr class="row-odd"><td><p>Power</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>Energy</p></td>
+<td><p>kWh for annual energy and battery capacity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cost</p></td>
+<td><p>USD</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-useful-unit-conversions-are-defined">
+<h3>What useful unit conversions are defined?<a class="headerlink" href="#what-useful-unit-conversions-are-defined" title="Link to this heading"></a></h3>
+<p>The following common unit conversions are defined in <code class="docutils literal notranslate"><span class="pre">constUnitConvert.py</span></code>:</p>
+<table class="docutils align-default" id="id12">
+<caption><span class="caption-text">Unit conversion constants</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Conversion</p></th>
+<th class="head"><p>Variable</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Seconds to days</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sec2days</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(24</span> <span class="pre">*</span> <span class="pre">3600)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Miles to meters</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mile2m</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1609.34</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Meters to kilometers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m2km</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-3</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Watts to megawatts</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">W2MW</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-6</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Watts to kilowatts</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">W2kW</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-3</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Kilo-euros to euros</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kE2E</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Newtons to metric tons</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">N2mTon</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.019716e-4</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Newtons to kilonewtons</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">N2kN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Euros to dollars</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">euro2dollar</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.424304</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Feet to meters</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ft2m</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.3048</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>cm/s to m/s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cms2ms</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>rad/s to rpm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rads2rpm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span> <span class="pre">/</span> <span class="pre">(2</span> <span class="pre">pi)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Cubic meters to cubic centimeters</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m32cm3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e6</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Hours to days</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hrs2days</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">24</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-should-users-check-before-trusting-results">
+<h3>What should users check before trusting results?<a class="headerlink" href="#what-should-users-check-before-trusting-results" title="Link to this heading"></a></h3>
+<p>Users should verify:</p>
+<ul class="simple">
+<li><p>Rotor performance data quality.</p></li>
+<li><p>Cpmin/cavitation data quality.</p></li>
+<li><p>Tidal data source and representativeness.</p></li>
+<li><p>Hub depth and mooring depth consistency.</p></li>
+<li><p>Vessel geometry and pitch-stiffness assumptions.</p></li>
+<li><p>Cost model applicability.</p></li>
+<li><p>Battery or grid-connection assumptions.</p></li>
+<li><p>Whether power should be evaluated as <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>, <code class="docutils literal notranslate"><span class="pre">Pac</span></code>, or <code class="docutils literal notranslate"><span class="pre">Pbat</span></code> for the intended use case.</p></li>
+<li><p>Whether the default values listed on this page are appropriate for the intended site and design.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="constraint.html" class="btn btn-neutral float-left" title="Constraint Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples/01_quickstart.html" class="btn btn-neutral float-right" title="VITAL Quickstart Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

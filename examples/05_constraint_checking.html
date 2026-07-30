@@ -1,0 +1,534 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 5: Checking Constraints (module_constraint_checker) &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 6: Calculating LCOE (module_lcoe)" href="06_lcoe_calculation.html" />
+    <link rel="prev" title="Tutorial 4: Simulating Rotor Performance (module_rotor_simulation)" href="04_rotor_simulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Notes-for-new-users">Notes for new users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Load-tidal-and-rotor-data">1. Load tidal and rotor data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Run-rotor-simulation">2. Run rotor simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Define-vessel-properties">3. Define vessel properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Check-constraints">4. Check constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Inspect-constraint-margins">5. Inspect constraint margins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Plot-constraint-margins">6. Plot constraint margins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-5:-Checking-Constraints-(module_constraint_checker)">
+<h1>Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)<a class="headerlink" href="#Tutorial-5:-Checking-Constraints-(module_constraint_checker)" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">ConstraintChecker</span></code> class to evaluate whether a turbine and vessel configuration satisfies key design constraints.</p>
+<p>The constraints checked are:</p>
+<ol class="arabic simple">
+<li><p><strong>Power constraint</strong>: electrical power should be nonnegative and should not exceed rated power.</p></li>
+<li><p><strong>Depth constraint</strong>: the rotor should remain submerged.</p></li>
+<li><p><strong>Cavitation constraint</strong>: estimated blade pressure should remain above vapor pressure.</p></li>
+<li><p><strong>Pitch constraint</strong>: simplified vessel pitch-stability margin should remain positive.</p></li>
+</ol>
+<p>This tutorial briefly repeats the tidal-data, rotor-data, and rotor-simulation setup from previous tutorials so that the constraint-checking workflow is self-contained.</p>
+<section id="Notes-for-new-users">
+<h2>Notes for new users<a class="headerlink" href="#Notes-for-new-users" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Constraint checks return <code class="docutils literal notranslate"><span class="pre">True</span></code> only if the constraint is satisfied for all time steps.</p></li>
+<li><p>A constraint can fail at only one time step and still return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>The constraint margins are useful because they show how close a design is to violating a constraint.</p></li>
+<li><p>Positive depth, cavitation, and pitch margins indicate feasible operation.</p></li>
+<li><p>The power constraint is satisfied when <span class="math notranslate nohighlight">\(0 \leq P_{elec} \leq P_{rated}\)</span>.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+
+<span class="kn">from</span> <span class="nn">vital.module_tidal</span> <span class="kn">import</span> <span class="n">process_tidal_data</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor</span> <span class="kn">import</span> <span class="n">RotorData</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor_simulation</span> <span class="kn">import</span> <span class="n">RotorSimulation</span>
+<span class="kn">from</span> <span class="nn">vital.module_vessel</span> <span class="kn">import</span> <span class="n">VesselData</span>
+<span class="kn">from</span> <span class="nn">vital.module_constraint_checker</span> <span class="kn">import</span> <span class="n">ConstraintChecker</span>
+
+<span class="c1"># Suppress warnings caused by NOAA requests using verify=False internally.</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Load-tidal-and-rotor-data">
+<h2>1. Load tidal and rotor data<a class="headerlink" href="#1.-Load-tidal-and-rotor-data" title="Link to this heading"></a></h2>
+<p>First, load the tidal resource data and rotor performance data.</p>
+<p>This tutorial uses the same basic NOAA workflow and Sitkana rotor file used in the previous tutorials.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tidal data inputs</span>
+<span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;COI0303&quot;</span>
+<span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;2021-09-01&quot;</span>
+
+<span class="n">range_hrs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span>
+<span class="n">time_step_s</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="n">city_data_file</span> <span class="o">=</span> <span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span>
+
+<span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="n">station</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="n">range_hrs</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="n">time_step_s</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="n">city_data_file</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data source: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station name: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mooring distance: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of time points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rotor data</span>
+<span class="n">rotor_performance_file</span> <span class="o">=</span> <span class="s2">&quot;../data/Sitkana_rotor_data_blade_2.txt&quot;</span>
+<span class="n">rotor</span> <span class="o">=</span> <span class="n">RotorData</span><span class="p">(</span><span class="n">rotor_performance_file</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal Cp: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal TSR: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated TSRmax: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Data source: NOAA
+Station name: Port Mackenzie, South of
+Mooring distance: 31.10 m
+Number of time points: 336
+
+Optimal Cp: 0.2119
+Optimal TSR: 0.7648
+Estimated TSRmax: 1.7084
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Run-rotor-simulation">
+<h2>2. Run rotor simulation<a class="headerlink" href="#2.-Run-rotor-simulation" title="Link to this heading"></a></h2>
+<p>Next, define a turbine configuration and run <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code>.</p>
+<p>The simulation results provide time histories for electrical power, rotor speed, thrust force, tip-speed ratio, and other quantities needed by the constraint checker.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>                    <span class="c1"># Rotor radius (m)</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>                 <span class="c1"># Rated electrical power (W)</span>
+    <span class="s2">&quot;Trated&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>                  <span class="c1"># Rated generator torque (N m)</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>                      <span class="c1"># Hub depth (m)</span>
+    <span class="s2">&quot;number_of_turbines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>          <span class="c1"># Number of turbines</span>
+
+    <span class="c1"># Site/time inputs</span>
+    <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>
+    <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+
+    <span class="c1"># Rotor performance functions</span>
+    <span class="s2">&quot;CpFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cp</span><span class="p">,</span>
+    <span class="s2">&quot;CqFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cq</span><span class="p">,</span>
+    <span class="s2">&quot;CtFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_ct</span><span class="p">,</span>
+    <span class="s2">&quot;CpOpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSROpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSRmax&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="p">,</span>
+
+    <span class="c1"># Drivetrain and generator parameters</span>
+    <span class="s2">&quot;Ng&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;Kt&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="s2">&quot;Rw&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;J_d&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="s2">&quot;B_d&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;J_r&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+
+    <span class="c1"># Power-conversion model</span>
+    <span class="s2">&quot;power_model&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">rotor_sim</span> <span class="o">=</span> <span class="n">RotorSimulation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">rotor_sim</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rotor_sim</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rotor simulation complete.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum electrical power: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rated electrical power: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Prated&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum thrust force: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Ft&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Rotor simulation complete.
+Maximum electrical power: 0.745 kW
+Rated electrical power: 1.000 kW
+Maximum thrust force: 2803.044 N
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Define-vessel-properties">
+<h2>3. Define vessel properties<a class="headerlink" href="#3.-Define-vessel-properties" title="Link to this heading"></a></h2>
+<p>The pitch constraint requires vessel/platform properties such as pitch stiffness, mooring angle, projected area, and force-application locations.</p>
+<p>For this tutorial, we use a simple representative vessel configuration. These values are for demonstration only and should be replaced with project-specific vessel or platform properties for design studies.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_vessel_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Xm&quot;</span><span class="p">:</span> <span class="mf">5.77</span><span class="p">,</span>                       <span class="c1"># Horizontal distance from center of rotation (m)</span>
+    <span class="s2">&quot;Zm&quot;</span><span class="p">:</span> <span class="mf">1.65</span><span class="p">,</span>                       <span class="c1"># Vertical distance from center of rotation (m)</span>
+    <span class="s2">&quot;Kphi&quot;</span><span class="p">:</span> <span class="mf">1.95e6</span><span class="p">,</span>                   <span class="c1"># Pitch hydrostatic stiffness (N m/rad)</span>
+    <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>    <span class="c1"># Mooring line angle (rad)</span>
+    <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>      <span class="c1"># Allowable/representative pitch angle (rad)</span>
+    <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>                      <span class="c1"># Cross-sectional area (m^2)</span>
+    <span class="s2">&quot;Cd&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>                        <span class="c1"># Drag coefficient</span>
+<span class="p">}</span>
+
+<span class="n">vessel</span> <span class="o">=</span> <span class="n">VesselData</span><span class="p">(</span>
+    <span class="n">user_defined</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">vessel_properties</span><span class="o">=</span><span class="n">user_vessel_properties</span><span class="p">,</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vessel properties used for constraint checking:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Xm: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">Xm</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Zm: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">Zm</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Kphi: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">Kphi</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> N m/rad&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  theta_m: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">theta_m</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> rad&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">phi</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> rad&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  area: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">area</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m^2&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Cd: </span><span class="si">{</span><span class="n">vessel</span><span class="o">.</span><span class="n">Cd</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">vessel</span><span class="o">.</span><span class="n">Fdrag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Maximum vessel drag: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">vessel</span><span class="o">.</span><span class="n">Fdrag</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Vessel properties used for constraint checking:
+  Xm: 5.770 m
+  Zm: 1.650 m
+  Kphi: 1.950e+06 N m/rad
+  theta_m: 0.785 rad
+  phi: 0.175 rad
+  area: 9.500 m^2
+  Cd: 1.000
+  Maximum vessel drag: 43473.266 N
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Check-constraints">
+<h2>4. Check constraints<a class="headerlink" href="#4.-Check-constraints" title="Link to this heading"></a></h2>
+<p>Now initialize <code class="docutils literal notranslate"><span class="pre">ConstraintChecker</span></code> and evaluate each constraint.</p>
+<p>Each check returns a Boolean value:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: the constraint is satisfied for all time steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: the constraint is violated for at least one time step.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">constraint_checker</span> <span class="o">=</span> <span class="n">ConstraintChecker</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">vessel</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Power Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_power_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Depth Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_depth_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Cavitation Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_cavitation_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Pitch Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_pitch_constraint</span><span class="p">(),</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Constraint Results:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">satisfied</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;Satisfied&quot;</span> <span class="k">if</span> <span class="n">satisfied</span> <span class="k">else</span> <span class="s2">&quot;Not Satisfied&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">All constraints are satisfied.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">One or more constraints are not satisfied.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Constraint Results:
+  Power Constraint: Satisfied
+  Depth Constraint: Satisfied
+  Cavitation Constraint: Satisfied
+  Pitch Constraint: Satisfied
+
+All constraints are satisfied.
+</pre></div></div>
+</div>
+</section>
+<section id="5.-Inspect-constraint-margins">
+<h2>5. Inspect constraint margins<a class="headerlink" href="#5.-Inspect-constraint-margins" title="Link to this heading"></a></h2>
+<p>The Boolean checks are useful, but margins provide more information.</p>
+<p>The margin conventions used here are:</p>
+<ul class="simple">
+<li><p>Power margin: <span class="math notranslate nohighlight">\(P_{rated} - P_{elec}\)</span>. This should be nonnegative.</p></li>
+<li><p>Depth margin: <span class="math notranslate nohighlight">\(d_{hub} - R\)</span>. This should be positive.</p></li>
+<li><p>Cavitation margin: should be positive.</p></li>
+<li><p>Pitch margin: should be positive.</p></li>
+</ul>
+<p>The minimum margin over time is often the most important value.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">power_margin</span> <span class="o">=</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">power_constraint</span><span class="p">()</span>
+<span class="n">depth_margin</span> <span class="o">=</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">depth_constraint</span><span class="p">()</span>
+<span class="n">cavitation_margin</span> <span class="o">=</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">cavitation_constraint</span><span class="p">()</span>
+<span class="n">pitch_margin</span> <span class="o">=</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">pitch_constraint</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Constraint margins:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Minimum power margin, Prated - Pelec: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">power_margin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> W&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Depth margin, dHub - Radius: </span><span class="si">{</span><span class="n">depth_margin</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Minimum cavitation margin: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">cavitation_margin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Pa&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Minimum pitch margin: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">pitch_margin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N m&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Additional power checks:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Minimum Pelec: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> W&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Maximum Pelec: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> W&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Rated power: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Prated&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> W&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Constraint margins:
+  Minimum power margin, Prated - Pelec: 254.999 W
+  Depth margin, dHub - Radius: 6.500 m
+  Minimum cavitation margin: 157528.652 Pa
+  Minimum pitch margin: 43590.347 N m
+
+Additional power checks:
+  Minimum Pelec: 0.000 W
+  Maximum Pelec: 745.001 W
+  Rated power: 1000.000 W
+</pre></div></div>
+</div>
+</section>
+<section id="6.-Plot-constraint-margins">
+<h2>6. Plot constraint margins<a class="headerlink" href="#6.-Plot-constraint-margins" title="Link to this heading"></a></h2>
+<p>The plots below show the time-varying constraint margins.</p>
+<p>For the plotted constraints, values below zero indicate a violation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_days</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Power margin</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">power_margin</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Power margin (kW)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Power Constraint Margin&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Cavitation margin</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">cavitation_margin</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Cavitation margin (Pa)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cavitation Constraint Margin&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Pitch margin</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">pitch_margin</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pitch margin (N m)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (days)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Pitch Constraint Margin&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Depth margin is constant for this simulation: </span><span class="si">{</span><span class="n">depth_margin</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_05_constraint_checking_13_0.png" src="../_images/examples_05_constraint_checking_13_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Depth margin is constant for this simulation: 6.500 m
+</pre></div></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This tutorial showed how to:</p>
+<ul class="simple">
+<li><p>Load tidal and rotor data.</p></li>
+<li><p>Run a rotor simulation.</p></li>
+<li><p>Define vessel properties.</p></li>
+<li><p>Check power, depth, cavitation, and pitch constraints.</p></li>
+<li><p>Inspect and plot constraint margins.</p></li>
+</ul>
+<p>The next tutorial uses the same type of simulation output to estimate levelized cost of energy.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="04_rotor_simulation.html" class="btn btn-neutral float-left" title="Tutorial 4: Simulating Rotor Performance (module_rotor_simulation)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="06_lcoe_calculation.html" class="btn btn-neutral float-right" title="Tutorial 6: Calculating LCOE (module_lcoe)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

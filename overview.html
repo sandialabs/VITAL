@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorials and Workflow &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Constraint Overview" href="constraint.html" />
+    <link rel="prev" title="VITAL" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials and Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#project-context">Project Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-learning-path">Recommended Learning Path</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tidal-data-module-tidal">Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rotor-data-module-rotor">Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rotor-simulation-module-rotor-simulation">Rotor Simulation (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constraint-checking-module-constraint-checker">Constraint Checking (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#levelized-cost-of-energy-module-lcoe">Levelized Cost of Energy (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-module-lcoe-optimizer">Optimization (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loss-models-module-rotor-simulation">Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#case-studies">Case Studies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#battery-charging-case-study">Battery-Charging Case Study</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#grid-connected-case-study">Grid-Connected Case Study</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assumptions-and-faq">Assumptions and FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorials and Workflow</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorials-and-workflow">
+<h1>Tutorials and Workflow<a class="headerlink" href="#tutorials-and-workflow" title="Link to this heading"></a></h1>
+<a class="reference internal image-reference" href="_images/VITAL_ModuleOverview.png"><img alt="Overview of how each module and data interact with one another." class="align-center" src="_images/VITAL_ModuleOverview.png" style="width: 800px;" />
+</a>
+<p>The figure above illustrates how the main VITAL modules and data products interact within a typical analysis workflow.</p>
+<section id="project-context">
+<h2>Project Context<a class="headerlink" href="#project-context" title="Link to this heading"></a></h2>
+<p>VITAL supports screening-level analysis of tidal energy systems that may be integrated with vessels, floating platforms, or other deployable marine-energy infrastructure.</p>
+<p>The workflow combines tidal resource data, rotor performance information, vessel or platform assumptions, dynamic simulation, physical constraint checks, cost models, annual energy production, and LCOE calculations.</p>
+<p>Results are intended to support early-stage comparison of candidate sites and design assumptions. They should not be interpreted as final engineering, permitting, or deployment recommendations.</p>
+</section>
+<section id="recommended-learning-path">
+<h2>Recommended Learning Path<a class="headerlink" href="#recommended-learning-path" title="Link to this heading"></a></h2>
+<p>New users are encouraged to begin with the quickstart tutorial and then review the module tutorials as needed. The case studies demonstrate application-focused workflows using representative assumptions.</p>
+<section id="quickstart">
+<h3>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h3>
+<p>The quickstart tutorial demonstrates an end-to-end VITAL workflow, including tidal data loading, rotor data loading, rotor simulation, constraint checking, and LCOE calculation.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/01_quickstart.html"><span class="doc">Quickstart</span></a></p>
+</section>
+<section id="tidal-data-module-tidal">
+<h3>Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)<a class="headerlink" href="#tidal-data-module-tidal" title="Link to this heading"></a></h3>
+<p>This tutorial explains how to acquire tidal data and site information using NOAA Tidal and Current APIs. It also includes a local-file workflow for offline or reproducible examples.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/02_tidaldata.html"><span class="doc">Tidal Data Tutorial</span></a></p>
+</section>
+<section id="rotor-data-module-rotor">
+<h3>Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)<a class="headerlink" href="#rotor-data-module-rotor" title="Link to this heading"></a></h3>
+<p>This tutorial explains how to load rotor performance data. The rotor file provides <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, and <code class="docutils literal notranslate"><span class="pre">Cq</span></code>; VITAL computes the power coefficient internally as:</p>
+<div class="math notranslate nohighlight">
+\[C_p = TSR \cdot C_q\]</div>
+<p>The tutorial also discusses interpolation, extrapolation, and optional <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> data.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/03_rotordata.html"><span class="doc">Rotor Data Tutorial</span></a></p>
+</section>
+<section id="rotor-simulation-module-rotor-simulation">
+<h3>Rotor Simulation (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)<a class="headerlink" href="#rotor-simulation-module-rotor-simulation" title="Link to this heading"></a></h3>
+<p>This tutorial demonstrates how to simulate rotor dynamics using tidal data and rotor performance characteristics. It explains how to define turbine configuration parameters and inspect outputs such as power, torque, thrust, TSR, and rotor speed.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/04_rotor_simulation.html"><span class="doc">Rotor Simulation Tutorial</span></a></p>
+</section>
+<section id="constraint-checking-module-constraint-checker">
+<h3>Constraint Checking (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)<a class="headerlink" href="#constraint-checking-module-constraint-checker" title="Link to this heading"></a></h3>
+<p>This tutorial demonstrates how to check turbine and vessel/platform constraints, including power, rotor submergence, cavitation, and pitch stability.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/05_constraint_checking.html"><span class="doc">Constraint Checking Tutorial</span></a></p>
+</section>
+<section id="levelized-cost-of-energy-module-lcoe">
+<h3>Levelized Cost of Energy (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)<a class="headerlink" href="#levelized-cost-of-energy-module-lcoe" title="Link to this heading"></a></h3>
+<p>This tutorial shows how to calculate LCOE using tidal data, turbine configuration, vessel/platform properties, and rotor simulation outputs.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/06_lcoe_calculation.html"><span class="doc">LCOE Tutorial</span></a></p>
+</section>
+<section id="optimization-module-lcoe-optimizer">
+<h3>Optimization (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)<a class="headerlink" href="#optimization-module-lcoe-optimizer" title="Link to this heading"></a></h3>
+<p>This tutorial demonstrates how to perform an explicit grid-search optimization over selected design variables while checking constraints and calculating LCOE.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/07_optimization.html"><span class="doc">Optimization Tutorial</span></a></p>
+</section>
+<section id="loss-models-module-rotor-simulation">
+<h3>Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)<a class="headerlink" href="#loss-models-module-rotor-simulation" title="Link to this heading"></a></h3>
+<p>This advanced tutorial demonstrates optional generator and power-electronics loss models. It explains the distinction between <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>, <code class="docutils literal notranslate"><span class="pre">Pac</span></code>, and <code class="docutils literal notranslate"><span class="pre">Pbat</span></code>.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/08_loss_models.html"><span class="doc">Loss Models Tutorial</span></a></p>
+</section>
+</section>
+<section id="case-studies">
+<h2>Case Studies<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h2>
+<p>Application-focused case studies demonstrate how the VITAL workflow can be applied to representative system configurations. The case studies use simplified assumptions and are intended to illustrate workflow capabilities rather than provide final design recommendations.</p>
+<section id="battery-charging-case-study">
+<h3>Battery-Charging Case Study<a class="headerlink" href="#battery-charging-case-study" title="Link to this heading"></a></h3>
+<p>This case study demonstrates a representative non-grid-connected battery-charging workflow, including site comparison, loss-model assumptions, LCOE calculation, and design optimization.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/sitkana_battery_charging.html"><span class="doc">Battery-Charging Case Study</span></a></p>
+</section>
+<section id="grid-connected-case-study">
+<h3>Grid-Connected Case Study<a class="headerlink" href="#grid-connected-case-study" title="Link to this heading"></a></h3>
+<p>This case study demonstrates a representative grid-connected workflow, including site comparison, LCOE calculation, constraint checking, and design optimization.</p>
+<p><strong>Example</strong>: <a class="reference internal" href="examples/hdps_grid_connection.html"><span class="doc">Grid-Connected Case Study</span></a></p>
+</section>
+</section>
+<section id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading"></a></h2>
+<p>For detailed information about each module, refer to the <a class="reference external" href="api_docs/vital.html">API Documentation</a>.</p>
+</section>
+<section id="assumptions-and-faq">
+<h2>Assumptions and FAQ<a class="headerlink" href="#assumptions-and-faq" title="Link to this heading"></a></h2>
+<p>New users are encouraged to review the <a class="reference external" href="assumptions_and_faq.html">Assumptions and FAQ</a> page before interpreting results. It summarizes important modeling assumptions, simplifications, unit conventions, default values, and common sources of confusion.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="VITAL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constraint.html" class="btn btn-neutral float-right" title="Constraint Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

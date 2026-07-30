@@ -1,0 +1,641 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 6: Calculating LCOE (module_lcoe) &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 7: Optimizing LCOE (module_lcoe_optimizer)" href="07_optimization.html" />
+    <link rel="prev" title="Tutorial 5: Checking Constraints (module_constraint_checker)" href="05_constraint_checking.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Notes-for-new-users">Notes for new users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Load-tidal-and-rotor-data">1. Load tidal and rotor data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Plot-tidal-resource-data">2. Plot tidal resource data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Run-rotor-simulation">3. Run rotor simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Plot-electrical-power">4. Plot electrical power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Define-vessel-properties">5. Define vessel properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Optional:-check-constraints-before-calculating-LCOE">6. Optional: check constraints before calculating LCOE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Create-LCOE-input-data">7. Create LCOE input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Calculate-LCOE">8. Calculate LCOE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Inspect-CAPEX-and-OPEX-details">9. Inspect CAPEX and OPEX details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Optional:-Get-CAPEX-summary-as-a-dictionary">Optional: Get CAPEX summary as a dictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-6:-Calculating-LCOE-(module_lcoe)">
+<h1>Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)<a class="headerlink" href="#Tutorial-6:-Calculating-LCOE-(module_lcoe)" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to calculate the Levelized Cost of Energy (LCOE) using <code class="docutils literal notranslate"><span class="pre">LCOEData</span></code> and <code class="docutils literal notranslate"><span class="pre">LCOECalculator</span></code>.</p>
+<p>The LCOE calculation combines:</p>
+<ul class="simple">
+<li><p>Tidal resource data</p></li>
+<li><p>Turbine configuration</p></li>
+<li><p>Vessel/platform properties</p></li>
+<li><p>Rotor simulation results</p></li>
+<li><p>Cost model assumptions</p></li>
+<li><p>Project lifetime and discount rate</p></li>
+</ul>
+<p>This tutorial briefly repeats the tidal-data, rotor-data, rotor-simulation, and vessel setup from earlier tutorials so that the LCOE workflow is self-contained.</p>
+<section id="Notes-for-new-users">
+<h2>Notes for new users<a class="headerlink" href="#Notes-for-new-users" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>LCOE is reported in USD/kWh.</p></li>
+<li><p>Annual energy is estimated from the simulated electrical power time series.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">application=&quot;battery_charging&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code> must be provided and must be greater than zero.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">application=&quot;grid_connection&quot;</span></code>, battery capacity is internally set to zero.</p></li>
+<li><p>The current active OPEX model assumes annual OPEX is 4% of CAPEX.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+
+<span class="kn">from</span> <span class="nn">vital.module_tidal</span> <span class="kn">import</span> <span class="n">process_tidal_data</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor</span> <span class="kn">import</span> <span class="n">RotorData</span>
+<span class="kn">from</span> <span class="nn">vital.module_rotor_simulation</span> <span class="kn">import</span> <span class="n">RotorSimulation</span>
+<span class="kn">from</span> <span class="nn">vital.module_vessel</span> <span class="kn">import</span> <span class="n">VesselData</span>
+<span class="kn">from</span> <span class="nn">vital.module_constraint_checker</span> <span class="kn">import</span> <span class="n">ConstraintChecker</span>
+<span class="kn">from</span> <span class="nn">vital.module_lcoe</span> <span class="kn">import</span> <span class="n">LCOEData</span><span class="p">,</span> <span class="n">LCOECalculator</span>
+
+<span class="c1"># Suppress warnings caused by NOAA requests using verify=False internally.</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Load-tidal-and-rotor-data">
+<h2>1. Load tidal and rotor data<a class="headerlink" href="#1.-Load-tidal-and-rotor-data" title="Link to this heading"></a></h2>
+<p>First, load the tidal resource data and rotor performance data.</p>
+<p>This tutorial uses the same basic NOAA workflow and Sitkana rotor file used in the previous tutorials.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tidal data inputs</span>
+<span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;COI0303&quot;</span>
+<span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;2021-09-01&quot;</span>
+
+<span class="n">range_hrs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span>
+<span class="n">time_step_s</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="n">city_data_file</span> <span class="o">=</span> <span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span>
+
+<span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="n">station</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="n">range_hrs</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="n">time_step_s</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="n">city_data_file</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data source: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station name: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mooring distance: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cable length: </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">cable_length</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of time points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rotor data</span>
+<span class="n">rotor_performance_file</span> <span class="o">=</span> <span class="s2">&quot;../data/Sitkana_rotor_data_blade_2.txt&quot;</span>
+<span class="n">rotor</span> <span class="o">=</span> <span class="n">RotorData</span><span class="p">(</span><span class="n">rotor_performance_file</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal Cp: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal TSR: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated TSRmax: </span><span class="si">{</span><span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Data source: NOAA
+Station name: Port Mackenzie, South of
+Mooring distance: 31.10 m
+Cable length: 3970.22 m
+Number of time points: 336
+
+Optimal Cp: 0.2119
+Optimal TSR: 0.7648
+Estimated TSRmax: 1.7084
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Plot-tidal-resource-data">
+<h2>2. Plot tidal resource data<a class="headerlink" href="#2.-Plot-tidal-resource-data" title="Link to this heading"></a></h2>
+<p>The time vector is stored in seconds. For plotting, we convert time to days.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_days</span> <span class="o">=</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (days)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Flow speed (m/s)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tidal resource at </span><span class="si">{</span><span class="n">tidal</span><span class="o">.</span><span class="n">station_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_06_lcoe_calculation_5_0.png" src="../_images/examples_06_lcoe_calculation_5_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-Run-rotor-simulation">
+<h2>3. Run rotor simulation<a class="headerlink" href="#3.-Run-rotor-simulation" title="Link to this heading"></a></h2>
+<p>Next, define a turbine configuration and run <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code>.</p>
+<p>The simulation results provide the electrical power time series used by the LCOE calculation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>                    <span class="c1"># Rotor radius (m)</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>                 <span class="c1"># Rated electrical power (W)</span>
+    <span class="s2">&quot;Trated&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>                  <span class="c1"># Rated generator torque (N m)</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>                      <span class="c1"># Hub depth (m)</span>
+    <span class="s2">&quot;number_of_turbines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>          <span class="c1"># Number of turbines</span>
+
+    <span class="c1"># Site/time inputs</span>
+    <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>
+    <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+
+    <span class="c1"># Rotor performance functions</span>
+    <span class="s2">&quot;CpFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cp</span><span class="p">,</span>
+    <span class="s2">&quot;CqFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cq</span><span class="p">,</span>
+    <span class="s2">&quot;CtFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_ct</span><span class="p">,</span>
+    <span class="s2">&quot;CpOpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSROpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSRmax&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="p">,</span>
+
+    <span class="c1"># Drivetrain and generator parameters</span>
+    <span class="s2">&quot;Ng&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;Kt&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="s2">&quot;Rw&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;J_d&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="s2">&quot;B_d&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;J_r&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+
+    <span class="c1"># Power-conversion model</span>
+    <span class="s2">&quot;power_model&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">rotor_sim</span> <span class="o">=</span> <span class="n">RotorSimulation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">rotor_sim</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rotor_sim</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rotor simulation complete.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean electrical power: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum electrical power: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pelec&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rated electrical power: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Prated&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> kW&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Solving the initial value problem (IVP) for turbine dynamics...
+IVP solving complete.
+Rotor simulation complete.
+Mean electrical power: 0.082 kW
+Maximum electrical power: 0.745 kW
+Rated electrical power: 1.000 kW
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Plot-electrical-power">
+<h2>4. Plot electrical power<a class="headerlink" href="#4.-Plot-electrical-power" title="Link to this heading"></a></h2>
+<p>The LCOE calculation uses the simulated electrical power time series. In this tutorial, annual energy is calculated from <code class="docutils literal notranslate"><span class="pre">Pelec</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time_days</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_days</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;Pelec&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Electrical power&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;Prated&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rated power&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (days)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pelec (kW)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Simulated electrical power&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_06_lcoe_calculation_9_0.png" src="../_images/examples_06_lcoe_calculation_9_0.png" />
+</div>
+</div>
+</section>
+<section id="5.-Define-vessel-properties">
+<h2>5. Define vessel properties<a class="headerlink" href="#5.-Define-vessel-properties" title="Link to this heading"></a></h2>
+<p>The LCOE data object stores vessel/platform information such as drag force and vessel volume for use by cost functions when applicable.</p>
+<p>For this tutorial, we use the same representative vessel configuration from the constraint-checking tutorial. These values are for demonstration only and should be replaced with project-specific vessel or platform properties for design studies.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_vessel_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Xm&quot;</span><span class="p">:</span> <span class="mf">5.77</span><span class="p">,</span>                       <span class="c1"># Horizontal distance from center of rotation (m)</span>
+    <span class="s2">&quot;Zm&quot;</span><span class="p">:</span> <span class="mf">1.65</span><span class="p">,</span>                       <span class="c1"># Vertical distance from center of rotation (m)</span>
+    <span class="s2">&quot;Kphi&quot;</span><span class="p">:</span> <span class="mf">1.95e6</span><span class="p">,</span>                   <span class="c1"># Pitch hydrostatic stiffness (N m/rad)</span>
+    <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>    <span class="c1"># Mooring line angle (rad)</span>
+    <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>      <span class="c1"># Allowable/representative pitch angle (rad)</span>
+    <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>                      <span class="c1"># Cross-sectional area (m^2)</span>
+    <span class="s2">&quot;Cd&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>                        <span class="c1"># Drag coefficient</span>
+<span class="p">}</span>
+
+<span class="n">vessel</span> <span class="o">=</span> <span class="n">VesselData</span><span class="p">(</span>
+    <span class="n">user_defined</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">vessel_properties</span><span class="o">=</span><span class="n">user_vessel_properties</span><span class="p">,</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vessel object created.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum vessel drag: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">vessel</span><span class="o">.</span><span class="n">Fdrag</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> N&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Vessel object created.
+Maximum vessel drag: 43473.266 N
+</pre></div></div>
+</div>
+</section>
+<section id="6.-Optional:-check-constraints-before-calculating-LCOE">
+<h2>6. Optional: check constraints before calculating LCOE<a class="headerlink" href="#6.-Optional:-check-constraints-before-calculating-LCOE" title="Link to this heading"></a></h2>
+<p>LCOE can be calculated for any simulated design, but a design that violates constraints should generally be treated as infeasible.</p>
+<p>Here we briefly check the same constraints introduced in the constraint-checking tutorial. The optimizer tutorial later uses constraint failures to exclude infeasible designs.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">constraint_checker</span> <span class="o">=</span> <span class="n">ConstraintChecker</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">vessel</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Power Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_power_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Depth Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_depth_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Cavitation Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_cavitation_constraint</span><span class="p">(),</span>
+    <span class="s2">&quot;Pitch Constraint&quot;</span><span class="p">:</span> <span class="n">constraint_checker</span><span class="o">.</span><span class="n">check_pitch_constraint</span><span class="p">(),</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Constraint Results:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">satisfied</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;Satisfied&quot;</span> <span class="k">if</span> <span class="n">satisfied</span> <span class="k">else</span> <span class="s2">&quot;Not Satisfied&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: One or more constraints are not satisfied. The LCOE can still be calculated, but the design should be treated as infeasible.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Constraint Results:
+  Power Constraint: Satisfied
+  Depth Constraint: Satisfied
+  Cavitation Constraint: Satisfied
+  Pitch Constraint: Satisfied
+</pre></div></div>
+</div>
+</section>
+<section id="7.-Create-LCOE-input-data">
+<h2>7. Create LCOE input data<a class="headerlink" href="#7.-Create-LCOE-input-data" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">LCOEData</span></code> object stores the inputs required by <code class="docutils literal notranslate"><span class="pre">LCOECalculator</span></code>.</p>
+<p>This example uses the Sitkana-style battery-charging configuration:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">customer=&quot;customer_B&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application=&quot;battery_charging&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh=10.0</span></code></p></li>
+</ul>
+<p>Because this is a battery-charging application, battery capacity must be provided and must be greater than zero.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lifetime</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">discount_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">turbulence_intensity</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">battery_capacity_kWh</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+<span class="n">lcoe_data</span> <span class="o">=</span> <span class="n">LCOEData</span><span class="p">(</span>
+    <span class="n">tidalData</span><span class="o">=</span><span class="n">tidal</span><span class="p">,</span>
+    <span class="n">turbineConfig</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+    <span class="n">vesselData</span><span class="o">=</span><span class="n">vessel</span><span class="p">,</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="n">lifetime</span><span class="p">,</span>
+    <span class="n">discount_rate</span><span class="o">=</span><span class="n">discount_rate</span><span class="p">,</span>
+    <span class="n">turbulence_intensity</span><span class="o">=</span><span class="n">turbulence_intensity</span><span class="p">,</span>
+    <span class="n">customer</span><span class="o">=</span><span class="s2">&quot;customer_B&quot;</span><span class="p">,</span>
+    <span class="n">application</span><span class="o">=</span><span class="s2">&quot;battery_charging&quot;</span><span class="p">,</span>
+    <span class="n">BatteryCapacity_kWh</span><span class="o">=</span><span class="n">battery_capacity_kWh</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">calculator</span> <span class="o">=</span> <span class="n">LCOECalculator</span><span class="p">(</span><span class="n">lcoe_data</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LCOEData and LCOECalculator objects created.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LCOEData and LCOECalculator objects created.
+</pre></div></div>
+</div>
+</section>
+<section id="8.-Calculate-LCOE">
+<h2>8. Calculate LCOE<a class="headerlink" href="#8.-Calculate-LCOE" title="Link to this heading"></a></h2>
+<p>The LCOE calculation combines CAPEX, OPEX, annual energy production, discount rate, and project lifetime.</p>
+<p>The result is reported in USD/kWh.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">total_capex</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">calculate_total_capex</span><span class="p">()</span>
+<span class="n">total_opex</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">calculate_total_opex</span><span class="p">(</span><span class="n">total_capex</span><span class="p">)</span>
+<span class="n">annual_energy</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">calculate_annual_energy</span><span class="p">()</span>
+<span class="n">capacity_factor</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">calculate_capacity_factor</span><span class="p">()</span>
+<span class="n">lcoe</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">calculate_lcoe</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LCOE: $</span><span class="si">{</span><span class="n">lcoe</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">/kWh&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Annual energy: </span><span class="si">{</span><span class="n">annual_energy</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2"> kWh/year&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Capacity factor: </span><span class="si">{</span><span class="n">capacity_factor</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total CAPEX: $</span><span class="si">{</span><span class="n">total_capex</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Annual OPEX: $</span><span class="si">{</span><span class="n">total_opex</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">/year&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LCOE: $0.5136/kWh
+Annual energy: 1,450.97 kWh/year
+Capacity factor: 0.166
+Total CAPEX: $3,675.82
+Annual OPEX: $147.03/year
+</pre></div></div>
+</div>
+</section>
+<section id="9.-Inspect-CAPEX-and-OPEX-details">
+<h2>9. Inspect CAPEX and OPEX details<a class="headerlink" href="#9.-Inspect-CAPEX-and-OPEX-details" title="Link to this heading"></a></h2>
+<p>The calculator stores a breakdown of CAPEX components after <code class="docutils literal notranslate"><span class="pre">calculate_total_capex()</span></code> or <code class="docutils literal notranslate"><span class="pre">calculate_lcoe()</span></code> has been called.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">calculator</span><span class="o">.</span><span class="n">list_capex</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">calculator</span><span class="o">.</span><span class="n">list_opex</span><span class="p">(</span><span class="n">total_capex</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">calculator</span><span class="o">.</span><span class="n">list_annual_energy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CAPEX Components:
+  anchor_cost: $159.05
+  gearbox_cost: $372.49
+  concrete_cost: $12.01
+  assembly_cost: $339.72
+  generator_cost: $703.60
+  rotor_cost: $3.55
+  steel_component_cost: $220.36
+  rotor_construction_cost: $6.59
+  battery_cost: $1500.00
+  charge_controller_cost: $358.45
+Total component CAPEX: $3675.82
+Adjustment factor: 1.00
+Adjusted CAPEX: $3675.82
+
+OPEX Components:
+  SITKANA Operating Cost: $147.03
+Total OPEX: $147.03
+
+Annual Energy Generation: 1450.97 kWh
+</pre></div></div>
+</div>
+</section>
+<section id="Optional:-Get-CAPEX-summary-as-a-dictionary">
+<h2>Optional: Get CAPEX summary as a dictionary<a class="headerlink" href="#Optional:-Get-CAPEX-summary-as-a-dictionary" title="Link to this heading"></a></h2>
+<p>For programmatic workflows, the CAPEX summary can also be returned as a dictionary.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">capex_summary</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">get_capex_summary</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CAPEX summary:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Component CAPEX: $</span><span class="si">{</span><span class="n">capex_summary</span><span class="p">[</span><span class="s1">&#39;component_capex&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Adjustment factor: </span><span class="si">{</span><span class="n">capex_summary</span><span class="p">[</span><span class="s1">&#39;adjustment_factor&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Adjusted CAPEX: $</span><span class="si">{</span><span class="n">capex_summary</span><span class="p">[</span><span class="s1">&#39;adjusted_capex&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CAPEX items:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">capex_summary</span><span class="p">[</span><span class="s2">&quot;capex_items&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: $</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CAPEX summary:
+  Component CAPEX: $3,675.82
+  Adjustment factor: 1.00
+  Adjusted CAPEX: $3,675.82
+
+CAPEX items:
+  anchor_cost: $159.05
+  gearbox_cost: $372.49
+  concrete_cost: $12.01
+  assembly_cost: $339.72
+  generator_cost: $703.60
+  rotor_cost: $3.55
+  steel_component_cost: $220.36
+  rotor_construction_cost: $6.59
+  battery_cost: $1,500.00
+  charge_controller_cost: $358.45
+</pre></div></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This tutorial showed how to:</p>
+<ul class="simple">
+<li><p>Load tidal and rotor data.</p></li>
+<li><p>Run a rotor simulation.</p></li>
+<li><p>Define vessel properties.</p></li>
+<li><p>Optionally check design constraints.</p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">LCOEData</span></code>.</p></li>
+<li><p>Calculate LCOE using <code class="docutils literal notranslate"><span class="pre">LCOECalculator</span></code>.</p></li>
+<li><p>Inspect annual energy, CAPEX, and OPEX.</p></li>
+</ul>
+<p>The next tutorial demonstrates how to automate this process over a grid of design variables using the LCOE optimizer.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="05_constraint_checking.html" class="btn btn-neutral float-left" title="Tutorial 5: Checking Constraints (module_constraint_checker)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="07_optimization.html" class="btn btn-neutral float-right" title="Tutorial 7: Optimizing LCOE (module_lcoe_optimizer)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
