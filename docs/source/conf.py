@@ -124,7 +124,7 @@ suppress_warnings = [
 # Other possible values:
 #   "auto"   - execute notebooks only if no outputs are present
 #   "always" - always execute notebooks during docs build
-nbsphinx_execute = "never"
+nbsphinx_execute = "always"
 nbsphinx_allow_errors = True
 
 
