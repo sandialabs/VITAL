@@ -2,81 +2,38 @@
 
 VITAL is an open-source Python package for screening-level assessment of tidal energy systems integrated with vessels, floating platforms, or other deployable marine-energy infrastructure.
 
-The software combines tidal resource data, rotor performance information, vessel or platform assumptions, dynamic rotor simulation, physical constraint checks, cost models, annual energy production, and Levelized Cost of Energy (LCOE) calculations.
+VITAL combines tidal resource data, rotor performance information, vessel or platform assumptions, rotor simulation, physical constraint checks, cost modeling, annual energy production, and Levelized Cost of Energy (LCOE) calculations.
 
-VITAL supports representative workflows for:
+VITAL can be used for:
 
-- battery-charging applications,
-- grid-connected applications,
-- design-variable grid-search optimization,
-- and early-stage comparison of candidate sites and system assumptions.
+- battery-charging tidal energy applications,
+- grid-connected tidal energy applications,
+- design-variable optimization,
+- comparison of candidate sites and system assumptions,
+- and export of key results for review and archival.
 
 Results are intended for early-stage screening and comparison. They should not be interpreted as final engineering, permitting, or deployment recommendations.
 
 ## Documentation
 
-The documentation is available at:
+Full documentation is available at:
 
 <https://sandialabs.github.io/VITAL/>
 
-The documentation includes:
+The documentation includes tutorials, case studies, API documentation, assumptions, input-format guidance, and reporting guidance.
 
-- a quickstart tutorial,
-- module-specific tutorials,
-- case studies,
-- assumptions and FAQ,
-- and API documentation.
+## Installation
 
-## Prerequisites
+VITAL uses Conda to manage its Python environment.
 
-Install Conda or Miniconda before creating the VITAL environment.
+If you do not already have Conda installed, install one of the following:
 
 - Anaconda: <https://www.anaconda.com/download>
 - Miniconda: <https://docs.conda.io/en/latest/miniconda.html>
 
-These instructions are intended for macOS, Windows, and Linux users. Commands should be run from a terminal:
-
-- macOS/Linux: Terminal
-- Windows: Anaconda Prompt, Miniconda Prompt, PowerShell, or Windows Terminal
-
-For users new to Conda, the Anaconda and Miniconda documentation provide installation and getting-started resources.
-
-## New to command-line tools?
-
-Most installation steps are run from a terminal.
-
-- On **macOS**, open the **Terminal** app.
-- On **Windows**, open **Anaconda Prompt** or **Miniconda Prompt** after installing Conda.
-- On **Linux**, open your usual terminal application.
-
-A few tips:
-
-- Type or paste one command at a time, then press **Enter**.
-- Run commands from the VITAL repository folder after cloning the repository.
-- If a command starts with `cd`, it changes the current folder.
-- If you close and reopen your terminal, activate the environment again with:
-
-```bash
-conda activate VITAL_env
-```
-
-If you are unsure where you are in the terminal, run:
-
-```bash
-pwd
-```
-
-on macOS/Linux, or:
-
-```bat
-cd
-```
-
-on Windows.
-
-## Installation
-
 ### 1. Clone the repository
+
+Open a terminal and run:
 
 ```bash
 git clone https://github.com/sandialabs/VITAL.git
@@ -95,64 +52,81 @@ conda env create --file environment.yml
 conda activate VITAL_env
 ```
 
-### 4. Install VITAL in editable mode
+### 4. Install VITAL
 
 ```bash
 pip install -e .
 ```
 
-For development and documentation dependencies, use:
+For development or documentation work, install the optional development tools:
 
 ```bash
 pip install -e ".[dev]"
 ```
 
-## Running the tutorials
+## Running the examples
 
-After installing VITAL, launch Jupyter Notebook or JupyterLab:
-
-```bash
-jupyter notebook
-```
-
-or:
+After installation, start JupyterLab:
 
 ```bash
 jupyter lab
 ```
 
+or Jupyter Notebook:
+
+```bash
+jupyter notebook
+```
+
 Then open the notebooks in the `example/` directory.
 
-Recommended learning path:
+A good starting point is:
 
-1. `01_quickstart.ipynb`
-2. `02_tidaldata.ipynb`
-3. `03_rotordata.ipynb`
-4. `04_rotor_simulation.ipynb`
-5. `05_constraint_checking.ipynb`
-6. `06_lcoe_calculation.ipynb`
-7. `07_optimization.ipynb`
-8. `08_loss_models.ipynb`
+```text
+example/01_quickstart.ipynb
+```
 
-Case studies are also provided in the `example/` directory.
+The example notebooks are organized as:
+
+```text
+example/
+├── 01_quickstart.ipynb
+├── 02_tidaldata.ipynb
+├── 03_rotordata.ipynb
+├── 04_rotor_simulation.ipynb
+├── 05_constraint_checking.ipynb
+├── 06_lcoe_calculation.ipynb
+├── 07_optimization.ipynb
+├── 08_loss_models.ipynb
+├── sitkana_battery_charging.ipynb
+└── hdps_grid_connection.ipynb
+```
+
+New users should begin with `01_quickstart.ipynb` before moving to the module tutorials or case studies.
+
+## Reporting
+
+VITAL can export LCOE and optimization results to Markdown and CSV files. These reports are intended for review, sharing, and archival of screening-level results.
+
+See the documentation for details on expected input formats, engineering units, and exported report files.
 
 ## Building the documentation locally
 
-From the repository root, activate the environment and move into the documentation folder:
+To build the documentation on your machine, activate the VITAL environment and move into the `docs` folder:
 
 ```bash
 conda activate VITAL_env
 cd docs
 ```
 
-### macOS/Linux
+On macOS or Linux, run:
 
 ```bash
 make clean
 make html
 ```
 
-### Windows
+On Windows, run:
 
 ```bat
 make.bat clean
@@ -167,33 +141,15 @@ docs/build/index.html
 
 Open that file in a web browser.
 
-On macOS, you can open it from the `docs` directory with:
-
-```bash
-open build/index.html
-```
-
-On Windows, you can open it from File Explorer or run from the `docs` directory:
-
-```bat
-start build\index.html
-```
-
-On Linux, you can open it from a file browser or run from the `docs` directory:
-
-```bash
-xdg-open build/index.html
-```
-
 ## Managing the Conda environment
 
-Deactivate the environment:
+To deactivate the environment:
 
 ```bash
 conda deactivate
 ```
 
-Remove the environment:
+To remove the environment:
 
 ```bash
 conda env remove --name VITAL_env

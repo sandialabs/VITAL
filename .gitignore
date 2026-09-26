@@ -42,7 +42,7 @@ docs/source/examples/
 docs/source/data/
 
 # Jupyter Notebook checkpoints
-**/.ipynb_checkpoints
+**/.ipynb_checkpoints/
 .ipynb_checkpoints/
 
 # Test files and old code
@@ -51,6 +51,7 @@ OldCode/
 
 # Old examples / development notebooks not included in docs
 example/Old/
+example/txt_version/
 
 # IDE files
 .vscode/
@@ -85,3 +86,8 @@ vital/oldcode.txt
 
 # One-off data conversion utility
 data/fixRotorFile.py
+
+
+# Generated VITAL report outputs
+reports/
+example/reports/
