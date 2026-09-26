@@ -4,24 +4,36 @@
 .. automodule:: vital
    :no-members:
 
+.. currentmodule:: vital
+
 Main Classes
 ------------
 
 .. autosummary::
 
-   vital.TidalData
-   vital.RotorData
-   vital.RotorSimulation
-   vital.ConstraintChecker
-   vital.VesselData
-   vital.LCOEData
-   vital.LCOECalculator
-   vital.LCOEOptimizer
+   TidalData
+   RotorData
+   RotorSimulation
+   ConstraintChecker
+   VesselData
+   LCOEData
+   LCOECalculator
+   LCOEOptimizer
+
+Reporting Utilities
+-------------------
+
+.. autosummary::
+
+   summarize_lcoe
+   export_lcoe_report
+   summarize_optimization_result
+   export_optimization_report
 
 Constants
 ---------
 
 .. autosummary::
 
-   vital.CONVERT
-   vital.GLOBAL
+   CONVERT
+   GLOBAL

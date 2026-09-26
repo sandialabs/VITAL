@@ -8,10 +8,12 @@ This package provides modules for:
     * Vessel operations (`module_vessel`)
     * Levelized cost of energy (LCOE) calculations (`module_lcoe` and `module_lcoe_optimizer`)
     * Battery charging systems
+    * Reporting utilities (`module_reporting`)
 
 It also includes:
     * Global physical constants (`constGlobal`)
     * Unit conversion constants (`constUnitConvert`)
+    * Reporting helpers for stakeholder-readable Markdown and CSV outputs
 
 Modules:
     * `constUnitConvert`: Provides unit conversion constants.
@@ -23,6 +25,7 @@ Modules:
     * `module_vessel`: Manages vessel data and operations.
     * `module_lcoe`: Calculates levelized cost of energy (LCOE).
     * `module_lcoe_optimizer`: Optimizes LCOE calculations.
+    * `module_reporting`: Exports LCOE and optimization summaries to Markdown and CSV.
 
 Classes:
     * `TidalData`: Handles tidal data retrieval and processing.
@@ -46,8 +49,14 @@ from .module_rotor import RotorData
 from .module_rotor_simulation import RotorSimulation
 from .module_constraint_checker import ConstraintChecker
 from .module_vessel import VesselData
-from .module_lcoe import LCOEData,LCOECalculator
+from .module_lcoe import LCOEData, LCOECalculator
 from .module_lcoe_optimizer import LCOEOptimizer
+from .module_reporting import (
+    summarize_lcoe,
+    export_lcoe_report,
+    summarize_optimization_result,
+    export_optimization_report,
+)
 
 # Initialize global constants for physical properties
 GLOBAL = ConstantsGlobal()
@@ -66,6 +75,13 @@ __all__ = [
     "LCOEData",
     "LCOECalculator",
     "LCOEOptimizer",
+
+    # Reporting helpers
+    "summarize_lcoe",
+    "export_lcoe_report",
+    "summarize_optimization_result",
+    "export_optimization_report",
+
     # Constants
     "CONVERT",
     "GLOBAL",

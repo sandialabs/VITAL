@@ -25,8 +25,7 @@ New users are encouraged to begin with the quickstart tutorial and then review t
 Quickstart
 ~~~~~~~~~~
 
-The quickstart tutorial demonstrates an end-to-end VITAL workflow, including tidal data loading, rotor data loading, rotor simulation, constraint checking, and LCOE calculation.
-
+The quickstart tutorial demonstrates an end-to-end VITAL workflow, including tidal data loading, rotor data loading, rotor simulation, constraint checking, LCOE calculation, and exporting a stakeholder-readable report.
 **Example**: `Quickstart`_
 
 Tidal Data (``module_tidal``)
@@ -77,6 +76,20 @@ This tutorial demonstrates how to perform an explicit grid-search optimization o
 
 **Example**: `Optimization Tutorial`_
 
+Reporting and Exported Results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+VITAL includes lightweight reporting utilities for exporting LCOE and
+optimization results to Markdown and CSV files. Markdown reports are intended
+for quick human review, sharing, or inclusion in project records. CSV files are
+intended for downstream analysis or archival.
+
+The reporting utilities are demonstrated in the Quickstart, Optimization
+tutorial, and application-focused case studies.
+
+**Reference**: `User Inputs and Reporting`_
+
+
 Loss Models (``module_rotor_simulation``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -125,3 +138,4 @@ New users are encouraged to review the `Assumptions and FAQ`_ page before interp
 .. _Grid-Connected Case Study: examples/hdps_grid_connection.ipynb
 .. _API Documentation: api_docs/vital.html
 .. _Assumptions and FAQ: assumptions_and_faq.html
+.. _User Inputs and Reporting: user_inputs_and_reporting.html

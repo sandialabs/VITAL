@@ -32,6 +32,7 @@ Sandia National Laboratories is a multi-mission laboratory managed and operated 
    :caption: Documentation
 
    overview
+   user_inputs_and_reporting
    constraint
    assumptions_and_faq
 
