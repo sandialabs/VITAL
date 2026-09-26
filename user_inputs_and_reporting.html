@@ -1,0 +1,1583 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Inputs and Reporting &mdash; VITAL 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"TeX": {"equationNumbers": {"autoNumber": "AMS"}}, "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Constraint Overview" href="constraint.html" />
+    <link rel="prev" title="Tutorials and Workflow" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VITAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Tutorials and Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Inputs and Reporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#units-and-file-format-conventions">Units and File Format Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-user-checklist">Quick User Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#required-user-inputs">Required User Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tidal-resource-data">Tidal Resource Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#noaa-based-workflow">NOAA-based workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-file-workflow">Local-file workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#city-metadata-file">City metadata file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rotor-performance-data">Rotor Performance Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cpmin-data">Cpmin Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#turbine-configuration">Turbine Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vessel-or-platform-properties">Vessel or Platform Properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-vessel-inputs">Default vessel inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-vessel-property-dictionary">Custom vessel-property dictionary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes-on-vessel-assumptions">Notes on vessel assumptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lcoe-inputs">LCOE Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-result-inputs">Simulation Result Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-inputs">Optimization Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reporting-and-exported-files">Reporting and Exported Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lcoe-reports">LCOE Reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-reports">Optimization Reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#where-reports-are-saved">Where Reports Are Saved</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-project-information-to-record">Recommended Project Information to Record</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpreting-reports">Interpreting Reports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constraint.html">Constraint Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="assumptions_and_faq.html">Assumptions and FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/01_quickstart.html">VITAL Quickstart Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/02_tidaldata.html">Tutorial 2: Acquiring Tidal Data (<code class="docutils literal notranslate"><span class="pre">module_tidal</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/03_rotordata.html">Tutorial 3: Defining Rotor Data (<code class="docutils literal notranslate"><span class="pre">module_rotor</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/04_rotor_simulation.html">Tutorial 4: Simulating Rotor Performance (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/05_constraint_checking.html">Tutorial 5: Checking Constraints (<code class="docutils literal notranslate"><span class="pre">module_constraint_checker</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/06_lcoe_calculation.html">Tutorial 6: Calculating LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/07_optimization.html">Tutorial 7: Optimizing LCOE (<code class="docutils literal notranslate"><span class="pre">module_lcoe_optimizer</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/08_loss_models.html">Tutorial 8: Generator and Power Electronics Loss Models (<code class="docutils literal notranslate"><span class="pre">module_rotor_simulation</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/sitkana_battery_charging.html">Battery-Charging Tidal Energy Case Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/hdps_grid_connection.html">Grid-Connected Tidal Energy Case Study</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_docs/vital.html">vital</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="permitting_info.html">Additional Resources: Permitting Info</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VITAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Inputs and Reporting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-inputs-and-reporting">
+<h1>User Inputs and Reporting<a class="headerlink" href="#user-inputs-and-reporting" title="Link to this heading"></a></h1>
+<p>This page summarizes the information a user should prepare before running VITAL
+and explains how to export results for review, sharing, or archival.</p>
+<p>VITAL is intended for screening-level analysis of tidal energy systems integrated
+with vessels, floating platforms, or other deployable marine-energy
+infrastructure. Results should be used for early-stage comparison of sites and
+design assumptions, not as final engineering, permitting, or deployment
+recommendations.</p>
+<section id="units-and-file-format-conventions">
+<h2>Units and File Format Conventions<a class="headerlink" href="#units-and-file-format-conventions" title="Link to this heading"></a></h2>
+<p>Unless otherwise noted, VITAL expects SI units for physical and engineering
+inputs.</p>
+<p>Common units used by VITAL are:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Expected unit</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Length, radius, depth, distance</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Used for rotor radius, hub depth, mooring distance, cable length, vessel dimensions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Time</p></td>
+<td><p>seconds, <code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Used for time vectors in local tidal files and simulation results</p></td>
+</tr>
+<tr class="row-even"><td><p>Flow speed</p></td>
+<td><p>meters per second, <code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p>Used for tidal current speed</p></td>
+</tr>
+<tr class="row-odd"><td><p>Force</p></td>
+<td><p>newtons, <code class="docutils literal notranslate"><span class="pre">N</span></code></p></td>
+<td><p>Used for turbine thrust, drag, mooring force, and constraint checks</p></td>
+</tr>
+<tr class="row-even"><td><p>Torque</p></td>
+<td><p>newton-meters, <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">m</span></code></p></td>
+<td><p>Used for rated generator torque</p></td>
+</tr>
+<tr class="row-odd"><td><p>Power</p></td>
+<td><p>watts, <code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>Used for rated power and instantaneous electrical power</p></td>
+</tr>
+<tr class="row-even"><td><p>Energy</p></td>
+<td><p>kilowatt-hours, <code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Used for annual energy and battery capacity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cost</p></td>
+<td><p>U.S. dollars, <code class="docutils literal notranslate"><span class="pre">USD</span></code></p></td>
+<td><p>Used for CAPEX, OPEX, and cost breakdowns</p></td>
+</tr>
+<tr class="row-even"><td><p>LCOE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD/kWh</span></code></p></td>
+<td><p>Levelized cost of energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Angles</p></td>
+<td><p>radians, <code class="docutils literal notranslate"><span class="pre">rad</span></code></p></td>
+<td><p>Used internally for vessel and mooring angles</p></td>
+</tr>
+<tr class="row-even"><td><p>Latitude and longitude in user metadata</p></td>
+<td><p>decimal degrees</p></td>
+<td><p>Converted internally to radians where needed</p></td>
+</tr>
+<tr class="row-odd"><td><p>Density</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kg/m^3</span></code></p></td>
+<td><p>Used for vessel or material density</p></td>
+</tr>
+<tr class="row-even"><td><p>Area</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m^2</span></code></p></td>
+<td><p>Used for vessel drag area</p></td>
+</tr>
+<tr class="row-odd"><td><p>Volume</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m^3</span></code></p></td>
+<td><p>Used for vessel or displaced volume</p></td>
+</tr>
+<tr class="row-even"><td><p>Coefficients</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Examples include <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, <code class="docutils literal notranslate"><span class="pre">Cq</span></code>, <code class="docutils literal notranslate"><span class="pre">Cp</span></code>, <code class="docutils literal notranslate"><span class="pre">Cd</span></code>, and turbulence intensity</p></td>
+</tr>
+</tbody>
+</table>
+<p>Recommended file extensions are:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input or output</p></th>
+<th class="head"><p>Recommended file type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Local tidal resource data</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">.dat</span></code></p></td>
+<td><p>Whitespace-delimited text with columns <code class="docutils literal notranslate"><span class="pre">t</span></code> and <code class="docutils literal notranslate"><span class="pre">U</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Rotor performance data</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">.dat</span></code></p></td>
+<td><p>Whitespace- or tab-delimited text with columns <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, and <code class="docutils literal notranslate"><span class="pre">Cq</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Cpmin data</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.json</span></code></p></td>
+<td><p>Optional JSON file with <code class="docutils literal notranslate"><span class="pre">TSR</span></code> and <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> entries</p></td>
+</tr>
+<tr class="row-odd"><td><p>City metadata</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code> or <code class="docutils literal notranslate"><span class="pre">.txt</span></code></p></td>
+<td><p>Comma-separated file with <code class="docutils literal notranslate"><span class="pre">Name</span></code>, <code class="docutils literal notranslate"><span class="pre">Latitude</span></code>, and <code class="docutils literal notranslate"><span class="pre">Longitude</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Exported report</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.md</span></code></p></td>
+<td><p>Markdown summary for human review</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exported summary table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></td>
+<td><p>Machine-readable summary or result table</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="quick-user-checklist">
+<h2>Quick User Checklist<a class="headerlink" href="#quick-user-checklist" title="Link to this heading"></a></h2>
+<p>Before starting a VITAL analysis, gather the following information:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Format</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Tidal resource data</p></td>
+<td><p>Yes</p></td>
+<td><p>NOAA station request or local whitespace-delimited file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m/s</span></code> for flow speed, <code class="docutils literal notranslate"><span class="pre">s</span></code> for time</p></td>
+<td><p>Local files require <code class="docutils literal notranslate"><span class="pre">t</span></code> and <code class="docutils literal notranslate"><span class="pre">U</span></code> columns</p></td>
+</tr>
+<tr class="row-odd"><td><p>Site metadata</p></td>
+<td><p>Yes for local tidal files</p></td>
+<td><p>Python dictionary</p></td>
+<td><p>degrees for latitude/longitude, <code class="docutils literal notranslate"><span class="pre">m</span></code> for mooring/cable length</p></td>
+<td><p>Required keys are listed below</p></td>
+</tr>
+<tr class="row-even"><td><p>City metadata</p></td>
+<td><p>Optional</p></td>
+<td><p>CSV-like file</p></td>
+<td><p>decimal degrees for coordinates</p></td>
+<td><p>Required columns are <code class="docutils literal notranslate"><span class="pre">Name</span></code>, <code class="docutils literal notranslate"><span class="pre">Latitude</span></code>, and <code class="docutils literal notranslate"><span class="pre">Longitude</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Rotor performance data</p></td>
+<td><p>Yes</p></td>
+<td><p>Whitespace- or tab-delimited text file</p></td>
+<td><p>dimensionless coefficients</p></td>
+<td><p>Required columns are <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, and <code class="docutils literal notranslate"><span class="pre">Cq</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Cpmin data</p></td>
+<td><p>Optional</p></td>
+<td><p>JSON file</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Used for cavitation-related checks if available</p></td>
+</tr>
+<tr class="row-odd"><td><p>Turbine configuration</p></td>
+<td><p>Yes</p></td>
+<td><p>Python dictionary</p></td>
+<td><p>SI units</p></td>
+<td><p>Includes radius, rated power, hub depth, time series, and rotor interpolation functions</p></td>
+</tr>
+<tr class="row-even"><td><p>Vessel or platform properties</p></td>
+<td><p>Yes</p></td>
+<td><p>Defaults or Python dictionary</p></td>
+<td><p>SI units</p></td>
+<td><p>Used for drag and physical constraint checks</p></td>
+</tr>
+<tr class="row-odd"><td><p>Application type</p></td>
+<td><p>Yes</p></td>
+<td><p>String</p></td>
+<td><p>Not applicable</p></td>
+<td><p>Common examples are <code class="docutils literal notranslate"><span class="pre">battery_charging</span></code> and <code class="docutils literal notranslate"><span class="pre">grid_connection</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Battery capacity</p></td>
+<td><p>Required for battery charging</p></td>
+<td><p>Numeric value</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Project economics</p></td>
+<td><p>Yes</p></td>
+<td><p>Numeric values and strings</p></td>
+<td><p>years, fraction, USD</p></td>
+<td><p>Includes lifetime, discount rate, customer, and application</p></td>
+</tr>
+<tr class="row-even"><td><p>Optimization bounds</p></td>
+<td><p>Required for optimization only</p></td>
+<td><p>Python dictionary</p></td>
+<td><p>Same units as the design variable</p></td>
+<td><p>Each variable uses <code class="docutils literal notranslate"><span class="pre">(minimum,</span> <span class="pre">maximum,</span> <span class="pre">step)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="required-user-inputs">
+<h2>Required User Inputs<a class="headerlink" href="#required-user-inputs" title="Link to this heading"></a></h2>
+<p>A typical VITAL workflow requires five categories of user input:</p>
+<ol class="arabic simple">
+<li><p>tidal resource data</p></li>
+<li><p>rotor performance data</p></li>
+<li><p>turbine configuration assumptions</p></li>
+<li><p>vessel or platform properties</p></li>
+<li><p>project and cost-model assumptions</p></li>
+</ol>
+<p>The exact inputs depend on the workflow being used. For example,
+battery-charging workflows require a battery capacity, while grid-connected
+workflows do not.</p>
+</section>
+<section id="tidal-resource-data">
+<h2>Tidal Resource Data<a class="headerlink" href="#tidal-resource-data" title="Link to this heading"></a></h2>
+<p>VITAL can use tidal resource data from NOAA or from a local file.</p>
+<section id="noaa-based-workflow">
+<h3>NOAA-based workflow<a class="headerlink" href="#noaa-based-workflow" title="Link to this heading"></a></h3>
+<p>For the NOAA workflow, the user provides:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">station</span></code></p></td>
+<td><p>string</p></td>
+<td><p>NOAA station identifier</p></td>
+<td><p>Station ID used to request current prediction data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">startdate</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code></p></td>
+<td><p>Start date for the NOAA data request</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">range_hrs</span></code></p></td>
+<td><p>integer or float</p></td>
+<td><p>hours</p></td>
+<td><p>Requested time range</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">time_step_s</span></code></p></td>
+<td><p>integer or float</p></td>
+<td><p>seconds</p></td>
+<td><p>Time step used for interpolation</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="s2">&quot;SEA0838&quot;</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+    <span class="n">city_data_file</span><span class="o">=</span><span class="s2">&quot;../data/AlaskaCityLatLong.txt&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The tidal-data processing function returns a processed object containing:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Returned field</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">flow_speeds</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p>Tidal flow-speed time series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Time vector</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mooring_distance</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Mooring depth or distance</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">latitude</span></code></p></td>
+<td><p>radians</p></td>
+<td><p>Station latitude converted for internal calculations</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">longitude</span></code></p></td>
+<td><p>radians</p></td>
+<td><p>Station longitude converted for internal calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">station_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Station name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nearest_city</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Nearest city identified from the city metadata file, if available</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cable_length</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Estimated electrical cable length</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">source</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;NOAA&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;local_file&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="local-file-workflow">
+<h3>Local-file workflow<a class="headerlink" href="#local-file-workflow" title="Link to this heading"></a></h3>
+<p>For offline or reproducible studies, users may provide a local tidal data file.</p>
+<p>Recommended file type:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">.dat</span></code></p></li>
+<li><p>whitespace-delimited</p></li>
+<li><p>first row should contain column names</p></li>
+<li><p>required columns are <code class="docutils literal notranslate"><span class="pre">t</span></code> and <code class="docutils literal notranslate"><span class="pre">U</span></code></p></li>
+</ul>
+<p>The local tidal file must contain at least these columns:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>seconds, <code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Time vector. Values should be monotonically increasing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">U</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters per second, <code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p>Tidal flow speed. VITAL uses the absolute value internally.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example local tidal file:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>t U
+0 0.85
+3600 1.10
+7200 0.95
+10800 0.40
+</pre></div>
+</div>
+<p>When using a local tidal file, the user must also provide site metadata because
+the station information is no longer coming from NOAA.</p>
+<p>Required local-file metadata:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metadata key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">station_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>text</p></td>
+<td><p>Name or label for the site</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">latitude_deg</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>decimal degrees</p></td>
+<td><p>Site latitude</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">longitude_deg</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>decimal degrees</p></td>
+<td><p>Site longitude</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mooring_distance_m</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Mooring depth or distance used by the vessel/turbine model</p></td>
+</tr>
+</tbody>
+</table>
+<p>Optional local-file metadata:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metadata key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nearest_city</span></code></p></td>
+<td><p>string</p></td>
+<td><p>text</p></td>
+<td><p>User-specified nearest city label</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cable_length_m</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Electrical cable length used by the cost model</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tidal</span> <span class="o">=</span> <span class="n">process_tidal_data</span><span class="p">(</span>
+    <span class="n">station</span><span class="o">=</span><span class="s2">&quot;LOCAL_SITE_001&quot;</span><span class="p">,</span>
+    <span class="n">startdate</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span>
+    <span class="n">range_hrs</span><span class="o">=</span><span class="mi">336</span><span class="p">,</span>
+    <span class="n">time_step_s</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+    <span class="n">local_file</span><span class="o">=</span><span class="s2">&quot;local_tidal_site_001.txt&quot;</span><span class="p">,</span>
+    <span class="n">fallback_metadata</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;station_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Local Site 001&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;latitude_deg&quot;</span><span class="p">:</span> <span class="mf">57.05</span><span class="p">,</span>
+        <span class="s2">&quot;longitude_deg&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">135.34</span><span class="p">,</span>
+        <span class="s2">&quot;mooring_distance_m&quot;</span><span class="p">:</span> <span class="mf">31.1</span><span class="p">,</span>
+        <span class="s2">&quot;nearest_city&quot;</span><span class="p">:</span> <span class="s2">&quot;Sitka&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cable_length_m&quot;</span><span class="p">:</span> <span class="mf">3970.22</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="city-metadata-file">
+<h3>City metadata file<a class="headerlink" href="#city-metadata-file" title="Link to this heading"></a></h3>
+<p>If a city-data file is supplied, VITAL can estimate the nearest city and cable
+length from the supplied latitude and longitude.</p>
+<p>Recommended file type:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code> or comma-separated <code class="docutils literal notranslate"><span class="pre">.txt</span></code></p></li>
+</ul>
+<p>Required columns:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>text</p></td>
+<td><p>City or community name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Latitude</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>decimal degrees</p></td>
+<td><p>City latitude</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Longitude</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>decimal degrees</p></td>
+<td><p>City longitude</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example city metadata file:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Name,Latitude,Longitude
+Sitka,57.0531,-135.3300
+Juneau,58.3019,-134.4197
+</pre></div>
+</div>
+</section>
+</section>
+<section id="rotor-performance-data">
+<h2>Rotor Performance Data<a class="headerlink" href="#rotor-performance-data" title="Link to this heading"></a></h2>
+<p>Rotor performance data are loaded using <code class="docutils literal notranslate"><span class="pre">RotorData</span></code>.</p>
+<p>Recommended file type:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">.dat</span></code></p></li>
+<li><p>whitespace-delimited or tab-delimited text</p></li>
+<li><p>first row should contain column names</p></li>
+</ul>
+<p>The rotor performance file must contain at least these columns:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TSR</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Tip-speed ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ct</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Thrust coefficient</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cq</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Torque coefficient</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example rotor performance file:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>TSR Ct Cq
+0.0 0.10 0.000
+1.0 0.45 0.120
+2.0 0.70 0.180
+3.0 0.82 0.160
+4.0 0.78 0.120
+</pre></div>
+</div>
+<p>VITAL computes the power coefficient internally as:</p>
+<div class="math notranslate nohighlight">
+\[C_p = TSR \cdot C_q\]</div>
+<p>Therefore, the input rotor data file does not need to include a <code class="docutils literal notranslate"><span class="pre">Cp</span></code> column.
+Some rotor files may include <code class="docutils literal notranslate"><span class="pre">Cp</span></code> for reference, but VITAL recomputes
+<code class="docutils literal notranslate"><span class="pre">Cp</span></code> from <code class="docutils literal notranslate"><span class="pre">TSR</span></code> and <code class="docutils literal notranslate"><span class="pre">Cq</span></code>.</p>
+<p>The rotor data should span the expected operating range of tip-speed ratios.
+Values outside the provided range are handled by simplified extrapolation logic
+and should not be interpreted as validated rotor performance.</p>
+<section id="cpmin-data">
+<h3>Cpmin Data<a class="headerlink" href="#cpmin-data" title="Link to this heading"></a></h3>
+<p>If cavitation checks are important for the study, users may also provide
+<code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> data.</p>
+<p>Recommended file type:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.json</span></code></p></li>
+</ul>
+<p>Expected structure:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;TSR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;Cpmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">-0.2</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.8</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Expected units:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TSR</span></code></p></td>
+<td><p>dimensionless</p></td>
+<td><p>Tip-speed-ratio values corresponding to the Cpmin curve</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cpmin</span></code></p></td>
+<td><p>dimensionless</p></td>
+<td><p>Minimum pressure coefficient values</p></td>
+</tr>
+</tbody>
+</table>
+<p>If no <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> file is supplied, VITAL uses a default <code class="docutils literal notranslate"><span class="pre">Cpmin</span></code> assumption.</p>
+</section>
+</section>
+<section id="turbine-configuration">
+<h2>Turbine Configuration<a class="headerlink" href="#turbine-configuration" title="Link to this heading"></a></h2>
+<p>The turbine configuration is provided as a Python dictionary. VITAL expects the
+dictionary values to use SI units.</p>
+<p>Required fields for LCOE calculations include <code class="docutils literal notranslate"><span class="pre">Radius</span></code>, <code class="docutils literal notranslate"><span class="pre">Prated</span></code>,
+<code class="docutils literal notranslate"><span class="pre">number_of_turbines</span></code>, and <code class="docutils literal notranslate"><span class="pre">dHub</span></code>. Most complete simulation workflows also
+include time-series inputs and rotor interpolation functions.</p>
+<p>Common fields include:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Radius</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Rotor radius</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Prated</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>watts, <code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Rated electrical power per turbine</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Trated</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>newton-meters, <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">m</span></code></p></td>
+<td><p>Usually</p></td>
+<td><p>Rated generator torque</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dHub</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Hub depth</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">number_of_turbines</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>count</p></td>
+<td><p>Yes</p></td>
+<td><p>Number of turbines in the system</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dMoor</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Usually</p></td>
+<td><p>Mooring depth or distance</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Uinf</span></code></p></td>
+<td><p>array-like</p></td>
+<td><p>meters per second, <code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p>Usually</p></td>
+<td><p>Tidal flow-speed time series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td><p>array-like</p></td>
+<td><p>seconds, <code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Usually</p></td>
+<td><p>Time vector corresponding to <code class="docutils literal notranslate"><span class="pre">Uinf</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CpFunc</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>dimensionless output</p></td>
+<td><p>Usually</p></td>
+<td><p>Power-coefficient interpolation function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CqFunc</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>dimensionless output</p></td>
+<td><p>Usually</p></td>
+<td><p>Torque-coefficient interpolation function</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CtFunc</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>dimensionless output</p></td>
+<td><p>Usually</p></td>
+<td><p>Thrust-coefficient interpolation function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CpminFunc</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>dimensionless output</p></td>
+<td><p>Optional</p></td>
+<td><p>Minimum-pressure-coefficient interpolation function</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CpOpt</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Usually</p></td>
+<td><p>Optimal power coefficient</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TSROpt</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Usually</p></td>
+<td><p>Optimal tip-speed ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TSRmax</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Usually</p></td>
+<td><p>Maximum tip-speed ratio used by the simulation</p></td>
+</tr>
+</tbody>
+</table>
+<p>Depending on the selected power-conversion model, additional parameters may be
+required. For example, the simple electrical model uses generator and drivetrain
+parameters such as <code class="docutils literal notranslate"><span class="pre">Ng</span></code>, <code class="docutils literal notranslate"><span class="pre">Kt</span></code>, <code class="docutils literal notranslate"><span class="pre">Rw</span></code>, <code class="docutils literal notranslate"><span class="pre">Bg</span></code>, and <code class="docutils literal notranslate"><span class="pre">J_r</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">turbine_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>                    <span class="c1"># m</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="mf">2500.0</span><span class="p">,</span>                 <span class="c1"># W</span>
+    <span class="s2">&quot;Trated&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>                  <span class="c1"># N m</span>
+    <span class="s2">&quot;dHub&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>                      <span class="c1"># m</span>
+    <span class="s2">&quot;number_of_turbines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>          <span class="c1"># count</span>
+    <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>  <span class="c1"># m</span>
+    <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>        <span class="c1"># m/s</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>                 <span class="c1"># s</span>
+    <span class="s2">&quot;CpFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cp</span><span class="p">,</span>
+    <span class="s2">&quot;CqFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cq</span><span class="p">,</span>
+    <span class="s2">&quot;CtFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_ct</span><span class="p">,</span>
+    <span class="s2">&quot;CpminFunc&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">get_cpmin</span><span class="p">,</span>
+    <span class="s2">&quot;CpOpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">CpOpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSROpt&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSROpt</span><span class="p">,</span>
+    <span class="s2">&quot;TSRmax&quot;</span><span class="p">:</span> <span class="n">rotor</span><span class="o">.</span><span class="n">TSRmax</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="vessel-or-platform-properties">
+<h2>Vessel or Platform Properties<a class="headerlink" href="#vessel-or-platform-properties" title="Link to this heading"></a></h2>
+<p>Vessel or platform properties are used for physical constraint checks and LCOE
+calculations.</p>
+<p>VITAL supports two common approaches:</p>
+<ol class="arabic simple">
+<li><p>use the default vessel assumptions by creating <code class="docutils literal notranslate"><span class="pre">VesselData</span></code> without a
+custom <code class="docutils literal notranslate"><span class="pre">vessel_properties</span></code> dictionary</p></li>
+<li><p>provide a custom <code class="docutils literal notranslate"><span class="pre">vessel_properties</span></code> dictionary with the keys expected by
+the current implementation</p></li>
+</ol>
+<p>All user-supplied physical values should use SI units.</p>
+<section id="default-vessel-inputs">
+<h3>Default vessel inputs<a class="headerlink" href="#default-vessel-inputs" title="Link to this heading"></a></h3>
+<p>When using the default vessel model, users may provide optional constructor
+arguments such as:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">height</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Vessel or platform height</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">density</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>kilograms per cubic meter, <code class="docutils literal notranslate"><span class="pre">kg/m^3</span></code></p></td>
+<td><p>Representative vessel or platform density</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">theta_m</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>radians, <code class="docutils literal notranslate"><span class="pre">rad</span></code></p></td>
+<td><p>Mooring-line angle</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">alpha</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Aspect-ratio parameter used by the simplified vessel model</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cd</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Drag coefficient</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">phi</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>radians, <code class="docutils literal notranslate"><span class="pre">rad</span></code></p></td>
+<td><p>Pitch angle or pitch constraint used by the constraint model</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">simResult</span></code></p></td>
+<td><p>dictionary</p></td>
+<td><p>SI units</p></td>
+<td><p>Optional simulation result used to estimate drag force from adjusted inflow speed</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vessel</span> <span class="o">=</span> <span class="n">VesselData</span><span class="p">(</span>
+    <span class="n">height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>                <span class="c1"># m</span>
+    <span class="n">density</span><span class="o">=</span><span class="mf">500.0</span><span class="p">,</span>             <span class="c1"># kg/m^3</span>
+    <span class="n">theta_m</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">4.0</span><span class="p">,</span>       <span class="c1"># rad</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>                 <span class="c1"># dimensionless</span>
+    <span class="n">Cd</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>                    <span class="c1"># dimensionless</span>
+    <span class="n">phi</span><span class="o">=</span><span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>  <span class="c1"># rad</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">sim_result</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-vessel-property-dictionary">
+<h3>Custom vessel-property dictionary<a class="headerlink" href="#custom-vessel-property-dictionary" title="Link to this heading"></a></h3>
+<p>For a fully custom vessel definition, create <code class="docutils literal notranslate"><span class="pre">VesselData</span></code> with
+<code class="docutils literal notranslate"><span class="pre">user_defined=True</span></code> and provide a <code class="docutils literal notranslate"><span class="pre">vessel_properties</span></code> dictionary.</p>
+<p>The current implementation expects the following dictionary keys:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Xm</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Longitudinal or horizontal reference location used by the constraint model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Zm</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>meters, <code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Vertical reference location used by the constraint model</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Kphi</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>rotational stiffness, typically <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">m/rad</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Pitch hydrostatic stiffness used by the constraint model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">theta</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>radians, <code class="docutils literal notranslate"><span class="pre">rad</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Mooring-line angle</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">phi</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>radians, <code class="docutils literal notranslate"><span class="pre">rad</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Pitch angle used for constraint evaluation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">area</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>square meters, <code class="docutils literal notranslate"><span class="pre">m^2</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Cross-sectional area used for drag calculation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cd</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Yes</p></td>
+<td><p>Drag coefficient</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_vessel_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Xm&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>                         <span class="c1"># m</span>
+    <span class="s2">&quot;Zm&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>                         <span class="c1"># m</span>
+    <span class="s2">&quot;Kphi&quot;</span><span class="p">:</span> <span class="mf">1.0e6</span><span class="p">,</span>                     <span class="c1"># N m/rad</span>
+    <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>     <span class="c1"># rad</span>
+    <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span>       <span class="c1"># rad</span>
+    <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>                       <span class="c1"># m^2</span>
+    <span class="s2">&quot;Cd&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>                         <span class="c1"># dimensionless</span>
+<span class="p">}</span>
+
+<span class="n">vessel</span> <span class="o">=</span> <span class="n">VesselData</span><span class="p">(</span>
+    <span class="n">user_defined</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">vessel_properties</span><span class="o">=</span><span class="n">user_vessel_properties</span><span class="p">,</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">sim_result</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>If any required custom vessel key is missing, VITAL raises an error when setting
+the vessel properties.</p>
+</section>
+<section id="notes-on-vessel-assumptions">
+<h3>Notes on vessel assumptions<a class="headerlink" href="#notes-on-vessel-assumptions" title="Link to this heading"></a></h3>
+<p>The default vessel model may also calculate or store additional quantities such
+as width, length, hydrostatic stiffness, metacentric height, displaced volume,
+submerged height, and drag force. These values are part of the simplified vessel
+model and are not all required as direct user inputs.</p>
+<p>Users should review vessel assumptions carefully. Simplified vessel or platform
+properties can be useful for screening studies, but they may not represent a
+final deployable design.</p>
+</section>
+</section>
+<section id="lcoe-inputs">
+<h2>LCOE Inputs<a class="headerlink" href="#lcoe-inputs" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">LCOEData</span></code> object collects the inputs required by <code class="docutils literal notranslate"><span class="pre">LCOECalculator</span></code>.</p>
+<p>Expected inputs include:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or allowed values</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tidalData</span></code></p></td>
+<td><p>processed tidal-data object</p></td>
+<td><p>SI units</p></td>
+<td><p>Contains cable length, mooring distance, flow speeds, and time values</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">turbineConfig</span></code></p></td>
+<td><p>dictionary</p></td>
+<td><p>SI units</p></td>
+<td><p>Contains turbine geometry, rated power, and operating assumptions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vesselData</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VesselData</span></code> object</p></td>
+<td><p>SI units</p></td>
+<td><p>Contains vessel/platform properties and drag force</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">simResult</span></code></p></td>
+<td><p>dictionary</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Pelec</span></code> in W, <code class="docutils literal notranslate"><span class="pre">t</span></code> in s</p></td>
+<td><p>Simulation result containing power and time data</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lifetime</span></code></p></td>
+<td><p>integer or float</p></td>
+<td><p>years</p></td>
+<td><p>Project lifetime used in present-value calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">discount_rate</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>fraction</p></td>
+<td><p>Example: use <code class="docutils literal notranslate"><span class="pre">0.08</span></code> for 8%</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">turbulence_intensity</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>fraction</p></td>
+<td><p>Example: use <code class="docutils literal notranslate"><span class="pre">0.10</span></code> for 10%</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">customer</span></code></p></td>
+<td><p>string</p></td>
+<td><p>configured customer key</p></td>
+<td><p>Selects the cost-function configuration</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">application</span></code></p></td>
+<td><p>string</p></td>
+<td><p>configured application key</p></td>
+<td><p>Common examples are <code class="docutils literal notranslate"><span class="pre">battery_charging</span></code> and <code class="docutils literal notranslate"><span class="pre">grid_connection</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code></p></td>
+<td><p>numeric or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>kilowatt-hours, <code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Required for battery-charging applications</p></td>
+</tr>
+</tbody>
+</table>
+<p>Supported application examples include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">application=&quot;battery_charging&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application=&quot;grid_connection&quot;</span></code></p></li>
+</ul>
+<p>For <code class="docutils literal notranslate"><span class="pre">application=&quot;battery_charging&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code> must be provided
+and must be greater than zero.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">application=&quot;grid_connection&quot;</span></code>, battery capacity is internally treated as
+zero.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lcoe_data</span> <span class="o">=</span> <span class="n">LCOEData</span><span class="p">(</span>
+    <span class="n">tidalData</span><span class="o">=</span><span class="n">tidal</span><span class="p">,</span>
+    <span class="n">turbineConfig</span><span class="o">=</span><span class="n">turbine_config</span><span class="p">,</span>
+    <span class="n">vesselData</span><span class="o">=</span><span class="n">vessel</span><span class="p">,</span>
+    <span class="n">simResult</span><span class="o">=</span><span class="n">sim_result</span><span class="p">,</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>                    <span class="c1"># years</span>
+    <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>             <span class="c1"># fraction</span>
+    <span class="n">turbulence_intensity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>       <span class="c1"># fraction</span>
+    <span class="n">customer</span><span class="o">=</span><span class="s2">&quot;customer_B&quot;</span><span class="p">,</span>
+    <span class="n">application</span><span class="o">=</span><span class="s2">&quot;battery_charging&quot;</span><span class="p">,</span>
+    <span class="n">BatteryCapacity_kWh</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>       <span class="c1"># kWh</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="simulation-result-inputs">
+<h2>Simulation Result Inputs<a class="headerlink" href="#simulation-result-inputs" title="Link to this heading"></a></h2>
+<p>Some workflows create <code class="docutils literal notranslate"><span class="pre">simResult</span></code> by running <code class="docutils literal notranslate"><span class="pre">RotorSimulation</span></code>. If a user
+constructs or modifies <code class="docutils literal notranslate"><span class="pre">simResult</span></code> manually, it must contain at least:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Pelec</span></code></p></td>
+<td><p>array-like</p></td>
+<td><p>watts, <code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>Electrical power time series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td><p>array-like</p></td>
+<td><p>seconds, <code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Time vector corresponding to <code class="docutils literal notranslate"><span class="pre">Pelec</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Many workflows also use:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Ft</span></code></p></td>
+<td><p>newtons, <code class="docutils literal notranslate"><span class="pre">N</span></code></p></td>
+<td><p>Turbine thrust time series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Uinf_adjusted</span></code></p></td>
+<td><p>meters per second, <code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p>Adjusted inflow velocity time series</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">Pelec</span></code> and <code class="docutils literal notranslate"><span class="pre">t</span></code> arrays must have the same length.</p>
+</section>
+<section id="optimization-inputs">
+<h2>Optimization Inputs<a class="headerlink" href="#optimization-inputs" title="Link to this heading"></a></h2>
+<p>The LCOE optimizer performs an explicit grid search over selected design
+variables.</p>
+<p>The user provides <code class="docutils literal notranslate"><span class="pre">variable_bounds</span></code> as a Python dictionary. Each entry maps a
+design variable to a tuple of:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The units of <code class="docutils literal notranslate"><span class="pre">minimum</span></code>, <code class="docutils literal notranslate"><span class="pre">maximum</span></code>, and <code class="docutils literal notranslate"><span class="pre">step</span></code> must match the units of the
+design variable being optimized.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">variable_bounds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Radius&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>        <span class="c1"># m</span>
+    <span class="s2">&quot;Prated&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">5000.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">)</span> <span class="c1"># W</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Common optimization variables include:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Radius</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Rotor radius</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Prated</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>Rated electrical power</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dHub</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Hub depth</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">number_of_turbines</span></code></p></td>
+<td><p>count</p></td>
+<td><p>Number of turbines</p></td>
+</tr>
+</tbody>
+</table>
+<p>The optimizer evaluates each combination in the grid. The total number of
+evaluated designs is the product of the number of values for each variable.
+Fine step sizes or many design variables can create large numbers of
+simulations.</p>
+<p>Users may also provide:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fixed_params</span></code></p></td>
+<td><p>dictionary</p></td>
+<td><p>same units as fixed variables</p></td>
+<td><p>Parameters held constant during the optimization</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">site_params</span></code></p></td>
+<td><p>dictionary</p></td>
+<td><p>SI units</p></td>
+<td><p>Site-specific values such as <code class="docutils literal notranslate"><span class="pre">dMoor</span></code>, <code class="docutils literal notranslate"><span class="pre">Uinf</span></code>, and <code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">customer</span></code></p></td>
+<td><p>string</p></td>
+<td><p>configured customer key</p></td>
+<td><p>Selects cost functions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">application</span></code></p></td>
+<td><p>string</p></td>
+<td><p>configured application key</p></td>
+<td><p>Example: <code class="docutils literal notranslate"><span class="pre">battery_charging</span></code> or <code class="docutils literal notranslate"><span class="pre">grid_connection</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BatteryCapacity_kWh</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Required for battery-charging optimization</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lifetime</span></code></p></td>
+<td><p>integer or float</p></td>
+<td><p>years</p></td>
+<td><p>Project lifetime</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">discount_rate</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>fraction</p></td>
+<td><p>Example: <code class="docutils literal notranslate"><span class="pre">0.08</span></code> for 8%</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">turbulence_intensity</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>fraction</p></td>
+<td><p>Example: <code class="docutils literal notranslate"><span class="pre">0.10</span></code> for 10%</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">opt_result</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">variable_bounds</span><span class="o">=</span><span class="n">variable_bounds</span><span class="p">,</span>
+    <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed_params</span><span class="p">,</span>
+    <span class="n">site_params</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;dMoor&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">mooring_distance</span><span class="p">,</span>  <span class="c1"># m</span>
+        <span class="s2">&quot;Uinf&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">flow_speeds</span><span class="p">,</span>        <span class="c1"># m/s</span>
+        <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">tidal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>                 <span class="c1"># s</span>
+    <span class="p">},</span>
+    <span class="n">customer</span><span class="o">=</span><span class="s2">&quot;customer_B&quot;</span><span class="p">,</span>
+    <span class="n">application</span><span class="o">=</span><span class="s2">&quot;battery_charging&quot;</span><span class="p">,</span>
+    <span class="n">BatteryCapacity_kWh</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>             <span class="c1"># kWh</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>                          <span class="c1"># years</span>
+    <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>                   <span class="c1"># fraction</span>
+    <span class="n">turbulence_intensity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>             <span class="c1"># fraction</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reporting-and-exported-files">
+<h2>Reporting and Exported Files<a class="headerlink" href="#reporting-and-exported-files" title="Link to this heading"></a></h2>
+<p>VITAL includes lightweight reporting helpers in <code class="docutils literal notranslate"><span class="pre">vital.module_reporting</span></code>.</p>
+<p>These helpers export results to:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Export type</p></th>
+<th class="head"><p>File extension</p></th>
+<th class="head"><p>Intended use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Markdown report</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.md</span></code></p></td>
+<td><p>Human-readable summary for review, sharing, or project records</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSV summary</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></td>
+<td><p>Machine-readable summary for downstream analysis or archival</p></td>
+</tr>
+<tr class="row-even"><td><p>Full optimization table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></td>
+<td><p>All evaluated design points</p></td>
+</tr>
+<tr class="row-odd"><td><p>Feasible optimization table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></td>
+<td><p>Evaluated design points that passed feasibility checks</p></td>
+</tr>
+</tbody>
+</table>
+<section id="lcoe-reports">
+<h3>LCOE Reports<a class="headerlink" href="#lcoe-reports" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">export_lcoe_report</span></code> to export a report from an initialized
+<code class="docutils literal notranslate"><span class="pre">LCOECalculator</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vital.module_reporting</span> <span class="kn">import</span> <span class="n">export_lcoe_report</span>
+
+<span class="n">report_files</span> <span class="o">=</span> <span class="n">export_lcoe_report</span><span class="p">(</span>
+    <span class="n">calculator</span><span class="p">,</span>
+    <span class="n">output_prefix</span><span class="o">=</span><span class="s2">&quot;reports/quickstart_lcoe_summary&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;markdown&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This creates:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>reports/quickstart_lcoe_summary.md
+reports/quickstart_lcoe_summary.csv
+</pre></div>
+</div>
+<p>The LCOE Markdown report includes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Report item</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LCOE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD/kWh</span></code></p></td>
+<td><p>Levelized cost of energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Annual energy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kWh/year</span></code></p></td>
+<td><p>Estimated annual electrical energy production</p></td>
+</tr>
+<tr class="row-even"><td><p>Capacity factor</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Ratio of generated annual energy to rated annual energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Adjusted CAPEX</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD</span></code></p></td>
+<td><p>Total capital cost after any customer/application adjustment</p></td>
+</tr>
+<tr class="row-even"><td><p>Annual OPEX</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD/year</span></code></p></td>
+<td><p>Annual operating cost</p></td>
+</tr>
+<tr class="row-odd"><td><p>Turbine radius</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Rotor radius</p></td>
+</tr>
+<tr class="row-even"><td><p>Rated power</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>Rated electrical power</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hub depth</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Turbine hub depth</p></td>
+</tr>
+<tr class="row-even"><td><p>Cable length</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Electrical cable length used in the cost model</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mooring depth</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Mooring depth or distance used in the cost model</p></td>
+</tr>
+<tr class="row-even"><td><p>Battery capacity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Battery capacity for battery-charging applications</p></td>
+</tr>
+<tr class="row-odd"><td><p>CAPEX breakdown</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD</span></code></p></td>
+<td><p>Individual cost components</p></td>
+</tr>
+</tbody>
+</table>
+<p>The CSV file contains the same summary information in machine-readable form.</p>
+</section>
+<section id="optimization-reports">
+<h3>Optimization Reports<a class="headerlink" href="#optimization-reports" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">export_optimization_report</span></code> to export a report from an optimizer result:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vital.module_reporting</span> <span class="kn">import</span> <span class="n">export_optimization_report</span>
+
+<span class="n">report_files</span> <span class="o">=</span> <span class="n">export_optimization_report</span><span class="p">(</span>
+    <span class="n">opt_result</span><span class="p">,</span>
+    <span class="n">output_prefix</span><span class="o">=</span><span class="s2">&quot;reports/optimization_summary&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;markdown&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;summary_csv&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;all_designs_csv&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report_files</span><span class="p">[</span><span class="s2">&quot;feasible_designs_csv&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This creates:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>reports/optimization_summary.md
+reports/optimization_summary.csv
+reports/optimization_summary_all_designs.csv
+reports/optimization_summary_feasible_designs.csv
+</pre></div>
+</div>
+<p>The optimization Markdown report includes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Report item</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Optimal LCOE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">USD/kWh</span></code></p></td>
+<td><p>Lowest feasible LCOE found in the grid search</p></td>
+</tr>
+<tr class="row-odd"><td><p>Total designs</p></td>
+<td><p>count</p></td>
+<td><p>Total number of evaluated grid points</p></td>
+</tr>
+<tr class="row-even"><td><p>Feasible designs</p></td>
+<td><p>count</p></td>
+<td><p>Number of evaluated designs that were feasible</p></td>
+</tr>
+<tr class="row-odd"><td><p>Feasible fraction</p></td>
+<td><p>dimensionless</p></td>
+<td><p>Feasible designs divided by total designs</p></td>
+</tr>
+<tr class="row-even"><td><p>Optimal design variables</p></td>
+<td><p>same units as input variables</p></td>
+<td><p>Design-variable values associated with the optimal feasible result</p></td>
+</tr>
+</tbody>
+</table>
+<p>The optimization CSV files include:</p>
+<ul class="simple">
+<li><p>a compact optimization summary</p></li>
+<li><p>the full table of evaluated designs</p></li>
+<li><p>the subset of feasible designs</p></li>
+</ul>
+</section>
+<section id="where-reports-are-saved">
+<h3>Where Reports Are Saved<a class="headerlink" href="#where-reports-are-saved" title="Link to this heading"></a></h3>
+<p>Reports are written relative to the current Python working directory.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output_prefix</span><span class="o">=</span><span class="s2">&quot;reports/quickstart_lcoe_summary&quot;</span>
+</pre></div>
+</div>
+<p>writes files to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>reports/
+</pre></div>
+</div>
+<p>To see the exact location from a notebook, run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;reports&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Markdown files can be opened in a text editor, viewed in JupyterLab or VS Code, or converted to other formats using standard Markdown tooling.</p>
+</section>
+</section>
+<section id="recommended-project-information-to-record">
+<h2>Recommended Project Information to Record<a class="headerlink" href="#recommended-project-information-to-record" title="Link to this heading"></a></h2>
+<p>For reproducible studies, users should record:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Information to record</p></th>
+<th class="head"><p>Units or format</p></th>
+<th class="head"><p>Why it matters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VITAL version or Git commit</p></td>
+<td><p>text</p></td>
+<td><p>Identifies the software version used</p></td>
+</tr>
+<tr class="row-odd"><td><p>Analysis date</p></td>
+<td><p>date</p></td>
+<td><p>Supports traceability</p></td>
+</tr>
+<tr class="row-even"><td><p>Analyst name or project identifier</p></td>
+<td><p>text</p></td>
+<td><p>Supports review and archival</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tidal-data source</p></td>
+<td><p>NOAA or local file</p></td>
+<td><p>Identifies the source of resource data</p></td>
+</tr>
+<tr class="row-even"><td><p>NOAA station ID or local-file name</p></td>
+<td><p>text</p></td>
+<td><p>Supports repeatability</p></td>
+</tr>
+<tr class="row-odd"><td><p>Start date, time range, and <code class="docutils literal notranslate"><span class="pre">time_step_s</span></code> value</p></td>
+<td><p>date, hours, seconds</p></td>
+<td><p>Defines the tidal-data period and resolution</p></td>
+</tr>
+<tr class="row-even"><td><p>Rotor performance file name</p></td>
+<td><p>file path</p></td>
+<td><p>Identifies the rotor performance curve</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cpmin file name, if used</p></td>
+<td><p>file path</p></td>
+<td><p>Identifies cavitation-related data</p></td>
+</tr>
+<tr class="row-even"><td><p>Turbine configuration</p></td>
+<td><p>SI units</p></td>
+<td><p>Defines the modeled turbine system</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vessel/platform assumptions</p></td>
+<td><p>SI units</p></td>
+<td><p>Defines the modeled vessel or platform</p></td>
+</tr>
+<tr class="row-even"><td><p>Customer and application type</p></td>
+<td><p>strings</p></td>
+<td><p>Selects the cost model and application assumptions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Project lifetime</p></td>
+<td><p>years</p></td>
+<td><p>Used in present-value calculations</p></td>
+</tr>
+<tr class="row-even"><td><p>Discount rate</p></td>
+<td><p>fraction</p></td>
+<td><p>Used in present-value calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p>Battery capacity, if applicable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kWh</span></code></p></td>
+<td><p>Required for battery-charging applications</p></td>
+</tr>
+<tr class="row-even"><td><p>Optimization variable bounds, if applicable</p></td>
+<td><p>same units as variables</p></td>
+<td><p>Defines the optimization search space</p></td>
+</tr>
+<tr class="row-odd"><td><p>Notes about assumptions or exclusions</p></td>
+<td><p>text</p></td>
+<td><p>Helps reviewers interpret screening-level results</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interpreting-reports">
+<h2>Interpreting Reports<a class="headerlink" href="#interpreting-reports" title="Link to this heading"></a></h2>
+<p>The exported reports are intended for communication and review. They do not
+replace review of the underlying model inputs, assumptions, constraints, or
+simulation outputs.</p>
+<p>Before using a report to compare designs or sites, users should confirm that:</p>
+<ul class="simple">
+<li><p>the tidal data source and time range are appropriate</p></li>
+<li><p>local tidal files use <code class="docutils literal notranslate"><span class="pre">t</span></code> in seconds and <code class="docutils literal notranslate"><span class="pre">U</span></code> in <code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></li>
+<li><p>rotor performance data are applicable to the design being studied</p></li>
+<li><p>rotor performance files include <code class="docutils literal notranslate"><span class="pre">TSR</span></code>, <code class="docutils literal notranslate"><span class="pre">Ct</span></code>, and <code class="docutils literal notranslate"><span class="pre">Cq</span></code></p></li>
+<li><p>vessel or platform assumptions are representative</p></li>
+<li><p>angles are supplied in radians where required by the Python model</p></li>
+<li><p>constraint checks have been reviewed</p></li>
+<li><p>cost assumptions are appropriate for the use case</p></li>
+<li><p>the customer and application type are correct</p></li>
+<li><p>battery capacity is specified in <code class="docutils literal notranslate"><span class="pre">kWh</span></code> for battery-charging studies</p></li>
+<li><p>optimization bounds and step sizes use the same units as the design variables</p></li>
+<li><p>the exported Markdown and CSV files are archived with the input data used to create them</p></li>
+</ul>
+<p>Reports should be treated as screening-level summaries.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Tutorials and Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constraint.html" class="btn btn-neutral float-right" title="Constraint Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, National Technology &amp; Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0f4e02c8",
+   "metadata": {},
+   "source": [
+    "# Tutorial 4: Simulating Rotor Performance (``module_rotor_simulation``)\n",
+    "\n",
+    "This tutorial demonstrates how to use the ``RotorSimulation`` class to simulate turbine performance using tidal resource data and rotor performance data.\n",
+    "\n",
+    "The tutorial compares two rotor configurations with different radii:\n",
+    "\n",
+    "- Rotor 1: radius = 0.5 m\n",
+    "- Rotor 2: radius = 1.0 m\n",
+    "\n",
+    "For simplicity, the two configurations use the same tidal resource, rotor performance curves, drivetrain parameters, and power-conversion model. Only the rotor radius is changed.\n",
+    "\n",
+    "This tutorial covers:\n",
+    "\n",
+    "1. Loading tidal resource data.\n",
+    "2. Loading rotor performance data.\n",
+    "3. Defining simulation configuration dictionaries.\n",
+    "4. Running ``RotorSimulation``.\n",
+    "5. Comparing electrical power, torque, TSR, and rotor speed.\n",
+    "\n",
+    "## Notes for new users\n",
+    "\n",
+    "- This tutorial uses the built-in ``simple`` power-conversion model.\n",
+    "- The ``simple`` model requires generator constants ``Kt`` and ``Rw``.\n",
+    "- The rotor simulation uses the adjusted flow speed at turbine depth.\n",
+    "- ``Pelec`` is the main electrical power output used by later LCOE and constraint tutorials.\n",
+    "- The drivetrain and generator parameters are held fixed for comparison. In a real design study, parameters such as inertia, rated torque, and generator constants may need to scale with rotor size."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "136b6f43",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "import urllib3\n",
+    "\n",
+    "from vital.module_tidal import process_tidal_data\n",
+    "from vital.module_rotor import RotorData\n",
+    "from vital.module_rotor_simulation import RotorSimulation\n",
+    "\n",
+    "# Suppress warnings caused by NOAA requests using verify=False internally.\n",
+    "urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ef111a23",
+   "metadata": {},
+   "source": [
+    "## 1. Load tidal resource data\n",
+    "\n",
+    "First, load tidal resource data using ``process_tidal_data``.\n",
+    "\n",
+    "This tutorial uses the same basic NOAA workflow introduced in the tidal-data tutorial. If NOAA access is unavailable, see the tidal-data tutorial for local-file workflows. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5e4d2f70",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "station = \"COI0303\"\n",
+    "startdate = \"2021-09-01\"\n",
+    "\n",
+    "range_hrs = 2 * 7 * 24\n",
+    "time_step_s = 3600\n",
+    "city_data_file = \"../data/AlaskaCityLatLong.txt\"\n",
+    "\n",
+    "tidal = process_tidal_data(\n",
+    "    station=station,\n",
+    "    startdate=startdate,\n",
+    "    range_hrs=range_hrs,\n",
+    "    time_step_s=time_step_s,\n",
+    "    city_data_file=city_data_file,\n",
+    ")\n",
+    "\n",
+    "print(f\"Data source: {tidal.source}\")\n",
+    "print(f\"Station name: {tidal.station_name}\")\n",
+    "print(f\"Mooring distance: {tidal.mooring_distance:.2f} m\")\n",
+    "print(f\"Number of time points: {len(tidal.times)}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9f0368bf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "time_days = tidal.times / (3600 * 24)\n",
+    "\n",
+    "plt.figure(figsize=(8, 4))\n",
+    "plt.plot(time_days, tidal.flow_speeds)\n",
+    "plt.xlabel(\"Time (days)\")\n",
+    "plt.ylabel(\"Flow speed (m/s)\")\n",
+    "plt.title(f\"Tidal resource at {tidal.station_name}\")\n",
+    "plt.grid(True)\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fb54e4f0",
+   "metadata": {},
+   "source": [
+    "## 2. Load rotor performance data\n",
+    "\n",
+    "Next, load rotor performance data using the ``RotorData`` class.\n",
+    "\n",
+    "The rotor file provides ``TSR``, ``Ct``, and ``Cq``. VITAL computes the power coefficient internally as:\n",
+    "\n",
+    "$$\n",
+    "C_p = TSR \\cdot C_q\n",
+    "$$\n",
+    "\n",
+    "The resulting rotor object provides coefficient functions used by the simulation:\n",
+    "\n",
+    "- ``rotor.get_cp``\n",
+    "- ``rotor.get_cq``\n",
+    "- ``rotor.get_ct``"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "123d4c90",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rotor_performance_file = \"../data/Sitkana_rotor_data_blade_2.txt\"\n",
+    "\n",
+    "rotor = RotorData(rotor_performance_file)\n",
+    "\n",
+    "print(f\"Optimal Cp: {rotor.CpOpt:.4f}\")\n",
+    "print(f\"Optimal TSR: {rotor.TSROpt:.4f}\")\n",
+    "print(f\"Estimated TSRmax: {rotor.TSRmax:.4f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af6fa3e3",
+   "metadata": {},
+   "source": [
+    "## 3. Define two rotor configurations\n",
+    "\n",
+    "The two configurations below use the same drivetrain, generator, and tidal inputs. The only parameter changed is rotor radius.\n",
+    "\n",
+    "This makes the comparison easier to interpret."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cdfa3483",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "base_config = {\n",
+    "    \"Prated\": 5000.0,                 # Rated electrical power (W)\n",
+    "    \"Trated\": 50.0,                   # Rated generator torque (N m)\n",
+    "    \"dHub\": 2.0,                      # Hub depth (m)\n",
+    "    \"dMoor\": tidal.mooring_distance,  # Mooring depth/distance (m)\n",
+    "    \"Uinf\": tidal.flow_speeds,        # Tidal flow speed time series (m/s)\n",
+    "    \"t\": tidal.times,                 # Time vector (s)\n",
+    "\n",
+    "    # Rotor performance functions\n",
+    "    \"CpFunc\": rotor.get_cp,\n",
+    "    \"CqFunc\": rotor.get_cq,\n",
+    "    \"CtFunc\": rotor.get_ct,\n",
+    "    \"CpOpt\": rotor.CpOpt,\n",
+    "    \"TSROpt\": rotor.TSROpt,\n",
+    "    \"TSRmax\": rotor.TSRmax,\n",
+    "\n",
+    "    # Drivetrain and generator parameters\n",
+    "    \"Ng\": 20,\n",
+    "    \"Kt\": 1.5,\n",
+    "    \"Rw\": 0.5,\n",
+    "    \"J_d\": 5.0,\n",
+    "    \"B_d\": 1.0,\n",
+    "    \"J_r\": 10.0,\n",
+    "\n",
+    "    # Power-conversion model\n",
+    "    \"power_model\": \"simple\",\n",
+    "}\n",
+    "\n",
+    "config_rotor1 = base_config.copy()\n",
+    "config_rotor1[\"Radius\"] = 0.5\n",
+    "\n",
+    "config_rotor2 = base_config.copy()\n",
+    "config_rotor2[\"Radius\"] = 1.0"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1c9cf1ad",
+   "metadata": {},
+   "source": [
+    "## 4. Run rotor simulations\n",
+    "\n",
+    "Now run the dynamic rotor simulation for both configurations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "28101ff3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rotor_sim1 = RotorSimulation(config_rotor1)\n",
+    "rotor_sim1.simulate()\n",
+    "results_rotor1 = rotor_sim1.get_results()\n",
+    "\n",
+    "rotor_sim2 = RotorSimulation(config_rotor2)\n",
+    "rotor_sim2.simulate()\n",
+    "results_rotor2 = rotor_sim2.get_results()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8c456bd7",
+   "metadata": {},
+   "source": [
+    "## 5. Summarize simulation results\n",
+    "\n",
+    "The simulation returns time histories for rotor speed, generator torque, thrust, hydrodynamic power, mechanical power, electrical power, and other quantities.\n",
+    "\n",
+    "Here we print a few simple summary metrics."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "27c65370",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def summarize_results(name, config, results):\n",
+    "    print(name)\n",
+    "    print(\"-\" * len(name))\n",
+    "    print(f\"Radius: {config['Radius']:.2f} m\")\n",
+    "    print(f\"Mean adjusted flow speed: {np.mean(results['Uinf_adjusted']):.3f} m/s\")\n",
+    "    print(f\"Max adjusted flow speed: {np.max(results['Uinf_adjusted']):.3f} m/s\")\n",
+    "    print(f\"Mean Pelec: {np.mean(results['Pelec']) / 1000:.3f} kW\")\n",
+    "    print(f\"Max Pelec: {np.max(results['Pelec']) / 1000:.3f} kW\")\n",
+    "    print(f\"Mean TSR: {np.mean(results['TSR']):.3f}\")\n",
+    "    print(f\"Max TSR: {np.max(results['TSR']):.3f}\")\n",
+    "    print(f\"Mean generator torque: {np.mean(results['Tg']):.3f} N m\")\n",
+    "    print(f\"Max generator torque: {np.max(results['Tg']):.3f} N m\")\n",
+    "    print()\n",
+    "\n",
+    "summarize_results(\"Rotor 1\", config_rotor1, results_rotor1)\n",
+    "summarize_results(\"Rotor 2\", config_rotor2, results_rotor2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cb91c6c",
+   "metadata": {},
+   "source": [
+    "## 6. Compare time-series outputs\n",
+    "\n",
+    "The plots below compare electrical power, generator torque, tip-speed ratio, and rotor speed for the two rotor radii."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "daa3137a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "time_days = results_rotor1[\"t\"] / (3600 * 24)\n",
+    "\n",
+    "fig, ax = plt.subplots(4, 1, figsize=(10, 10), sharex=True)\n",
+    "\n",
+    "# Electrical power\n",
+    "ax[0].plot(time_days, results_rotor1[\"Pelec\"] / 1000, label=\"Rotor 1: R = 0.5 m\")\n",
+    "ax[0].plot(time_days, results_rotor2[\"Pelec\"] / 1000, label=\"Rotor 2: R = 1.0 m\")\n",
+    "ax[0].axhline(base_config[\"Prated\"] / 1000, color=\"k\", linestyle=\"--\", linewidth=1, label=\"Rated power\")\n",
+    "ax[0].axhline(0.0, color=\"gray\", linestyle=\":\", linewidth=1)\n",
+    "ax[0].set_ylabel(\"Pelec (kW)\")\n",
+    "ax[0].set_title(\"Electrical Power\")\n",
+    "ax[0].legend()\n",
+    "ax[0].grid(True)\n",
+    "\n",
+    "# Generator torque\n",
+    "ax[1].plot(time_days, results_rotor1[\"Tg\"], label=\"Rotor 1: R = 0.5 m\")\n",
+    "ax[1].plot(time_days, results_rotor2[\"Tg\"], label=\"Rotor 2: R = 1.0 m\")\n",
+    "ax[1].axhline(base_config[\"Trated\"], color=\"k\", linestyle=\"--\", linewidth=1, label=\"Rated torque\")\n",
+    "ax[1].set_ylabel(\"Tg (N m)\")\n",
+    "ax[1].set_title(\"Generator Torque\")\n",
+    "ax[1].legend()\n",
+    "ax[1].grid(True)\n",
+    "\n",
+    "# Tip-speed ratio\n",
+    "ax[2].plot(time_days, results_rotor1[\"TSR\"], label=\"Rotor 1: R = 0.5 m\")\n",
+    "ax[2].plot(time_days, results_rotor2[\"TSR\"], label=\"Rotor 2: R = 1.0 m\")\n",
+    "ax[2].axhline(rotor.TSROpt, color=\"k\", linestyle=\"--\", linewidth=1, label=\"Optimal TSR\")\n",
+    "ax[2].set_ylabel(\"TSR\")\n",
+    "ax[2].set_title(\"Tip-Speed Ratio\")\n",
+    "ax[2].legend()\n",
+    "ax[2].grid(True)\n",
+    "\n",
+    "# Rotor angular speed\n",
+    "ax[3].plot(time_days, results_rotor1[\"wr\"], label=\"Rotor 1: R = 0.5 m\")\n",
+    "ax[3].plot(time_days, results_rotor2[\"wr\"], label=\"Rotor 2: R = 1.0 m\")\n",
+    "ax[3].set_ylabel(\"Rotor speed (rad/s)\")\n",
+    "ax[3].set_xlabel(\"Time (days)\")\n",
+    "ax[3].set_title(\"Rotor Angular Speed\")\n",
+    "ax[3].legend()\n",
+    "ax[3].grid(True)\n",
+    "\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "180404f0",
+   "metadata": {},
+   "source": [
+    "## Summary\n",
+    "\n",
+    "This tutorial showed how to:\n",
+    "\n",
+    "- Load tidal resource data.\n",
+    "- Load rotor performance data.\n",
+    "- Configure the ``RotorSimulation`` model.\n",
+    "- Run simulations for two rotor radii.\n",
+    "- Compare electrical power, torque, TSR, and rotor speed.\n",
+    "\n",
+    "The next tutorial uses the simulation results to evaluate design constraints such as power limits, rotor submergence, cavitation, and vessel pitch stability."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "VITAL_env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
